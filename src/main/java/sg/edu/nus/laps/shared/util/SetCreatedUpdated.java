@@ -16,13 +16,8 @@ public abstract class SetCreatedUpdated {
 	@Column(name = "updated_at", nullable = false)
 	protected LocalDateTime updatedAt;
 
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
-
-	public LocalDateTime getUpdatedAt() {
-		return updatedAt;
-	}
+	public LocalDateTime getCreatedAt() { return createdAt; }
+	public LocalDateTime getUpdatedAt() { return updatedAt; }
 
 	@PrePersist // set NOW() in MySQL on create
 	private void onCreate() {

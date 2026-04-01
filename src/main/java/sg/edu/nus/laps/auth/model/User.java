@@ -23,8 +23,8 @@ public class User extends SetCreatedUpdated {
 	@Id
 	@Column(nullable = false, unique = true, length = 256) // JPA - MySQL constraints
 	@NotBlank(message = "Company email is required")
-	@Email(message = "Please enter a valid email address") // Check invalid email
-	@Size(min = 10, max = 256, message = "Email must be between 10 to 256 characters")
+	@Email(message = "Company email is invalid") // Check invalid email
+	@Size(min = 10, max = 256, message = "Company email must be between 10 to 256 characters")
 	private String email;
 
 	// No raw password validation bc this is hashed password
@@ -98,6 +98,5 @@ public class User extends SetCreatedUpdated {
 			", role='" + getRole() + "'" +
 			"}";
 	}
-	
 
 }
