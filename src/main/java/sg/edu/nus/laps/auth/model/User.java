@@ -1,7 +1,5 @@
 package sg.edu.nus.laps.auth.model;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,10 +12,11 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import sg.edu.nus.laps.employee.model.Employee;
+import sg.edu.nus.laps.shared.util.SetCreatedUpdated;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends SetCreatedUpdated {
 	
 	// VARIABLES
 
@@ -39,11 +38,11 @@ public class User {
 	@Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
 	private boolean enabled = true;
 
-	@Column(name = "created_at", nullable = false, updatable = false) // JPA - MySQL constraints
-	private LocalDateTime createdAt;
+	// @Column(name = "created_at", nullable = false, updatable = false) // JPA - MySQL constraints
+	// private LocalDateTime createdAt;
 	
-	@Column(name = "updated_at", nullable = false) // JPA - MySQL constraints
-	private LocalDateTime updatedAt;
+	// @Column(name = "updated_at", nullable = false) // JPA - MySQL constraints
+	// private LocalDateTime updatedAt;
 
 	// ASSOCIATIONS
 
@@ -57,6 +56,8 @@ public class User {
 	// User to Employee: One to One
 	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
 	private Employee employee;
+
+	// LIFECYCLE
 
 	// CONSTRUCTORS
 
@@ -81,9 +82,22 @@ public class User {
 	public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 	public boolean isEnabled() { return this.enabled; }
 	public void setEnabled(boolean enabled) { this.enabled = enabled; }
-	public LocalDateTime getCreatedAt() { return this.createdAt; }
-	public LocalDateTime getUpdatedAt() { return this.updatedAt; }
+	// public LocalDateTime getCreatedAt() { return this.createdAt; }
+	// public LocalDateTime getUpdatedAt() { return this.updatedAt; }
 	public Role getRole() { return this.role; }
 	public void setRole(Role role) { this.role = role; }
+
+	// TO STRING
+
+	@Override
+	public String toString() {
+		return "{" +
+			" email='" + getEmail() + "'" +
+			", passwordHash='" + getPasswordHash() + "'" +
+			", enabled='" + isEnabled() + "'" +
+			", role='" + getRole() + "'" +
+			"}";
+	}
+	
 
 }

@@ -1,6 +1,5 @@
 package sg.edu.nus.laps.employee.model;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +15,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,10 +24,11 @@ import jakarta.validation.constraints.Size;
 import sg.edu.nus.laps.auth.model.User;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveRecord;
+import sg.edu.nus.laps.shared.util.SetCreatedUpdated;
 
 @Entity
 @Table(name = "employees")
-public class Employee {
+public class Employee extends SetCreatedUpdated {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,11 +70,11 @@ public class Employee {
 	@Positive(message = "Manager's id must be a positive number") // Validate admin input
 	private Long managerId;
 
-	@Column(name = "created_at", nullable = false, updatable = false) // JPA - MySQL constraints
-	private LocalDateTime createdAt;
+	// @Column(name = "created_at", nullable = false, updatable = false) // JPA - MySQL constraints
+	// private LocalDateTime createdAt;
 	
-	@Column(name = "updated_at", nullable = false) // JPA - MySQL constraints
-	private LocalDateTime updatedAt;
+	// @Column(name = "updated_at", nullable = false) // JPA - MySQL constraints
+	// private LocalDateTime updatedAt;
 	
 	// Employee to User: One to One
 	// Employee as Owning Side bc User may not be Employee, but Employee must be User
@@ -178,32 +176,32 @@ public class Employee {
 		this.user = user;
 	}
 
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
-
-	// public void setCreatedAt(LocalDateTime createdAt) {
-	// 	this.createdAt = createdAt;
+	// public LocalDateTime getCreatedAt() {
+	// 	return createdAt;
 	// }
 
-	public LocalDateTime getUpdatedAt() {
-		return updatedAt;
-	}
+	// // public void setCreatedAt(LocalDateTime createdAt) {
+	// // 	this.createdAt = createdAt;
+	// // }
 
-	// public void setUpdatedAt(LocalDateTime updatedAt) {
-	// 	this.updatedAt = updatedAt;
+	// public LocalDateTime getUpdatedAt() {
+	// 	return updatedAt;
 	// }
 
-	@PrePersist // set NOW() in MySQL on create
-	private void onCreate() {
-		LocalDateTime now = LocalDateTime.now();
-		this.createdAt = now;
-		this.updatedAt = now;
-	}
+	// // public void setUpdatedAt(LocalDateTime updatedAt) {
+	// // 	this.updatedAt = updatedAt;
+	// // }
 
-	@PreUpdate // set NOW() in MySQL on update
-	private void onUpdate() {
-		this.updatedAt = LocalDateTime.now();
-	}
+	// @PrePersist // set NOW() in MySQL on create
+	// private void onCreate() {
+	// 	LocalDateTime now = LocalDateTime.now();
+	// 	this.createdAt = now;
+	// 	this.updatedAt = now;
+	// }
+
+	// @PreUpdate // set NOW() in MySQL on update
+	// private void onUpdate() {
+	// 	this.updatedAt = LocalDateTime.now();
+	// }
 
 }
