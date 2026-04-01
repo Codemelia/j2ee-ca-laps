@@ -1,6 +1,9 @@
 package sg.edu.nus.laps.employee.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -24,22 +27,33 @@ public class EmployeeController {
 		this.eService = eService;
 	}
 	
-	private Long requireLogin(HttpSession session, RedirectAttributes redirectAttr) {
-		Long userId = (Long) session.getAttribute("userId");
-		if (userId == null) {
-			redirectAttr.addFlashAttribute("error", "Please log in first!");
-		}
-		
-		return userId;
-	}
+	private boolean isLoggedIn(HttpSession session) {
+        return session.getAttribute("loggedInUser") != null;
+         
+    }
+	
 
 	@GetMapping("/employees")
-	public String displayEmployeesList() {
-		return "details";
+	public String displayEmployeesList(Model model, HttpSession session, RedirectAttributes redirectAttrs) {
+		if (!isLoggedIn(session)) {
+            redirectAttrs.addFlashAttribute("errorMessage",
+                    "Please log in to view courses.");
+            return "redirect:/login";
+        }
+		
+		List<Employee> allEmployees = eService.findAll();
+		model.addAttribute("employees", allEmployees);
+		
+		return "dashboard";
 	}
 	
 	@GetMapping("/employees/create")
-	public String showCreateEmployeeForm() {
+	public String showCreateEmployeeForm(HttpSession session, RedirectAttributes redirectAttrs) {
+		if (!isLoggedIn(session)) {
+            redirectAttrs.addFlashAttribute("errorMessage",
+                    "Please log in to view Create New Employee form.");
+            return "redirect:/login";
+        }
 		return "form";
 	}
 	
