@@ -96,8 +96,8 @@ Replace or expand this list based on what your app needs.
 3. Under User variables, click New.
 4. Add each variable name and value
     - Name: MYSQL_URL | Value: jdbc:mysql://localhost:3306
-    - Name: MYSQL_USERNAME | Value: <your MySQL username>
-    - Name: MYSQL_PASSWORD | Value: <your MySQL password>
+    - Name: MYSQL_USERNAME | Value: [your MySQL username]
+    - Name: MYSQL_PASSWORD | Value: [your MySQL password]
 5. Restart terminal/IDE after saving.
 
 ### 2.2 Option B: CLI / Terminal (Temporary Setting)
@@ -107,12 +107,12 @@ Replace or expand this list based on what your app needs.
 3. Add each variable name and value:
     - Windows: 
         * SET MYSQL_URL=jdbc:mysql://localhost:3306
-        * SET MYSQL_USERNAME=<your MySQL username>
-        * SET MYSQL_PASSWORD=<your MySQL password>
+        * SET MYSQL_USERNAME=[your MySQL username]
+        * SET MYSQL_PASSWORD=[your MySQL password]
     - macOS:
         * EXPORT MYSQL_URL=jdbc:mysql://localhost:3306
-        * EXPORT MYSQL_USERNAME=<your MySQL username>
-        * EXPORT MYSQL_PASSWORD=<your MySQL password>
+        * EXPORT MYSQL_USERNAME=[your MySQL username]
+        * EXPORT MYSQL_PASSWORD=[your MySQL password]
 4. Restart terminal/IDE after executing.
 
 ### 2.3 Verify variables
