@@ -41,8 +41,7 @@ public class Employee {
 	@NotNull(message = "Please select employee's rank")
 	private EmployeeRank rank;
 	
-	// Will Create Employee Form ask for manager's name and then extract id? 
-	// Or require Admin to key in manager's id directly?
+	// Admin will need to key in manager's id directly
 	@NotBlank(message = "Manager's id is required") 
 	private Integer manager_id;
 	private LocalDateTime created_at;
