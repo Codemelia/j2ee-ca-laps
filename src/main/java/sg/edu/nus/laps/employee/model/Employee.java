@@ -19,7 +19,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -37,11 +36,12 @@ public class Employee {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false, unique = true, length = 256) // JPA - MySQL constraints
-	@NotBlank(message = "Company email is required")
-	@Email(message = "Please enter a valid email address") // check invalid email
-	@Size(min = 10, max = 256, message = "Email must be between 10 to 256 characters")
-	private String email;
+	// Remove bc this should be FK
+	// @Column(nullable = false, unique = true, length = 256) // JPA - MySQL constraints
+	// @NotBlank(message = "Company email is required")
+	// @Email(message = "Please enter a valid email address") // check invalid email
+	// @Size(min = 10, max = 256, message = "Email must be between 10 to 256 characters")
+	// private String email;
 
 	@Column(name = "first_name", nullable = false, length = 50) // JPA - MySQL constraints
 	@NotBlank(message = "First name is required")
@@ -79,10 +79,13 @@ public class Employee {
 	private LocalDateTime updatedAt;
 	
 	// Employee to User: One to One
+	// Employee as Owning Side bc User may not be Employee, but Employee must be User
 	// CascadeType.REMOVE - On delete employee, delete associated user
 	// orphanRemoval=true - On setUser(null), detaches old user and deletes it
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
-	@JoinColumn(name = "user_id", referencedColumnName = "id")
+	@OneToOne(optional = false, fetch = FetchType.LAZY, 
+		cascade = CascadeType.REMOVE, orphanRemoval = true) // optional to reinforce Employee must be User
+	@JoinColumn(name = "email", referencedColumnName = "email",
+		nullable = false, unique = true)
 	private User user;
 	
 	// Employee to LeaveApplication: One to Many
@@ -97,19 +100,18 @@ public class Employee {
 		super();
 	}
 
-	public Employee(Long id, String email, String firstName, 
-			String lastName, String contactNumber, EmployeeRank rank, 
-			Long managerId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+	public Employee(Long id, String firstName, String lastName, 
+			String contactNumber, EmployeeRank rank, Long managerId) {
 		super();
 		this.id = id;
-		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.contactNumber = contactNumber;
 		this.rank = rank;
 		this.managerId = managerId;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
+		// Not needed, auto update via JPA/MySQL
+		// this.createdAt = createdAt;
+		// this.updatedAt = updatedAt;
 	}
 
 	public Long getId() {
@@ -120,13 +122,13 @@ public class Employee {
 //		this.id = id;
 //	}
 
-	public String getEmail() {
-		return email;
-	}
+	// public String getEmail() {
+	// 	return email;
+	// }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+	// public void setEmail(String email) {
+	// 	this.email = email;
+	// }
 
 	public String getFirstName() {
 		return firstName;
@@ -174,9 +176,6 @@ public class Employee {
 
 	public void setUser(User user) {
 		this.user = user;
-		if (user != null && user.getEmployee() != this) {
-			user.setEmployee(this);
-		}
 	}
 
 	public LocalDateTime getCreatedAt() {
