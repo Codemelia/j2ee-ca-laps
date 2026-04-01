@@ -5,15 +5,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import sg.edu.nus.laps.auth.model.User;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
@@ -26,29 +35,52 @@ public class Employee {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@Column(nullable = false, unique = true, length = 256) // JPA - MySQL constraints
 	@NotBlank(message = "Company email is required")
+	@Email(message = "Please enter a valid email address") // check invalid email
 	@Size(min = 10, max = 256, message = "Email must be between 10 to 256 characters")
 	private String email;
+
+	@Column(name = "first_name", nullable = false, length = 50) // JPA - MySQL constraints
 	@NotBlank(message = "First name is required")
 	@Size(min = 2, max = 50, message = "First name must be between 2 to 50 characters")
-	private String first_name;
+	@Pattern(regexp = "^[A-Za-z '-]+$", message = "First name contains invalid characters") // Validate no special characters
+	private String firstName;
+
+	@Column(name = "last_name", nullable = false, length = 50) // JPA - MySQL constraints
 	@NotBlank(message = "Last name is required")
-	@Size(min = 2, max = 50, message = "First name must be between 2 to 50 characters")
-	private String last_name;
+	@Size(min = 2, max = 50, message = "Last name must be between 2 to 50 characters")
+	@Pattern(regexp = "^[A-Za-z '-]+$", message = "Last name contains invalid characters") // Validate no special characters
+	private String lastName;
+
+	@Column(name = "contact_number", nullable = false, length = 15) // JPA - MySQL constraints
 	@NotBlank(message = "Contact number is required")
-	@Size(min = 8, max = 15, message = "Contact number must be between 8 to 15 digits")
-	private String contact_number;
+	@Size(min = 8, max = 15, message = "Contact number must be between 8 to 15 characters")
+	@Pattern(regexp = "^\\+?\\d{8,15}$", message = "Enter a valid phone number") // Validate phone number regexp - \\s () \\d . not allowed for now
+	private String contactNumber;
+
+	@Enumerated(EnumType.STRING) // JPA store ENUM as String in DB
+	@Column(nullable = false, length = 30) // JPA - MySQL constraints
 	@NotNull(message = "Please select employee's rank")
 	private EmployeeRank rank;
 	
 	// Admin will need to key in manager's id directly
-	@NotBlank(message = "Manager's id is required") 
-	private Integer manager_id;
-	private LocalDateTime created_at;
-	private LocalDateTime updated_at;
+	@Column(name = "manager_id", nullable = false) // JPA - MySQL constraints
+	@NotNull(message = "Manager's id is required")
+	@Positive(message = "Manager's id must be a positive number") // Validate admin input
+	private Long managerId;
+
+	@Column(name = "created_at", nullable = false, updatable = false) // JPA - MySQL constraints
+	private LocalDateTime createdAt;
+	
+	@Column(name = "updated_at", nullable = false) // JPA - MySQL constraints
+	private LocalDateTime updatedAt;
 	
 	// Employee to User: One to One
-	@OneToOne(mappedBy = "employee", fetch = FetchType.LAZY)
+	// CascadeType.REMOVE - On delete employee, delete associated user
+	// orphanRemoval=true - On setUser(null), detaches old user and deletes it
+	@OneToOne(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private User user;
 	
 	// Employee to LeaveApplication: One to Many
@@ -63,24 +95,19 @@ public class Employee {
 		super();
 	}
 
-	public Employee(Long id,
-			@NotBlank(message = "Company email is required") @Size(min = 10, max = 256, message = "Email must be between 10 to 256 characters") String email,
-			@NotBlank(message = "First name is required") @Size(min = 2, max = 50, message = "First name must be between 2 to 50 characters") String first_name,
-			@NotBlank(message = "Last name is required") @Size(min = 2, max = 50, message = "First name must be between 2 to 50 characters") String last_name,
-			@NotBlank(message = "Contact number is required") @Size(min = 8, max = 15, message = "Contact number must be between 8 to 15 digits") String contact_number,
-			@NotNull(message = "Please select employee's rank") EmployeeRank rank,
-			@NotBlank(message = "Manager's id is required") Integer manager_id, LocalDateTime created_at,
-			LocalDateTime updated_at) {
+	public Employee(Long id, String email, String firstName, 
+			String lastName, String contactNumber, EmployeeRank rank, 
+			Long managerId, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super();
 		this.id = id;
 		this.email = email;
-		this.first_name = first_name;
-		this.last_name = last_name;
-		this.contact_number = contact_number;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.contactNumber = contactNumber;
 		this.rank = rank;
-		this.manager_id = manager_id;
-		this.created_at = created_at;
-		this.updated_at = updated_at;
+		this.managerId = managerId;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
 	}
 
 	public Long getId() {
@@ -99,28 +126,28 @@ public class Employee {
 		this.email = email;
 	}
 
-	public String getFirst_name() {
-		return first_name;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setFirst_name(String first_name) {
-		this.first_name = first_name;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
-	public String getLast_name() {
-		return last_name;
+	public String getLastName() {
+		return lastName;
 	}
 
-	public void setLast_name(String last_name) {
-		this.last_name = last_name;
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
-	public String getContact_number() {
-		return contact_number;
+	public String getContactNumber() {
+		return contactNumber;
 	}
 
-	public void setContact_number(String contact_number) {
-		this.contact_number = contact_number;
+	public void setContactNumber(String contactNumber) {
+		this.contactNumber = contactNumber;
 	}
 
 	public EmployeeRank getRank() {
@@ -131,32 +158,51 @@ public class Employee {
 		this.rank = rank;
 	}
 
-	public Integer getManager_id() {
-		return manager_id;
+	public Long getManagerId() {
+		return managerId;
 	}
 
-	public void setManager_id(Integer manager_id) {
-		this.manager_id = manager_id;
+	public void setManagerId(Long managerId) {
+		this.managerId = managerId;
 	}
 
-	public LocalDateTime getCreated_at() {
-		return created_at;
+	public User getUser() {
+		return user;
 	}
 
-	public void setCreated_at(LocalDateTime created_at) {
-		this.created_at = created_at;
+	public void setUser(User user) {
+		this.user = user;
+		if (user != null && user.getEmployee() != this) {
+			user.setEmployee(this);
+		}
 	}
 
-	public LocalDateTime getUpdated_at() {
-		return updated_at;
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setUpdated_at(LocalDateTime updated_at) {
-		this.updated_at = updated_at;
+	// public void setCreatedAt(LocalDateTime createdAt) {
+	// 	this.createdAt = createdAt;
+	// }
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
 	}
-	
-	
-	
-	
+
+	// public void setUpdatedAt(LocalDateTime updatedAt) {
+	// 	this.updatedAt = updatedAt;
+	// }
+
+	@PrePersist // set NOW() in MySQL on create
+	private void onCreate() {
+		LocalDateTime now = LocalDateTime.now();
+		this.createdAt = now;
+		this.updatedAt = now;
+	}
+
+	@PreUpdate // set NOW() in MySQL on update
+	private void onUpdate() {
+		this.updatedAt = LocalDateTime.now();
+	}
 
 }
