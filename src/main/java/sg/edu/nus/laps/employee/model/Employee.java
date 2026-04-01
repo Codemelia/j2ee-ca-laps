@@ -13,6 +13,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
@@ -80,7 +81,8 @@ public class Employee {
 	// Employee to User: One to One
 	// CascadeType.REMOVE - On delete employee, delete associated user
 	// orphanRemoval=true - On setUser(null), detaches old user and deletes it
-	@OneToOne(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private User user;
 	
 	// Employee to LeaveApplication: One to Many
