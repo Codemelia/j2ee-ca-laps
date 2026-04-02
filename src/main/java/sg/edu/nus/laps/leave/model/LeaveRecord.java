@@ -99,5 +99,4 @@ public class LeaveRecord extends SetCreatedUpdated {
 				+ ", leaveType=" + leaveType 
 				+ "]";
 	}	
-	
 }
