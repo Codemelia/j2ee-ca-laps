@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Update Employee Details</title>
+<style>
+  label {
+    display: inline-block;
+    width: 150px; /* Specify your desired width here */
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+  input {
+    width: 200px;
+  }
+</style>
+</head>
+
+<body>
+	<h1>Update Employee Details</h1>
+	<form th:action="@{/update/{id}(id=${employee.id})}" th:object="${employee} method="post">
+		<div><input type="hidden" th:field="*{id}"></div>
+		<div>
+			<label for=firstName">First name:</label>
+			<input type="text" th:field="*{first_name}" placeholder="First name"><br> 
+			<span class="error" th:if="${#fields.hasErrors('first_name')}"
+		                 th:errors="*{first_name}"></span>
+		</div>
+		
+		<div>	
+			<label for="lastName">Last name:</label>
+			<input type="text" th:field="*{last_name}" placeholder="Last name"><br>
+			<span class="error" th:if="${#fields.hasErrors('last_name')}"
+		                 th:errors="*{last_name}"></span>
+		</div>
+		
+		<div>                 
+		    <label for="email">Employee's email:</label>
+			<input type="email" th:field="*{email}" autofocus placeholder="name@company.com"><br> 
+			<span class="error" th:if="${#fields.hasErrors('email')}"
+		                 th:errors="*{email}"></span>
+		</div>
+		
+		<div>	
+			<label for="contactNum">Contact number:</label> 
+			<input type="text" th:field="*{contact_number}"><br>
+			<span class="error" th:if="${#fields.hasErrors('contact_number')}"
+		                 th:errors="*{contact_number}"></span>
+		</div>
+		
+		<div>	
+			<label for="rank">Employee's rank:</label>
+			<select th:field="*{rank}">
+			  <option value="NON_EXECUTIVE">Non-Executive</option>
+			  <option value="PROFESSIONAL">Professional</option>
+			</select><br>
+			<span class="error" th:if="${#fields.hasErrors('rank')}"
+		                 th:errors="*{rank}"></span>
+		</div>	
+			
+		<div>	
+			<label for="managerId">Manager's ID:</label>
+			<input type="text" th:field="*{manager_id}""><br>
+			<span class="error" th:if="${#fields.hasErrors('manager_id')}"
+		                 th:errors="*{manager_id}"></span>
+		</div>
+		
+		<button type="submit">Update Employee</button>
+	</form>
+
+</body>
+</html>
