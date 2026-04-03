@@ -1,6 +1,7 @@
 package sg.edu.nus.laps.employee.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,7 +29,7 @@ public class EmployeeController {
 	}
 	
 	private boolean isLoggedIn(HttpSession session) {
-        return session.getAttribute("loggedInUser") != null;
+        return session.getAttribute("user") != null;
          
     }
 	
@@ -37,12 +38,15 @@ public class EmployeeController {
 	public String displayEmployeesList(Model model, HttpSession session, RedirectAttributes redirectAttrs) {
 		if (!isLoggedIn(session)) {
             redirectAttrs.addFlashAttribute("errorMessage",
-                    "Please log in to view courses.");
+                    "Please log in to view employees.");
             return "redirect:/login";
         }
 		
 		List<Employee> allEmployees = eService.findAll();
 		model.addAttribute("employees", allEmployees);
+		
+		Optional<Employee> loggedInEmployee = eService.findByEmail(session.user.email);
+		model.addAttribute("loggedInEmployee", loggedInEmployee);
 		
 		return "dashboard";
 	}
