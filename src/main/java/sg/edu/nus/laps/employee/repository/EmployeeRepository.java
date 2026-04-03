@@ -10,5 +10,7 @@ import sg.edu.nus.laps.employee.model.Employee;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	
-	Optional<Employee> findByEmail();
+	Optional<Employee> findByEmail(String email);
+	
+	Optional<Employee> findById(Long id);
 }
