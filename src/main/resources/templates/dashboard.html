@@ -8,22 +8,25 @@
 	<h1>Leave Dashboard</h1>
 	
 	<div >
-    	<p>Welcome, <span th:text="${userFirstName}! You have access to the dashboard.">Greet User</span></p>
+    	<p>Welcome, <span th:text="${userFirstName}!">Greet User</span></p>
 	</div>	
 	
 		<!-- Employees table -->
 	<div th:if="${user.role == T(sg.edu.nus.laps.auth.model.Role).ADMIN}">	
-		<table border="1" cellpadding="6" cellspacing="0" th:unless="${products.isEmpty()}">
+		<p><h2>All Employees</h2></p>
+		<table border="1" cellpadding="6" cellspacing="0" th:unless="${allEmployees.isEmpty()}">
 		    <thead>
 		        <tr>
 		            <th>ID</th><th>First Name</th><th>Last Name</th>
 		            <th>Email</th><th>Contact Number</th><th>Rank</th>
 		            <th>Manager's ID</th>
 <!-- 		            <th>Created At</th><th>Updated At</th> -->
+					<th>Update</th>
+					<th>Delete</th>
 		        </tr>
 		    </thead>
 		    <tbody>
-		        <tr th:each="e : ${employees}">
+		        <tr th:each="e : ${allEmployees}">
 		            <td th:text="${e.id}">Employee Id</td>
 		            <td th:text="${e.firstName}">First Name</td>
 		            <td th:text="${e.lastName}">Last Name</td>
@@ -33,6 +36,8 @@
 		            <td th:text="${e.managerId">Manager's ID</td>
 		            <!-- <td th:text="${#temporals.format(e.createdAt,'dd MMM yyyy')}">Created At</td>
 		            <td th:text="${#temporals.format(e.updatedAt,'dd MMM yyyy')}">Updated At</td> -->
+		            <td><a th:href="@{/update/{id}(id=${e.id})}" th:text="Update Details">Update Details</a></td>
+		            <td><a th:href="@{/delete/{id}(id=${e.id})}" th:text="Delete Employee">Delete Employee</a></td>
 		        </tr>
 		    </tbody>
 		</table>
