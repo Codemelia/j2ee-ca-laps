@@ -34,8 +34,8 @@ public class EmployeeController {
     }
 	
 
-	@GetMapping("/employees")
-	public String displayEmployeesList(Model model, HttpSession session, RedirectAttributes redirectAttrs) {
+	@GetMapping("/")
+	public String displayDashboard(Model model, HttpSession session, RedirectAttributes redirectAttrs) {
 		if (!isLoggedIn(session)) {
             redirectAttrs.addFlashAttribute("errorMessage",
                     "Please log in to view employees.");
@@ -45,13 +45,23 @@ public class EmployeeController {
 		List<Employee> allEmployees = eService.findAll();
 		model.addAttribute("employees", allEmployees);
 		
-		Optional<Employee> loggedInEmployee = eService.findByEmail(session.user.email);
-		model.addAttribute("loggedInEmployee", loggedInEmployee);
+		Optional<Employee> loggedInUser = eService.findByEmail(session.user.email);
+		
+		String userFirstName = "";
+		if (loggedInUser.isPresent()) {
+			userFirstName = loggedInUser.get().getFirstName();
+		}
+		
+		if (loggedInUser.isEmpty()) {
+			userFirstName = "Admin";
+		}
+		
+		model.addAttribute("userFirstName", userFirstName);
 		
 		return "dashboard";
 	}
 	
-	@GetMapping("/employees/create")
+	@GetMapping("/create")
 	public String showCreateEmployeeForm(HttpSession session, RedirectAttributes redirectAttrs) {
 		if (!isLoggedIn(session)) {
             redirectAttrs.addFlashAttribute("errorMessage",
@@ -61,7 +71,7 @@ public class EmployeeController {
 		return "form";
 	}
 	
-//	@PostMapping("/employees/create")
+//	@PostMapping("/create")
 //	public String createEmployee(@Valid @ModelAttribute Employee employee, BindingResult bindingResult, RedirectAttributes redirectAttrs) {
 //		if (bindingResult.hasErrors()) {
 //			return "form";
