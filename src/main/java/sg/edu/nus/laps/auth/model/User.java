@@ -31,7 +31,7 @@ public class User extends SetCreatedUpdated {
 	// Set length at 255 for flexibility in case of hash algorithm change
 	@Column(name = "password_hash", nullable = false, length = 255) // JPA - MySQL constraints
 	@NotBlank(message = "Password hash is required")
-	@Size(max = 255, message = "Password hash is too long")
+	@Size(max = 255, message = "Password hash must not be longer than 255 characters")
 	private String passwordHash;
 
 	// default to true - Avoid accidental pending state
@@ -73,7 +73,6 @@ public class User extends SetCreatedUpdated {
 
 	// Restrictions:
 	// Only admin can access setEmail() / setRole() / isEnabled() - enforced in service layer
-	// NO getEmployee() / setEmployee() bc Employee-User RS is unidirectional for now
 	// NO setCreatedAt() / setUpdatedAt() to prevent corrupting timestamps
 
 	public String getEmail() { return this.email; }
@@ -86,6 +85,8 @@ public class User extends SetCreatedUpdated {
 	// public LocalDateTime getUpdatedAt() { return this.updatedAt; }
 	public Role getRole() { return this.role; }
 	public void setRole(Role role) { this.role = role; }
+	public Employee getEmployee() { return this.employee; }
+	public void setEmployee(Employee employee) { this.employee = employee; }
 
 	// TO STRING
 
