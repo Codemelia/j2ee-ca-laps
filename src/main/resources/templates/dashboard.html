@@ -11,7 +11,8 @@
     	<p>Welcome, <span th:text="${userFirstName}!">Greet User</span></p>
 	</div>	
 	
-		<!-- Employees table -->
+	<!-- Employees table -->
+	<!-- All employees table only displays when user role is ADMIN -->
 	<div th:if="${user.role == T(sg.edu.nus.laps.auth.model.Role).ADMIN}">	
 		<p><h2>All Employees</h2></p>
 		<table border="1" cellpadding="6" cellspacing="0" th:unless="${allEmployees.isEmpty()}">
