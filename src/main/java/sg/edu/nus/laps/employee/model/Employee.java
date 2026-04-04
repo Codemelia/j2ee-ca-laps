@@ -41,10 +41,10 @@ public class Employee extends SetCreatedUpdated {
 
 	// Remove bc this should be FK
 	// @Column(nullable = false, unique = true, length = 256) // JPA - MySQL constraints
-	 @NotBlank(message = "Company email is required")
-	 @Email(message = "Please enter a valid email address") // check invalid email
-	 @Size(min = 10, max = 256, message = "Email must be between 10 to 256 characters")
-	 private String email;
+//	 @NotBlank(message = "Company email is required")
+//	 @Email(message = "Please enter a valid email address") // check invalid email
+//	 @Size(min = 10, max = 256, message = "Email must be between 10 to 256 characters")
+//	 private String email;
 
 	@Column(name = "first_name", nullable = false, length = 50) // JPA - MySQL constraints
 	@NotBlank(message = "First name is required")
