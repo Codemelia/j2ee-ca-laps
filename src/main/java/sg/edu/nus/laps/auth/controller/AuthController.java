@@ -26,7 +26,7 @@ public class AuthController {
     @GetMapping("/login")
     public String getLogin(Model model, HttpSession session) {
         // If session contains user, redirect to index page
-        if (session.getAttribute("user") != null)
+        if (session.getAttribute("userEmail") != null)
             return "redirect/";
         model.addAttribute("user", new User()); // Map new User object
         return "login";
@@ -38,7 +38,7 @@ public class AuthController {
         Model model, HttpSession session, BindingResult bindRes) {
 
         // If session contains user, redirect to index page
-        if (session.getAttribute("user") != null)
+        if (session.getAttribute("userEmail") != null)
             return "redirect/";
 
         // If there are validation errors, return to login page with errors
