@@ -1,7 +1,11 @@
 package sg.edu.nus.laps.employee.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Column;
@@ -73,9 +77,13 @@ public class Employee extends SetCreatedUpdated {
 
 	// @Column(name = "created_at", nullable = false, updatable = false) // JPA - MySQL constraints
 	// private LocalDateTime createdAt;
+	@CreationTimestamp
+	private LocalDateTime createdAt;
 	
 	// @Column(name = "updated_at", nullable = false) // JPA - MySQL constraints
 	// private LocalDateTime updatedAt;
+	@UpdateTimestamp
+	private LocalDateTime updatedAt;
 	
 	// Employee to User: One to One
 	// Employee as Owning Side bc User may not be Employee, but Employee must be User
