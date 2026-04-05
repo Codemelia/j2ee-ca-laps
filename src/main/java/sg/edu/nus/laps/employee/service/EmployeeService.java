@@ -46,13 +46,11 @@ public class EmployeeService {
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
-	@Modifying(clearAutomatically = true)
 	public void save(Employee employee) {
 		eRepo.save(employee);
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
-	@Modifying(clearAutomatically = true)
 	public void delete(Employee employee) {
 		eRepo.delete(employee);
 	}
