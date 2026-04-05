@@ -185,6 +185,14 @@ public class Employee extends SetCreatedUpdated {
 		this.user = user;
 	}
 
+	@Override
+	public String toString() {
+		return "Employee [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", contactNumber="
+				+ contactNumber + ", rank=" + rank + ", managerId=" + managerId + ", createdAt=" + createdAt
+				+ ", updatedAt=" + updatedAt + ", user=" + user + ", leaveApplications=" + leaveApplications
+				+ ", leaveRecords=" + leaveRecords + "]";
+	}
+
 	// public LocalDateTime getCreatedAt() {
 	// 	return createdAt;
 	// }
@@ -213,4 +221,5 @@ public class Employee extends SetCreatedUpdated {
 	// 	this.updatedAt = LocalDateTime.now();
 	// }
 
+	
 }
