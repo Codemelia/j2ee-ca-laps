@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import sg.edu.nus.laps.employee.model.Employee;
@@ -25,6 +27,7 @@ import sg.edu.nus.laps.shared.util.SetCreatedUpdated;
  *  	Long			- id
  *  	Long			- employeeId
  *  	Long			- leave_typeId
+ *  	Integer			- calendarYear
  *  	Double			- entitledDays
  *  	Double			- consumedDays
  *  	LocalDateTime	- createdAt
@@ -40,6 +43,12 @@ public class LeaveRecord extends SetCreatedUpdated {
 	private Long id;
 	
 	// 1. Setting the Attributes
+	@Column(name = "calendar_year", nullable = false)
+	@NotNull(message = "Calendar Year is Mandatory")
+	@Min(2025) 
+	@Max(2125)
+	private Integer calendarYear;
+	
 	@Column(name = "entitled_days", nullable = false)
 	@NotNull(message = "Entitled Days is Mandatory")
 	@PositiveOrZero(message = "Entitled Days must be Positive")
@@ -69,7 +78,8 @@ public class LeaveRecord extends SetCreatedUpdated {
 		// TODO Auto-generated constructor stub
 	}
 
-	public LeaveRecord(Double entitledDays, Double consumedDays, Employee employee, LeaveType leaveType) {
+	public LeaveRecord(Integer calendarYear, Double entitledDays, Double consumedDays, Employee employee, LeaveType leaveType) {
+		this.calendarYear = calendarYear;
 		this.entitledDays = entitledDays;
 		this.consumedDays = consumedDays;
 		this.employee = employee;
@@ -78,11 +88,13 @@ public class LeaveRecord extends SetCreatedUpdated {
 	
 	// 4. Setting Setters & Getters
 	public Long getId() 								{ return id; }
+	public Integer getCalendarYear() 					{ return calendarYear; }
 	public Double getEntitledDays() 					{ return entitledDays; }
 	public Double getConsumedDays() 					{ return consumedDays; }
 	public Employee getEmployee() 						{ return employee; }
 	public LeaveType getLeaveType() 					{ return leaveType; }
 
+	public void setCalendarYear(Integer calendarYear)	{ this.calendarYear = calendarYear; }
 	public void setEntitledDays(Double entitledDays) 	{ this.entitledDays = entitledDays; }
 	public void setConsumedDays(Double consumedDays) 	{ this.consumedDays = consumedDays; }
 	public void setEmployee(Employee employee) 			{ this.employee = employee; }
@@ -92,11 +104,12 @@ public class LeaveRecord extends SetCreatedUpdated {
 	@Override
 	public String toString() {
 		return "LeaveRecord ["
-				+ "id=" + id 
-				+ ", entitledDays=" + entitledDays 
-				+ ", consumedDays=" + consumedDays
-				+ ", employee=" + employee 
-				+ ", leaveType=" + leaveType 
+				+ "id = " + id 
+				+ ", calendarYear = " + calendarYear
+				+ ", entitledDays = " + entitledDays 
+				+ ", consumedDays = " + consumedDays
+				+ ", employee = " + (employee != null ? employee.getId() : "null") 
+				+ ", leaveType = " + (leaveType != null ? leaveType.getId() : "null") 
 				+ "]";
 	}	
 }

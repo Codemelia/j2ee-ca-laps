@@ -46,16 +46,15 @@ public class EmployeeController {
 		
 		List<Employee> allEmployees = eService.findAll();
 		model.addAttribute("allEmployees", allEmployees);
+
+		// Retrieve user email from session attribute
+		String userEmail = (String) session.getAttribute("userEmail");
+		Optional<Employee> loggedInUser = eService.findByEmail(userEmail);
 		
-		Optional<Employee> loggedInUser = eService.findByEmail(session.user.email);
-		
-		String userFirstName = "";
+		// Base first name: "Admin" - accommodate outsourced admins
+		String userFirstName = "admin";
 		if (loggedInUser.isPresent()) {
 			userFirstName = loggedInUser.get().getFirstName();
-		}
-		
-		if (loggedInUser.isEmpty()) {
-			userFirstName = "Admin";
 		}
 		
 		model.addAttribute("userFirstName", userFirstName);
