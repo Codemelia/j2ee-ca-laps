@@ -23,9 +23,9 @@ import sg.edu.nus.laps.employee.model.Employee;
                     CONTROLLER SCOPE
     ------------------------------------------------
     GET  /employees/create 		  - Display create employee form
-    POST /employees/create 		  - Process new employee creation
+    POST /employees/create 		  - Process employee create request
     GET  /employees/update/{id}   - Display update employee form
-    POST /employees/update/{id}   - Process employee update
+    POST /employees/update/{id}   - Process employee update request
     DELETE /employees/delete/{id} - Delete employee by ID
 */
 @RequestMapping("/employees")

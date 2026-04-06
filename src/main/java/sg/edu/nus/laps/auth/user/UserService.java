@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
                     SERVICE SCOPE
     ------------------------------------------------
     -- READ --
-    findByUserEmail(email)          - Find user by email
-    findByUserId(id)                - Find user by ID
+    findByUserEmail(email) - Retrieve user by User Email
+    findByUserId(id)       - Retrieve user by User ID
 
     -- CREATE / UPDATE --
-    save(user)                      - Create or update user account (JPA maps by ID)
+    save(user)             - Create or update user account (JPA maps by ID)
 
     -- DELETE --
-    delete(user)                    - Delete user account
+    delete(user)           - Delete user account
 */
 @Service
 public class UserService {

@@ -17,15 +17,15 @@ import sg.edu.nus.laps.employee.repository.EmployeeRepository;
                     SERVICE SCOPE
     ------------------------------------------------
     -- READ --
-    findAll()                       - Return all employees
-    findByEmail(email)              - Find employee by email
-    findById(id)                    - Find employee by ID
+    findAll()          - Retrieve list of all employees
+    findByEmail(email) - Retrieve employee by email
+    findById(id)       - Retrieve employee by ID
 
     -- CREATE / UPDATE --
-    save(employee)                  - Create or update employee record (JPA maps by ID)
+    save(employee)     - Create or update employee record (JPA maps by ID)
 
     -- DELETE --
-    delete(employee)                - Delete employee record
+    delete(employee)   - Delete employee record
 */
 @Service
 public class EmployeeService {

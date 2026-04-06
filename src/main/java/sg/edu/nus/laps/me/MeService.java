@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
                     SERVICE SCOPE
     ------------------------------------------------
     -- READ --
-    getDashboardData(employeeId)        - Retrieve recent leave requests and leave balances for dashboard
-    getProfile(employeeId)              - Retrieve employee profile details
-    getNotifications(employeeId)        - Retrieve notifications for current employee
+    getDashboardData(employeeId)        - Retrieve recent leave requests and leave balances by Employee ID
+    getProfile(employeeId)              - Retrieve employee profile by Employee ID
+    getNotifications(employeeId)        - Retrieve notifications by Employee ID
 
     -- UPDATE --
     updateProfile(employeeId, profile)  - Update employee profile details

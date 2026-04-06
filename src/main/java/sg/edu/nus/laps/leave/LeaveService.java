@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
                     SERVICE SCOPE
     ------------------------------------------------
     -- READ --
-    findAllByEmployeeId(employeeId) - Return all leaves for current employee
-    findByLeaveId(id)               - Find a specific leave application by ID
+    findAllByEmployeeId(employeeId) - Retrieve list of all leaves by Employee ID
+    findByLeaveId(id)               - Retrieve leave application by Leave ID
 
     -- CREATE / UPDATE --
     save(leaveApplication)          - Create or update a leave application (JPA maps by ID)
