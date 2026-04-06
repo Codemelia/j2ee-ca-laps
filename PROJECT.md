@@ -158,10 +158,3 @@ LAPS
 └── pom.xml
 ...
 ```
-
----
-
-## 3. Scope and Assumptions
-
-### 3.1 Scope
-The system is a web-based LAPS that allows
