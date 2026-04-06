@@ -1,18 +1,38 @@
 # J2EE CA - LAPS
 
 Leave Application Processing System (LAPS) for the J2EE course assignment.
+
 The LAPS is a leave processing system that is used by three primary user role groups:
-1. Employee [Internal user] - Primary function: Apply for leaves
-2. Manager [Internal user] - Primary function: Approve leaves
-3. Admin [Internal/External user - can be outsourced] - Primary function: Manage employees (CRUD)
+1. Employee [Internal user]
+2. Manager [Internal user]
+3. Admin [Internal/External user - can be outsourced]
+
+## Project Scope
+The system for LAPS is web-based; it allows employees to apply for leave, managers to approve/reject leave requests, admins to manage users/employees and roles. LAPS supports annual/medical/compensation leave.
+
+## Project Role Matrix
+This is an overview of the functions of each role (Y = Yes, N = No):
+```
+| Function               | Employee | Manager | Admin (Internal) | Admin (External) |
+| ---------------------- | -------- | ------- | ---------------- | ---------------- |
+| Login / Logout         | Y        | Y       |         Y        |         Y        |
+| Apply Leave            | Y        | Y       |         Y        |         N        |
+| View Own Leave         | Y        | Y       |         Y        |         N        |
+| Approve Leave          | N        | Y       |         N        |         N        |
+| View Subordinate Leave | N        | Y       |         N        |         N        |
+| Manage Users/Employees | N        | N       |         Y        |         Y        |
+| Manage Leave Types     | N        | N       |         Y        |         Y        |
+| Manage Entitlements    | N        | N       |         Y        |         Y        |
+| Manage Roles           | N        | N       |         Y        |         Y        |
+```
+
+---
 
 ## Project Overview
 This PROJECT is organized as a practical project structure and workflow guide.
 
 1. Project Stack
 2. Repository Structure
-3. Scope and assumptions
-4. Role matrix 
 
 ---
 
@@ -138,3 +158,10 @@ LAPS
 └── pom.xml
 ...
 ```
+
+---
+
+## 3. Scope and Assumptions
+
+### 3.1 Scope
+The system is a web-based LAPS that allows
