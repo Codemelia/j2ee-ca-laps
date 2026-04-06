@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 
                     SERVICE SCOPE
     ------------------------------------------------
-    getRequests() - Retrieve list of team leave requests
+    getRequests()    - Retrieve list of team leave requests
     getRequestById() - Retrieve specific leave request by leaveId
     approveRequest() - Approve leave request
-    rejectRequest() - Reject leave request
+    rejectRequest()  - Reject leave request
 */
 @Service
 public class ApprovalService {
