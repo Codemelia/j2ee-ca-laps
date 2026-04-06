@@ -13,8 +13,8 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import sg.edu.nus.laps.common.util.SetCreatedUpdated;
 import sg.edu.nus.laps.employee.model.Employee;
-import sg.edu.nus.laps.shared.util.SetCreatedUpdated;
 
 /* 
  * Successful Transactional Leave Application

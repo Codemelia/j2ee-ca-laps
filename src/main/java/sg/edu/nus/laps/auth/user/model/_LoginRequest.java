@@ -1,11 +1,12 @@
-package sg.edu.nus.laps.auth.model;
+package sg.edu.nus.laps.auth.user.model;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+// UNUSED SINCE USING SPRING SECURITY
 // DTO: takes in user login credentials
-public class LoginRequest {
+public class _LoginRequest {
 
     // VARIABLES
 
@@ -19,8 +20,8 @@ public class LoginRequest {
 
     // CONSTRUCTORS
 
-    public LoginRequest() {}
-    public LoginRequest(String email, String password) {
+    public _LoginRequest() {}
+    public _LoginRequest(String email, String password) {
         this.email = email;
         this.password = password;
     }

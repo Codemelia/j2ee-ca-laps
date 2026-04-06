@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.shared.security;
+package sg.edu.nus.laps.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

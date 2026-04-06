@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.auth.repository;
+package sg.edu.nus.laps.auth.user.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import sg.edu.nus.laps.auth.model.User;
+import sg.edu.nus.laps.auth.user.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {

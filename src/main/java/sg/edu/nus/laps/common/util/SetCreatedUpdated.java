@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.shared.util;
+package sg.edu.nus.laps.common.util;
 
 import java.time.LocalDateTime;
 

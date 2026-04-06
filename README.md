@@ -2,6 +2,8 @@
 
 Leave Application Processing System (LAPS) for the J2EE course assignment.
 
+For detailed planning on LAPS, view PROJECT.md.
+
 ## Guide Overview
 This README is organized as a practical setup and workflow guide.
 

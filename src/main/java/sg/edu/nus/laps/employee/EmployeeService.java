@@ -1,9 +1,8 @@
-package sg.edu.nus.laps.employee.service;
+package sg.edu.nus.laps.employee;
 
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -12,6 +11,22 @@ import org.springframework.transaction.annotation.Transactional;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.repository.EmployeeRepository;
 
+/*
+    EmployeeService handles all employee CRUD operations (Admin-only)
+
+                    SERVICE SCOPE
+    ------------------------------------------------
+    -- READ --
+    findAll()                       - Return all employees
+    findByEmail(email)              - Find employee by email
+    findById(id)                    - Find employee by ID
+
+    -- CREATE / UPDATE --
+    save(employee)                  - Create or update employee record (JPA maps by ID)
+
+    -- DELETE --
+    delete(employee)                - Delete employee record
+*/
 @Service
 public class EmployeeService {
 	

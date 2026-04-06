@@ -1,6 +1,5 @@
-package sg.edu.nus.laps.employee.controller;
+package sg.edu.nus.laps.employee;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
@@ -17,8 +16,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import sg.edu.nus.laps.employee.model.Employee;
-import sg.edu.nus.laps.employee.service.EmployeeService;
 
+/*
+    EmployeeController handles employee CRUD operations (Admin only)
+
+                    CONTROLLER SCOPE
+    ------------------------------------------------
+    GET  /employees/create 		  - Display create employee form
+    POST /employees/create 		  - Process new employee creation
+    GET  /employees/update/{id}   - Display update employee form
+    POST /employees/update/{id}   - Process employee update
+    DELETE /employees/delete/{id} - Delete employee by ID
+*/
 @RequestMapping("/employees")
 @Controller
 public class EmployeeController {
@@ -32,35 +41,34 @@ public class EmployeeController {
 	
 	private boolean isLoggedIn(HttpSession session) {
         return session.getAttribute("user") != null;
-         
     }
 	
+	// Not part of Employee CRUD
+	// @GetMapping("/")
+	// public String showDashboard(Model model, HttpSession session, RedirectAttributes redirectAttrs) {
+	// 	if (!isLoggedIn(session)) {
+    //         redirectAttrs.addFlashAttribute("errorMessage",
+    //                 "Please log in to view employees.");
+    //         return "redirect:/login";
+    //     }
+		
+	// 	List<Employee> allEmployees = eService.findAll();
+	// 	model.addAttribute("allEmployees", allEmployees);
 
-	@GetMapping("/")
-	public String showDashboard(Model model, HttpSession session, RedirectAttributes redirectAttrs) {
-		if (!isLoggedIn(session)) {
-            redirectAttrs.addFlashAttribute("errorMessage",
-                    "Please log in to view employees.");
-            return "redirect:/login";
-        }
+	// 	// Retrieve user email from session attribute
+	// 	String userEmail = (String) session.getAttribute("userEmail");
+	// 	Optional<Employee> loggedInUser = eService.findByEmail(userEmail);
 		
-		List<Employee> allEmployees = eService.findAll();
-		model.addAttribute("allEmployees", allEmployees);
-
-		// Retrieve user email from session attribute
-		String userEmail = (String) session.getAttribute("userEmail");
-		Optional<Employee> loggedInUser = eService.findByEmail(userEmail);
+	// 	// Base first name: "Admin" - accommodate outsourced admins
+	// 	String userFirstName = "admin";
+	// 	if (loggedInUser.isPresent()) {
+	// 		userFirstName = loggedInUser.get().getFirstName();
+	// 	}
 		
-		// Base first name: "Admin" - accommodate outsourced admins
-		String userFirstName = "admin";
-		if (loggedInUser.isPresent()) {
-			userFirstName = loggedInUser.get().getFirstName();
-		}
+	// 	model.addAttribute("userFirstName", userFirstName);
 		
-		model.addAttribute("userFirstName", userFirstName);
-		
-		return "dashboard";
-	}
+	// 	return "dashboard";
+	// }
 	
 	@GetMapping("/create")
 	public String showCreateEmployeeForm(HttpSession session, RedirectAttributes redirectAttrs) {

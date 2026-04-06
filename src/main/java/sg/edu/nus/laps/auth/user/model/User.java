@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.auth.model;
+package sg.edu.nus.laps.auth.user.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,8 +11,8 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import sg.edu.nus.laps.common.util.SetCreatedUpdated;
 import sg.edu.nus.laps.employee.model.Employee;
-import sg.edu.nus.laps.shared.util.SetCreatedUpdated;
 
 @Entity
 @Table(name = "users")

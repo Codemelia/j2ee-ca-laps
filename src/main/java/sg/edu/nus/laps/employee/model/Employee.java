@@ -26,10 +26,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import sg.edu.nus.laps.auth.model.User;
+import sg.edu.nus.laps.auth.user.model.User;
+import sg.edu.nus.laps.common.util.SetCreatedUpdated;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveRecord;
-import sg.edu.nus.laps.shared.util.SetCreatedUpdated;
 
 @Entity
 @Table(name = "employees")

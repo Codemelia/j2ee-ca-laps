@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.shared.security;
+package sg.edu.nus.laps.auth.security;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -7,11 +7,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import sg.edu.nus.laps.auth.model.Role;
-import sg.edu.nus.laps.auth.model.User;
+import sg.edu.nus.laps.auth.user.model.Role;
+import sg.edu.nus.laps.auth.user.model.User;
 
-// SHARED UserDetails for Spring Security implementation
-public class _SessionUserDetails implements UserDetails {
+public class AuthUserDetails implements UserDetails {
 
     private final String email;
     private final String passwordHash;
@@ -19,7 +18,7 @@ public class _SessionUserDetails implements UserDetails {
     private final Long employeeId; // Nullable
     private final boolean enabled;
     
-    public _SessionUserDetails(User user) {
+    public AuthUserDetails(User user) {
         this.email = user.getEmail();
         this.passwordHash = user.getPasswordHash();
         this.role = user.getRole();

@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.auth.model;
+package sg.edu.nus.laps.auth.user.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
