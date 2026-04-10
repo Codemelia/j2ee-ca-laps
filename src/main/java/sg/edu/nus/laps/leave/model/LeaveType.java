@@ -31,87 +31,86 @@ public class LeaveType {
 	@Size(max = 200, message = "Description cannot exceed 200 characters")
 	private String leaveDescription;
 	
-	 @OneToMany(mappedBy = "LeaveType", fetch = FetchType.LAZY)
-	    private List<LeaveRecord> leaveRecords = new ArrayList<>();
-	 
-	 @OneToMany(mappedBy = "LeaveType", fetch = FetchType.LAZY)
-	    private List<LeaveApplication> leaveApplication = new ArrayList<>();
+	@OneToMany(mappedBy = "leaveType", fetch = FetchType.LAZY)
+	private List<LeaveRecord> leaveRecords = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "leaveType", fetch = FetchType.LAZY)
+	private List<LeaveApplication> leaveApplication = new ArrayList<>();
 
-	 public Long getId() {
-		 return id;
-	 }
+	public Long getId() {
+		return id;
+	}
 
-	 public void setId(Long id) {
-		 this.id = id;
-	 }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-	 public String getLeaveType() {
-		 return leaveType;
-	 }
+	public String getLeaveType() {
+		return leaveType;
+	}
 
-	 public void setLeaveType(String leaveType) {
-		 this.leaveType = leaveType;
-	 }
+	public void setLeaveType(String leaveType) {
+		this.leaveType = leaveType;
+	}
 
-	 public String getLeaveDescription() {
-		 return leaveDescription;
-	 }
+	public String getLeaveDescription() {
+		return leaveDescription;
+	}
 
-	 public void setLeaveDescription(String leaveDescription) {
-		 this.leaveDescription = leaveDescription;
-	 }
+	public void setLeaveDescription(String leaveDescription) {
+		this.leaveDescription = leaveDescription;
+	}
 
-	 public List<LeaveRecord> getLeaveRecords() {
-		 return leaveRecords;
-	 }
+	public List<LeaveRecord> getLeaveRecords() {
+		return leaveRecords;
+	}
 
-	 public void setLeaveRecords(List<LeaveRecord> leaveRecords) {
-		 this.leaveRecords = leaveRecords;
-	 }
+	public void setLeaveRecords(List<LeaveRecord> leaveRecords) {
+		this.leaveRecords = leaveRecords;
+	}
 
-	 public List<LeaveApplication> getLeaveApplication() {
-		 return leaveApplication;
-	 }
+	public List<LeaveApplication> getLeaveApplication() {
+		return leaveApplication;
+	}
 
-	 public void setLeaveApplication(List<LeaveApplication> leaveApplication) {
-		 this.leaveApplication = leaveApplication;
-	 }
+	public void setLeaveApplication(List<LeaveApplication> leaveApplication) {
+		this.leaveApplication = leaveApplication;
+	}
 
-	 public LeaveType(Long id,
-			@NotNull(message = "Leave type is mandatory") @Size(max = 20, message = "Leave type cannot exceed 20 characters") String leaveType,
-			@Size(max = 200, message = "Description cannot exceed 200 characters") String leaveDescription,
-			List<LeaveRecord> leaveRecords, List<LeaveApplication> leaveApplication) {
+	public LeaveType(Long id,
+		@NotNull(message = "Leave type is mandatory") @Size(max = 20, message = "Leave type cannot exceed 20 characters") String leaveType,
+		@Size(max = 200, message = "Description cannot exceed 200 characters") String leaveDescription,
+		List<LeaveRecord> leaveRecords, List<LeaveApplication> leaveApplication) {
 		super();
 		this.id = id;
 		this.leaveType = leaveType;
 		this.leaveDescription = leaveDescription;
 		this.leaveRecords = leaveRecords;
 		this.leaveApplication = leaveApplication;
-	 }
+	}
 
-	 public LeaveType() {
+	public LeaveType() {
 		super();
-		// TODO Auto-generated constructor stub
-	 }
+	}
 
-	 @Override
-	 public int hashCode() {
+	@Override
+	public int hashCode() {
 		return Objects.hash(id);
-	 }
+	}
 
-	 @Override
-	 public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		LeaveType other = (LeaveType) obj;
+	@Override
+	public boolean equals(Object obj) {
+	if (this == obj)
+		return true;
+	if (obj == null)
+		return false;
+	if (getClass() != obj.getClass())
+		return false;
+	LeaveType other = (LeaveType) obj;
 		return Objects.equals(id, other.id);
-	 }
-	  @Override
-	 public String toString() {
+	}
+	@Override
+	public String toString() {
 		return "LeaveType [id=" + id + ", leaveType=" + leaveType + ", leaveDescription=" + leaveDescription + "]";
-	 }
+	}
 }
