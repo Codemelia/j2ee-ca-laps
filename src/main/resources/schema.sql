@@ -43,6 +43,8 @@ CREATE TABLE employees (
     first_name     VARCHAR(50)     NOT NULL ,
     last_name      VARCHAR(50)     NOT NULL,
     contact_number VARCHAR(15)     NOT NULL,
+    job_title      VARCHAR(50)     NOT NULL,
+    team_name      VARCHAR(50)     NOT NULL,
     `rank`   	   ENUM('NON_EXECUTIVE', 'PROFESSIONAL')    NOT NULL       DEFAULT 'NON_EXECUTIVE', 
     manager_id     BIGINT,
     created_at	   DATETIME		   NOT NULL                 DEFAULT CURRENT_TIMESTAMP,
