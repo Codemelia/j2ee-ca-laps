@@ -110,5 +110,8 @@ public class LeaveType {
 		LeaveType other = (LeaveType) obj;
 		return Objects.equals(id, other.id);
 	 }
-	 
+	  @Override
+	 public String toString() {
+		return "LeaveType [id=" + id + ", leaveType=" + leaveType + ", leaveDescription=" + leaveDescription + "]";
+	 }
 }
