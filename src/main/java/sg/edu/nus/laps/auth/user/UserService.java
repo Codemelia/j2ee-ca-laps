@@ -51,6 +51,7 @@ public class UserService {
         if (userRepo.existsByEmail(user.getEmail()))
             throw new UserAlreadyExistsException();
         
+        // Encode password and store in User
         user.setPasswordHash(encoder.encode(user.getPasswordHash()));
         return userRepo.save(user);
     }

@@ -1,27 +1,29 @@
 package sg.edu.nus.laps.auth.security;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import sg.edu.nus.laps.auth.user.model.Role;
 import sg.edu.nus.laps.auth.user.model.User;
 
 public class AuthUserDetails implements UserDetails {
 
     private final String email;
     private final String passwordHash;
-    private final Role role;
+    private final String roleName;
     private final Long employeeId; // Nullable
     private final boolean enabled;
     
     public AuthUserDetails(User user) {
         this.email = user.getEmail();
         this.passwordHash = user.getPasswordHash();
-        this.role = user.getRole();
+        this.roleName = user.getRole() != null 
+            ? user.getRole().getName() 
+            : "UNKNOWN";
         this.employeeId = user.getEmployee() != null
             ? user.getEmployee().getId()
             : null; // Allow nullable
@@ -29,34 +31,43 @@ public class AuthUserDetails implements UserDetails {
     }
 
     // Get authorities (role) granted to user
-    // Return singleton list bc Spring expects a collection
-    // But 1 user can only have 1 role
+    // Return collection which SpringSecurity will save as Authorities
+    // Main auth: User Role and whether Admin is internal employee or outsourced
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (role == null || role.getName() == null)
+        if (roleName == null) {
             throw new IllegalStateException("User does not have a valid role: " + email);
-        return Collections.singletonList(
-            new SimpleGrantedAuthority("ROLE_" + role.getName().toUpperCase()) // Ensure uppercase
-        );
+        }
+
+        List<GrantedAuthority> auths = new ArrayList<>();
+        auths.add(new SimpleGrantedAuthority("ROLE_" + roleName.toUpperCase())); // Add role as authority
+
+        if ("ADMIN".equalsIgnoreCase(roleName)) {
+            if (employeeId == null) {
+                auths.add(
+                    new SimpleGrantedAuthority("AUTH_EXTERNAL_ADMIN")); // Specify external admin
+            } else {
+                auths.add(
+                    new SimpleGrantedAuthority("AUTH_INTERNAL_ADMIN")); // Specify internal admin
+            }
+        }
+
+        return auths;
     }
 
+    // For password matching
     @Override
-    public String getPassword() {
-        return passwordHash;
-    }
+    public String getPassword() { return passwordHash; }
 
     @Override
-    public String getUsername() {
-        return email;
-    }
+    public String getUsername() { return email; }
     
+    // Spring Security throws DisabledException and rejects login
     @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
+    public boolean isEnabled() { return enabled; }
 
-    public Long getEmployeeId() {
-        return employeeId;
-    }
+    public Long getEmployeeId() { return employeeId; }
+    public String getEmail() { return email; }
+    public String getRoleName() { return roleName; }
 
 }
