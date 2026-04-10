@@ -1,11 +1,7 @@
 package sg.edu.nus.laps.employee.model;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Column;
@@ -20,7 +16,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -70,20 +65,19 @@ public class Employee extends SetCreatedUpdated {
 	private EmployeeRank rank;
 	
 	// Admin will need to key in manager's id directly
-	@Column(name = "manager_id", nullable = false) // JPA - MySQL constraints
-	@NotNull(message = "Manager's id is required")
+	@Column(name = "manager_id", nullable = true) // JPA - MySQL constraints
 	@Positive(message = "Manager's id must be a positive number") // Validate admin input
 	private Long managerId;
 
+	// Set by /common/util/SetCreatedUpdated.java
 	// @Column(name = "created_at", nullable = false, updatable = false) // JPA - MySQL constraints
 	// private LocalDateTime createdAt;
-	@CreationTimestamp
-	private LocalDateTime createdAt;
-	
-	// @Column(name = "updated_at", nullable = false) // JPA - MySQL constraints
+	// @CreationTimestamp
+	// private LocalDateTime createdAt;
+	// // @Column(name = "updated_at", nullable = false) // JPA - MySQL constraints
+	// // private LocalDateTime updatedAt;
+	// @UpdateTimestamp
 	// private LocalDateTime updatedAt;
-	@UpdateTimestamp
-	private LocalDateTime updatedAt;
 	
 	// Employee to User: One to One
 	// Employee as Owning Side bc User may not be Employee, but Employee must be User
@@ -192,34 +186,5 @@ public class Employee extends SetCreatedUpdated {
 				+ ", updatedAt=" + updatedAt + ", user=" + user + ", leaveApplications=" + leaveApplications
 				+ ", leaveRecords=" + leaveRecords + "]";
 	}
-
-	// public LocalDateTime getCreatedAt() {
-	// 	return createdAt;
-	// }
-
-	// // public void setCreatedAt(LocalDateTime createdAt) {
-	// // 	this.createdAt = createdAt;
-	// // }
-
-	// public LocalDateTime getUpdatedAt() {
-	// 	return updatedAt;
-	// }
-
-	// // public void setUpdatedAt(LocalDateTime updatedAt) {
-	// // 	this.updatedAt = updatedAt;
-	// // }
-
-	// @PrePersist // set NOW() in MySQL on create
-	// private void onCreate() {
-	// 	LocalDateTime now = LocalDateTime.now();
-	// 	this.createdAt = now;
-	// 	this.updatedAt = now;
-	// }
-
-	// @PreUpdate // set NOW() in MySQL on update
-	// private void onUpdate() {
-	// 	this.updatedAt = LocalDateTime.now();
-	// }
-
 	
 }

@@ -44,7 +44,7 @@ public class EmployeeService {
 	
 	@Transactional(readOnly=true)
 	public Optional<Employee> findByEmail(String email) {
-		Optional<Employee> emOpt = eRepo.findByEmail(email);
+		Optional<Employee> emOpt = eRepo.findByUser_Email(email);
 		if (emOpt.isPresent()) {
 			return emOpt;
 		}
