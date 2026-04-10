@@ -69,6 +69,17 @@ public class Employee extends SetCreatedUpdated {
 	@Positive(message = "Manager's id must be a positive number") // Validate admin input
 	private Long managerId;
 
+	// ADDED for Dashboard Display
+	@Column(nullable=false)
+	@NotBlank(message = "Please state employee's team name")
+	@Size(max = 50, message = "Team name must be 50 characters and below")
+	private String teamName;
+
+	@Column(nullable=false)
+	@NotBlank(message = "Please state employee's job title")
+	@Size(max = 50, message = "Job title must be 50 characters and below")
+	private String jobTitle;
+
 	// Set by /common/util/SetCreatedUpdated.java
 	// @Column(name = "created_at", nullable = false, updatable = false) // JPA - MySQL constraints
 	// private LocalDateTime createdAt;
@@ -177,6 +188,39 @@ public class Employee extends SetCreatedUpdated {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+
+	public String getTeamName() {
+		return this.teamName;
+	}
+
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
+	}
+
+	public String getJobTitle() {
+		return this.jobTitle;
+	}
+
+	public void setJobTitle(String jobTitle) {
+		this.jobTitle = jobTitle;
+	}
+
+	public List<LeaveApplication> getLeaveApplications() {
+		return this.leaveApplications;
+	}
+
+	public void setLeaveApplications(List<LeaveApplication> leaveApplications) {
+		this.leaveApplications = leaveApplications;
+	}
+
+	public List<LeaveRecord> getLeaveRecords() {
+		return this.leaveRecords;
+	}
+
+	public void setLeaveRecords(List<LeaveRecord> leaveRecords) {
+		this.leaveRecords = leaveRecords;
 	}
 
 	@Override
