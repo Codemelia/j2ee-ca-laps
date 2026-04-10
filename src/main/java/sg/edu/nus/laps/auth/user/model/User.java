@@ -54,7 +54,7 @@ public class User extends SetCreatedUpdated {
 	private Role role;
 
 	// User to Employee: One to One
-	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+	@OneToOne(optional = true, mappedBy = "user", fetch = FetchType.LAZY)
 	private Employee employee;
 
 	// LIFECYCLE
