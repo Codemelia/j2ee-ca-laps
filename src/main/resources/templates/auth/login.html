@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/css/style.css" th:href=@{/css/style.css}>
+        <title>LAPS Login</title>
+    </head>
+
+    <body>
+        <div class="page-wrapper">
+            <main class="card">
+                <h1>Login to access G3LAPS</h1>
+                <p class="sub-text">Use your company email and password.</p>
+
+                <!-- success/error messages from Spring Security -->
+                <div class="alert alert-error" th:if="${param.error}">
+                    Invalid email or password.Please try again.
+                </div>
+                <div class="alert alert-info" th:if="${param.logout}">
+                    You have been logged out successfully.
+                </div>
+
+                <div class="alert alert-error" th:if="${param.expired}">
+                    Your session has expired. Please log in again.
+                </div>
+
+                <!-- Form where Spring Security picks up field values -->
+                <form th:action="@{/auth/login}" method="POST">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" name="password" required>
+                    </div>
+
+                    <!-- Spring Security checks CSRF token; rejected with 403 if invalid -->
+                    <input type="hidden" th:name="${_csrf.parameterName}"
+                        th:value="${_csrf.token}">
+                    
+                    <button class="btn btn-primary btn-full" type="submit">Login</button>
+                </form>
+                <div class="hint-box">
+                    <h3>
+                        Test Credentials
+                    </h3>
+                    <p>
+                        -- Admin:    test_admin@gmail.com / 12345abc!
+                    </p>
+                    <p>
+                        -- Manager:  test_manager@gmail.com / 12345abc!
+                    </p>
+                    <p>
+                        -- EmployeeA: test_employeeA@gmail.com / 12345abc!
+                    </p>
+                    <p>
+                        -- EmployeeB: test_employeeB@gmail.com / 12345abc!
+                    </p>
+                </div>
+            </main>
+        </div>
+    </body>
+
+</html>
