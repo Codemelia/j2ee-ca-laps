@@ -11,7 +11,8 @@
     <body>
         <div class="page-wrapper">
             <main class="card">
-                <h1>Login to access G3LAPS</h1>
+                <h1 th:if="${entryPoint == 'employee'}">Employee Login</h1>
+                <h1 th:if="${entryPoint == 'admin'}">Admin Login</h1>
                 <p class="sub-text">Use your company email and password.</p>
 
                 <!-- success/error messages from Spring Security -->

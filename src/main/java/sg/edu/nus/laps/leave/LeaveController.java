@@ -8,13 +8,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
     
                     CONTROLLER SCOPE
     ------------------------------------------------
-    GET /leaves              - Display list of leaves for current employee
-    GET /leaves/apply        - Display apply for leave form
-    POST /leaves             - Process leave application request
-    GET /leaves/{id}         - Display specific leave information
-    GET /leaves/{id}/edit    - Display leave info and populate leave edit form
-    POST /leaves/{id}/update - Process leave edit request
-    POST /leaves/{id}/cancel - Process leave cancel request
+    GET /leaves
+        - Display list of leaves for current employee
+    GET /leaves/new
+        - Display apply-for-leave form
+    POST /leaves
+        - Process leave application request
+    GET /leaves/{id}
+        - Display specific leave information
+    GET /leaves/{id}/edit
+        - Display leave info and populate leave edit form
+    POST /leaves/{id}
+        - Process leave update request
+    POST /leaves/{id}/cancel
+        - Process leave cancel request
 */
 @RequestMapping("/leaves")
 @Controller

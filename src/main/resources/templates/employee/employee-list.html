@@ -13,7 +13,7 @@
 	
 	<!-- Employees table -->
 	<!-- All employees table only displays when user role is ADMIN -->
-	<div th:if="${user.role == T(sg.edu.nus.laps.auth.model.Role).ADMIN}">	
+	<div th:if="${user.role == T(sg.edu.nus.laps.auth.user.model.Role).ADMIN}">	
 		<p><h2>All Employees</h2></p>
 		<table border="1" cellpadding="6" cellspacing="0" th:unless="${allEmployees.isEmpty()}">
 		    <thead>
@@ -32,13 +32,13 @@
 		            <td th:text="${e.firstName}">First Name</td>
 		            <td th:text="${e.lastName}">Last Name</td>
 		            <td th:text="${e.email}">Email</td>
-		            <td th:text="${e.contactNumber">Contact Number</td>
+		            <td th:text="${e.contactNumber}">Contact Number</td>
 		            <td th:text="#{'Rank.' + ${e.rank}}">Rank</td>
-		            <td th:text="${e.managerId">Manager's ID</td>
+		            <td th:text="${e.managerId}">Manager's ID</td>
 		            <!-- <td th:text="${#temporals.format(e.createdAt,'dd MMM yyyy')}">Created At</td>
 		            <td th:text="${#temporals.format(e.updatedAt,'dd MMM yyyy')}">Updated At</td> -->
-		            <td><a th:href="@{/employees/update/{id}(id=${e.id})}" th:text="Update Details">Update Details</a></td>
-		            <td><a th:href="@{/employees/delete/{id}(id=${e.id})}" th:text="Delete Employee">Delete Employee</a></td>
+		            <td><a th:href="@{/admin/employees/update/{id}(id=${e.id})}" th:text="Update Details">Update Details</a></td>
+		            <td><a th:href="@{/admin/employees/delete/{id}(id=${e.id})}" th:text="Delete Employee">Delete Employee</a></td>
 		        </tr>
 		    </tbody>
 		</table>

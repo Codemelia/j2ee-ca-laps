@@ -1,6 +1,7 @@
 package sg.edu.nus.laps.auth;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -9,9 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
                     CONTROLLER SCOPE
     ------------------------------------------------
-    GET /auth/login  - Display login form
-    POST /auth/login - Process login request
-    GET /auth/logout - Logout and invalidate session
+    GET /auth/login           - Fallback route, redirects to employee login
+    GET /auth/employee/login  - Employee login entry point
+    GET /auth/admin/login     - Admin login entry point
+    POST /auth/login          - Spring Security login processing endpoint
+    POST /auth/logout         - Spring Security logout endpoint
 */
 @RequestMapping("/auth")
 @Controller
@@ -21,9 +24,23 @@ public class AuthController {
     // private UserService userSvc;
 
     // USING SPRING SECURITY
-    // GET /auth/login
+    // Fallback - GET /auth/login
     @GetMapping("/login")
     public String getLogin() {
+        return "redirect:/auth/employee/login"; // Default employee login
+    }
+
+    // Employee - GET /auth/employee/login
+    @GetMapping("/employee/login")
+    public String employeeLogin(Model model) {
+        model.addAttribute("entryPoint", "employee");
+        return "auth/login";
+    }
+
+    // Admin - GET /auth/admin/login
+    @GetMapping("/admin/login")
+    public String adminLogin(Model model) {
+        model.addAttribute("entryPoint", "admin");
         return "auth/login";
     }
 

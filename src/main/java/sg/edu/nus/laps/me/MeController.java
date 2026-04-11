@@ -15,13 +15,17 @@ import sg.edu.nus.laps.employee.model.Employee;
 
                     CONTROLLER SCOPE
     ------------------------------------------------
-    CORE:
-    GET /me OR / - Dashboard: show recent leave requests and leave balances
+    DASHBOARD:
+    GET / OR /me
+        - Show dashboard summary and user context
 
-    OPTIONAL:
-    GET  /me/profile 		- Display employee profile
-    POST /me/profile/edit 	- Process employee profile edit request
-    GET  /me/notifications 	- Display notifications list
+    USER-FACING PAGES:
+    GET  /me/profile
+        - Display employee profile
+    POST /me/profile
+        - Process employee profile edit request
+    GET  /me/notifications
+        - Display notifications list
 */
 @RequestMapping(path={"/", "/me"})
 @Controller

@@ -22,13 +22,14 @@ import sg.edu.nus.laps.employee.model.Employee;
 
                     CONTROLLER SCOPE
     ------------------------------------------------
-    GET  /employees/create 		  - Display create employee form
-    POST /employees/create 		  - Process employee create request
-    GET  /employees/update/{id}   - Display update employee form
-    POST /employees/update/{id}   - Process employee update request
-    DELETE /employees/delete/{id} - Delete employee by ID
+	BASE: /admin/employees
+	GET  /admin/employees/new         - Display create employee form
+	POST /admin/employees             - Process employee create request
+	GET  /admin/employees/{id}/edit   - Display update employee form
+	POST /admin/employees/{id}        - Process employee update request
+	POST /admin/employees/{id}/delete - Delete employee by ID
 */
-@RequestMapping("/employees")
+@RequestMapping("/admin/employees")
 @Controller
 public class EmployeeController {
 	
@@ -75,16 +76,16 @@ public class EmployeeController {
 		if (!isLoggedIn(session)) {
             redirectAttrs.addFlashAttribute("errorMessage",
                     "Please log in to view Create New Employee form.");
-            return "redirect:/login";
+            return "redirect:/auth/admin/login";
         }
-		return "employeeDetailsForm";
+		return "employee/create-employee-form";
 	}
 	
 	@PostMapping("/create")
 	public String createEmployee(@Valid @ModelAttribute Employee employee, 
 			BindingResult bindingResult, RedirectAttributes redirectAttrs) {
 		if (bindingResult.hasErrors()) {
-			return "employeeDetailsForm";
+			return "employee/create-employee-form";
 		}
 		
 		eService.save(employee);
@@ -99,7 +100,7 @@ public class EmployeeController {
 		if (!isLoggedIn(session)) {
             redirectAttrs.addFlashAttribute("errorMessage",
                     "Please log in to update employee details.");
-            return "redirect:/login";
+            return "redirect:/auth/admin/login";
         }
 		
 		Optional<Employee> empToUpdate = eService.findById(id);
@@ -110,22 +111,22 @@ public class EmployeeController {
 		if (empToUpdate.isEmpty()) {
 			redirectAttrs.addFlashAttribute("errorMessage", 
 					"Employee does not exist.");
-			return "redirect:/dashboard";
+			return "redirect:/";
 		}
 		
-		return "updateEmployeeForm";
+		return "employee/update-employee-form";
 	}
 	
 	@PostMapping("/update/{id}")
 	public String updateEmployeeDetails(@PathVariable Long id, @Valid @ModelAttribute Employee employee, 
 			BindingResult bindingResult, RedirectAttributes redirectAttrs) {
 		if (bindingResult.hasErrors()) {
-			return "updateEmployeeForm";
+			return "employee/update-employee-form";
 		}
 		employee.setId(id);
 		eService.save(employee);
 		redirectAttrs.addFlashAttribute("success", "Employee #" + id + " has been updated.");
-		return "redirect:/dashboard";
+		return "redirect:/";
 	}
 	
 	@DeleteMapping("/delete/{id}")

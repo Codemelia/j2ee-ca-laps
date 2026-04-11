@@ -8,14 +8,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
                     CONTROLLER SCOPE
     ------------------------------------------------
-    GET /team               - Display list of team members
-    GET /team/{emploeeId}/leaves
-    GET /team/leaves        - Display all team members leaves
-    GET /team/leaves/{leaveId}          - Display information of specific leave request
-    POST /team/leaves/{leaveId}/approve - Process leave request approval
-    POST /team/leaves/{leaveId}/reject  - Process leave request rejection
+    GET /manager/subordinates/{employeeId}/leaves
+        - Display leave history for a subordinate
+    GET /manager/leaves
+        - Display all team leave requests pending/reviewed
+    GET /manager/leaves/{leaveId}
+        - Display information of specific leave request
+    POST /manager/leaves/{leaveId}/approve
+        - Process leave request approval
+    POST /manager/leaves/{leaveId}/reject
+        - Process leave request rejection
 */
-@RequestMapping("/team")
+@RequestMapping("/manager")
 @Controller
 public class ApprovalController {
     
