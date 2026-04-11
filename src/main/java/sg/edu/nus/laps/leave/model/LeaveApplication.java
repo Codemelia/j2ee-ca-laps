@@ -120,5 +120,9 @@ public class LeaveApplication extends SetCreatedUpdated {
 
 	public String getContactDetails() { return contactDetails; }
 	public void setContactDetails(String contactDetails) { this.contactDetails = contactDetails; }
+
+    public String getProof() { return this.proof; }
+    public void setProof(String proof) { this.proof = proof; }
+
     
 }
