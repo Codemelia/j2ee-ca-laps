@@ -23,7 +23,11 @@
                 </div>
 
                 <div class="alert alert-error" th:if="${param.expired}">
-                    Your session has expired. Please log in again.
+                    Your session has expired. Please log in.
+                </div>
+
+                <div class="alert alert-error" th:if="${param.unauthorised}">
+                    Please login to access G3LAPS.
                 </div>
 
                 <!-- Form where Spring Security picks up field values -->
