@@ -45,10 +45,10 @@ public class AuthUserDetails implements UserDetails {
         if ("ADMIN".equalsIgnoreCase(roleName)) {
             if (employeeId == null) {
                 auths.add(
-                    new SimpleGrantedAuthority("AUTH_EXTERNAL_ADMIN")); // Specify external admin
+                    new SimpleGrantedAuthority("AUTH_EXTERNAL_ADMIN")); // External admin
             } else {
                 auths.add(
-                    new SimpleGrantedAuthority("AUTH_INTERNAL_ADMIN")); // Specify internal admin
+                    new SimpleGrantedAuthority("AUTH_INTERNAL_ADMIN")); // Internal admin
             }
         }
 

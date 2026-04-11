@@ -17,7 +17,7 @@ import jakarta.validation.constraints.Size;
 import sg.edu.nus.laps.common.util.SetCreatedUpdated;
 
 @Entity
-@Table(name = "leave_type")
+@Table(name = "leave_types")
 public class LeaveType extends SetCreatedUpdated {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

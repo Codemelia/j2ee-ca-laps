@@ -38,6 +38,8 @@ public class LeaveApplication extends SetCreatedUpdated {
     @Column(name = "to_date", nullable = false)
     private LocalDate toDate;
 
+    @Column(name = "proof", nullable = true)
+    private String proof; // For medical proof url (Nullable)
 
     @NotBlank(message = "Reason is mandatory")
     @Column(nullable = false, length = 255)
@@ -58,10 +60,10 @@ public class LeaveApplication extends SetCreatedUpdated {
     @Column(nullable = false)
     private LeaveStatus status = LeaveStatus.DRAFT;
 
+    // Set via common/util/SetCreatedUpdated.java
     // @Column(name = "created_at")
     // private LocalDateTime createdAt;
 
-  
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "leave_type_id")
     private LeaveType leaveType;
@@ -70,15 +72,12 @@ public class LeaveApplication extends SetCreatedUpdated {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
-
-
     // @PrePersist
     // protected void onCreate() {
     //    this.createdAt = LocalDateTime.now();
     //    if (this.status == null) this.status = LeaveStatus.DRAFT;
     // }
 
-   
 
     public LeaveApplication() {}
 
@@ -121,5 +120,9 @@ public class LeaveApplication extends SetCreatedUpdated {
 
 	public String getContactDetails() { return contactDetails; }
 	public void setContactDetails(String contactDetails) { this.contactDetails = contactDetails; }
+
+    public String getProof() { return this.proof; }
+    public void setProof(String proof) { this.proof = proof; }
+
     
 }

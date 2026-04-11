@@ -1,6 +1,6 @@
 package sg.edu.nus.laps.leave;
 
-// TO BE IMPLEMENTED (if calling Holiday API)
+// TO BE IMPLEMENTED
 public class HolidayService {
     
 }

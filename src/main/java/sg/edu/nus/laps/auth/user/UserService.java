@@ -2,6 +2,8 @@ package sg.edu.nus.laps.auth.user;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import sg.edu.nus.laps.auth.user.model.User;
 import sg.edu.nus.laps.auth.user.repository.UserRepository;
@@ -37,6 +39,7 @@ public class UserService {
     // Save user to repo
     // If user already exists in DB, throw exception
     // Else, encode user password and save in DB
+    @Transactional(propagation = Propagation.REQUIRED)
     public User saveUser(User user) {
 
         // Null/empty checks
@@ -56,7 +59,10 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    // Not needed since implementing Spring Security
+    // Update user (user change password)
+
+
+    // REPLACE WITH SPRING SECURITY
     // Authenticate email and password
     // public boolean authenticate(String email, String password) {
     //     Optional<User> optUser = userRepo.findByEmailAndEnabledTrue(email); // Find active account

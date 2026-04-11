@@ -37,8 +37,8 @@
 		            <td th:text="${e.managerId">Manager's ID</td>
 		            <!-- <td th:text="${#temporals.format(e.createdAt,'dd MMM yyyy')}">Created At</td>
 		            <td th:text="${#temporals.format(e.updatedAt,'dd MMM yyyy')}">Updated At</td> -->
-		            <td><a th:href="@{/update/{id}(id=${e.id})}" th:text="Update Details">Update Details</a></td>
-		            <td><a th:href="@{/delete/{id}(id=${e.id})}" th:text="Delete Employee">Delete Employee</a></td>
+		            <td><a th:href="@{/employees/update/{id}(id=${e.id})}" th:text="Update Details">Update Details</a></td>
+		            <td><a th:href="@{/employees/delete/{id}(id=${e.id})}" th:text="Delete Employee">Delete Employee</a></td>
 		        </tr>
 		    </tbody>
 		</table>
