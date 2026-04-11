@@ -15,20 +15,17 @@
                 <h1 th:if="${entryPoint == 'admin'}">Admin Login</h1>
                 <p class="sub-text">Use your company email and password.</p>
 
-                <!-- success/error messages from Spring Security -->
-                <div class="alert alert-error" th:if="${param.error}">
-                    Invalid email or password.Please try again.
+                <!-- error from Spring Security -->
+                <div class="alert alert-error" 
+                    th:if="${param.error != null or param.expired != null or param.unauthorised != null}">
+                    <div th:if="${param.error != null}">Invalid email or password. Please try again.</div>
+                    <div th:if="${param.expired != null}">Your session has expired. Please log in.</div>
+                    <div th:if="${param.unauthorised != null}">Please login to access G3LAPS.</div>
                 </div>
-                <div class="alert alert-info" th:if="${param.logout}">
+
+                <!-- success from Spring Security -->
+                <div class="alert alert-info" th:if="${param.logout != null}">
                     You have been logged out successfully.
-                </div>
-
-                <div class="alert alert-error" th:if="${param.expired}">
-                    Your session has expired. Please log in.
-                </div>
-
-                <div class="alert alert-error" th:if="${param.unauthorised}">
-                    Please login to access G3LAPS.
                 </div>
 
                 <!-- Form where Spring Security picks up field values -->
@@ -54,10 +51,10 @@
                         Test Credentials
                     </h3>
                     <p>
-                        -- Admin:    test_admin@gmail.com / 12345abc!
+                        -- Admin: test_admin@gmail.com / 12345abc!
                     </p>
                     <p>
-                        -- Manager:  test_manager@gmail.com / 12345abc!
+                        -- Manager: test_manager@gmail.com / 12345abc!
                     </p>
                     <p>
                         -- EmployeeA: test_employeeA@gmail.com / 12345abc!

@@ -20,8 +20,19 @@ public class GlobalExceptionHandler {
     @ModelAttribute
     public void checkUserAuthentication(@AuthenticationPrincipal AuthUserDetails user,
         HttpServletRequest request) {
-        boolean isPublicPath = request.getRequestURI()
-            .equals(request.getContextPath() + "/auth/login"); // Only login is public
+        String uri = request.getRequestURI();
+        String path = request.getContextPath();
+
+        boolean isPublicPath =
+            uri.equals(path + "/auth/login") ||
+            uri.equals(path + "/auth/employee/login") ||
+            uri.equals(path + "/auth/admin/login") ||
+            uri.startsWith(path + "/css/") ||
+            uri.startsWith(path + "/js/") ||
+            uri.startsWith(path + "/images/") ||
+            uri.equals(path + "/favicon.ico") ||
+            uri.startsWith(path + "/error");
+
         if (!isPublicPath && user == null) { // Only do null checks for authenticated paths
             throw new UnauthenticatedUserException();
         }

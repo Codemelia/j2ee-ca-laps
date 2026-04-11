@@ -1,9 +1,13 @@
 package sg.edu.nus.laps.auth;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /*
     AuthController handles all user auth operations
@@ -26,8 +30,27 @@ public class AuthController {
     // USING SPRING SECURITY
     // Fallback - GET /auth/login
     @GetMapping("/login")
-    public String getLogin() {
-        return "redirect:/auth/employee/login"; // Default employee login
+    public String getLogin(
+        @RequestParam(value = "unauthorised", required = false) String unauth,
+        @RequestParam(value = "error", required = false) String error,
+        @RequestParam(value = "logout", required = false) String logout,
+        @RequestParam(value = "expired", required = false) String expired) {
+
+        // Build redirect string - default to employee login
+        StringBuilder redirect = new StringBuilder("redirect:/auth/employee/login");
+
+        // set to hold param
+        Set<String> params = new HashSet<>();
+
+        // Add params based on param value
+        if (unauth != null) { params.add("unauthorised"); }
+        if (error != null) { params.add("unauthorised"); }
+        if (logout != null) { params.add("unauthorised"); }
+        if (expired != null) { params.add("unauthorised"); }
+
+        // Build and return final redir string
+        if (!params.isEmpty()) { redirect.append("?").append(String.join("&", params)); }
+        return redirect.toString();
     }
 
     // Employee - GET /auth/employee/login
