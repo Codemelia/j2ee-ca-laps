@@ -21,7 +21,7 @@
 		<div>
 			<label for="firstName">First name:</label>
 			<input type="text" th:field="*{firstName}" placeholder="First name"><br> 
-			<span class="error" th:if="${#fields.hasErrors('first_name')}"
+			<span class="error" th:if="${#fields.hasErrors('firstName')}"
 				th:errors="*{first_name}"></span>
 		</div>
 		
@@ -40,10 +40,22 @@
 		</div>
 		
 		<div>	
-			<label for="contactNum">Contact number:</label> 
+			<label for="contactNumber">Contact number:</label> 
 			<input type="text" th:field="*{contactNumber}"><br>
 			<span class="error" th:if="${#fields.hasErrors('contactNumber')}"
 				th:errors="*{contactNumber}"></span>
+		</div>
+
+		<div>
+			<label for="roleName">Employee's role:</label>
+			<select th:field="*{roleName}">
+				<option value="" disabled selected>Select a role</option>
+				<option th:each="role : ${roleList}"
+						th:value="${role.name}"
+						th:text="${role.name}"></option>
+			</select>
+			<span class="error" th:if="${#fields.hasErrors('roleName')}"
+				th:errors="*{roleName}"></span>
 		</div>
 		
 		<div>	

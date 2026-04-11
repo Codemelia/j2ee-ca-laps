@@ -16,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -44,13 +45,13 @@ public class Employee extends SetCreatedUpdated {
 	@Column(name = "first_name", nullable = false, length = 50) // JPA - MySQL constraints
 	@NotBlank(message = "First name is required")
 	@Size(min = 2, max = 50, message = "First name must be between 2 to 50 characters")
-	@Pattern(regexp = "^[A-Za-z '-]+$", message = "First name contains invalid characters") // Validate no special characters
+	@Pattern(regexp = "^[A-Za-z '-]+$", message = "First name contains invalid characters") // Only allow letters, space, ', -
 	private String firstName;
 
 	@Column(name = "last_name", nullable = false, length = 50) // JPA - MySQL constraints
 	@NotBlank(message = "Last name is required")
 	@Size(min = 2, max = 50, message = "Last name must be between 2 to 50 characters")
-	@Pattern(regexp = "^[A-Za-z '-]+$", message = "Last name contains invalid characters") // Validate no special characters
+	@Pattern(regexp = "^[A-Za-z '-]+$", message = "Last name contains invalid characters")
 	private String lastName;
 
 	@Column(name = "contact_number", nullable = false, length = 15) // JPA - MySQL constraints
@@ -79,6 +80,11 @@ public class Employee extends SetCreatedUpdated {
 	@NotBlank(message = "Please state employee's job title")
 	@Size(max = 50, message = "Job title must be 50 characters and below")
 	private String jobTitle;
+
+	// ADDED for form binding
+	// Will not affect DB
+	@Transient
+	private String roleName;
 
 	// Set by /common/util/SetCreatedUpdated.java
 	// @Column(name = "created_at", nullable = false, updatable = false) // JPA - MySQL constraints
@@ -221,6 +227,14 @@ public class Employee extends SetCreatedUpdated {
 
 	public void setLeaveRecords(List<LeaveRecord> leaveRecords) {
 		this.leaveRecords = leaveRecords;
+	}
+
+	public String getRoleName() {
+		return this.roleName;
+	}
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
 	}
 
 	@Override

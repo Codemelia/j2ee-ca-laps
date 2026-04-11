@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import sg.edu.nus.laps.auth.user.RoleService;
+import sg.edu.nus.laps.auth.user.model.Role;
 import sg.edu.nus.laps.employee.model.Employee;
 
 /*
@@ -34,10 +37,13 @@ import sg.edu.nus.laps.employee.model.Employee;
 public class EmployeeController {
 	
 	private final EmployeeService eService;
+	private final RoleService rService;
 	
-	public EmployeeController(EmployeeService eService) {
+	public EmployeeController(EmployeeService eService,
+		RoleService rService) {
 		super();
 		this.eService = eService;
+		this.rService = rService;
 	}
 	
 	private boolean isLoggedIn(HttpSession session) {
@@ -83,16 +89,19 @@ public class EmployeeController {
 	
 	@PostMapping("/create")
 	public String createEmployee(@Valid @ModelAttribute Employee employee, 
-			BindingResult bindingResult, RedirectAttributes redirectAttrs) {
+		BindingResult bindingResult, RedirectAttributes redirectAttrs,
+		@RequestParam String roleName) {
+		buildCustomRoleError(bindingResult, roleName);
 		if (bindingResult.hasErrors()) {
 			return "employee/create-employee-form";
 		}
 		
-		eService.save(employee);
+		// Get role by name
+		Role role = rService.findRoleByName(roleName).get();
+		eService.saveNewEmployee(employee, role);
 		redirectAttrs.addFlashAttribute("success", "Employee has been created.");
 		
 		return "redirect:/";
-		
 	}
 	@GetMapping("/update/{id}")
 	public String showUpdateEmployeeForm(@PathVariable Long id, Model model, 
@@ -111,7 +120,7 @@ public class EmployeeController {
 		if (empToUpdate.isEmpty()) {
 			redirectAttrs.addFlashAttribute("errorMessage", 
 					"Employee does not exist.");
-			return "redirect:/";
+			return "redirect:/admin/employees"; // employee-list
 		}
 		
 		return "employee/update-employee-form";
@@ -119,14 +128,19 @@ public class EmployeeController {
 	
 	@PostMapping("/update/{id}")
 	public String updateEmployeeDetails(@PathVariable Long id, @Valid @ModelAttribute Employee employee, 
-			BindingResult bindingResult, RedirectAttributes redirectAttrs) {
+		BindingResult bindingResult, RedirectAttributes redirectAttrs,
+		@RequestParam String roleName) {
+		buildCustomRoleError(bindingResult, roleName);
 		if (bindingResult.hasErrors()) {
 			return "employee/update-employee-form";
 		}
 		employee.setId(id);
-		eService.save(employee);
+
+		// Get role by name
+		Role role = rService.findRoleByName(roleName).get();
+		eService.updateEmployee(employee, role);
 		redirectAttrs.addFlashAttribute("success", "Employee #" + id + " has been updated.");
-		return "redirect:/";
+		return "redirect:/admin/employees"; // employee-list
 	}
 	
 	@DeleteMapping("/delete/{id}")
@@ -143,4 +157,15 @@ public class EmployeeController {
 		}
 		return "redirect:/";
 	}
+
+	// HELPER
+	private void buildCustomRoleError(BindingResult bindingResult, String roleName) {
+		// Custom field error for invalid role
+		if (roleName == null || roleName.isBlank()
+        || !rService.roleExistsByName(roleName)) {
+			bindingResult.rejectValue("roleName", "invalid.role", 
+				"Employee role is invalid.");
+		}
+	}
+
 }

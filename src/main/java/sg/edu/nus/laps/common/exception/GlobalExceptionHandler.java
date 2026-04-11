@@ -23,6 +23,7 @@ public class GlobalExceptionHandler {
         String uri = request.getRequestURI();
         String path = request.getContextPath();
 
+        // All non-authenticated paths
         boolean isPublicPath =
             uri.equals(path + "/auth/login") ||
             uri.equals(path + "/auth/employee/login") ||
@@ -32,8 +33,9 @@ public class GlobalExceptionHandler {
             uri.startsWith(path + "/images/") ||
             uri.equals(path + "/favicon.ico") ||
             uri.startsWith(path + "/error");
-
-        if (!isPublicPath && user == null) { // Only do null checks for authenticated paths
+        
+        // Only do null checks for authenticated paths
+        if (!isPublicPath && user == null) {
             throw new UnauthenticatedUserException();
         }
     }

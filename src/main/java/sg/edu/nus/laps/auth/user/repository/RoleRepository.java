@@ -10,10 +10,13 @@ import sg.edu.nus.laps.auth.user.model.Role;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
-    // Find by ID
-    public Optional<Role> findById(Long id);
-
     // Find by Name
     public Optional<Role> findByName(String name);
+
+    // Check if role exists
+    public boolean existsByName(String name);
+
+    // Get role id by name
+    public String findIdByName(String name);
 
 }
