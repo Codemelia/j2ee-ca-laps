@@ -35,14 +35,14 @@
                     </th:block>
 
                     <!-- INTERNAL ROLE_ADMIN: Dashboard, My Leaves, Employee Management -->
-                    <th:block sec:authorize="hasRole('ADMIN') and hasAuthority('AUTH_EXTERNAL_ADMIN')">
+                    <th:block sec:authorize="hasRole('ADMIN') and hasAuthority('AUTH_INTERNAL_ADMIN')">
                         <a th:href="@{/me}">Dashboard</a>
                         <a th:href="@{/leaves}">My Leave History</a>
 						<a th:href="@{/admin/employees}">Employee Management</a>
                     </th:block>
 
                     <!-- EXTERNAL ROLE_ADMIN: Employee Management -->
-                    <th:block sec:authorize="hasRole('ADMIN') and hasAuthority('AUTH_INTERNAL_ADMIN')">
+                    <th:block sec:authorize="hasRole('ADMIN') and hasAuthority('AUTH_EXTERNAL_ADMIN')">
 						<a th:href="@{/admin/employees}">Employee Management</a>
                     </th:block>
 

@@ -25,22 +25,25 @@ INSERT INTO roles (id, name, description) VALUES
   
 -- ── users (ManytoOne → roles, OnetoOne → employees) ────────────────────────────────────────────────────────────
 -- Test login accounts
--- admin:    test_admin@gmail.com / 12345abc!
+-- Internal admin: test_adminA@gmail.com / 12345abc!
+-- External admin: test_adminB@gmail.com / 12345abc!
 -- manager:  test_manager@gmail.com / 12345abc!
 -- employee: test_employeeA@gmail.com / 12345abc!
 -- employee: test_employeeB@gmail.com / 12345abc!
 INSERT INTO users (email, role_id , password_hash,enabled,created_at,updated_at) VALUES
-  ('test_admin@gmail.com', '1',  '$2a$10$8SzJSmsqrjhbliFpHZsQSOMRFuBP7trEn4VVCzatYs9KGrjxDnvUW', TRUE, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
+  ('test_adminA@gmail.com', '1',  '$2a$10$8SzJSmsqrjhbliFpHZsQSOMRFuBP7trEn4VVCzatYs9KGrjxDnvUW', TRUE, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
   ('test_manager@gmail.com', '2', '$2a$10$8SzJSmsqrjhbliFpHZsQSOMRFuBP7trEn4VVCzatYs9KGrjxDnvUW', TRUE, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
   ('test_employeeA@gmail.com', '3', '$2a$10$8SzJSmsqrjhbliFpHZsQSOMRFuBP7trEn4VVCzatYs9KGrjxDnvUW', TRUE, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
-  ('test_employeeB@gmail.com', '3', '$2a$10$8SzJSmsqrjhbliFpHZsQSOMRFuBP7trEn4VVCzatYs9KGrjxDnvUW', TRUE, '2026-04-01 00:00:00', '2026-04-01 00:00:00');
+  ('test_employeeB@gmail.com', '3', '$2a$10$8SzJSmsqrjhbliFpHZsQSOMRFuBP7trEn4VVCzatYs9KGrjxDnvUW', TRUE, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
+  ('test_adminB@gmail.com', '1',  '$2a$10$8SzJSmsqrjhbliFpHZsQSOMRFuBP7trEn4VVCzatYs9KGrjxDnvUW', TRUE, '2026-04-01 00:00:00', '2026-04-01 00:00:00');
 
 -- ── employees (OnetoOne → users, OnetoMany → leave_applications) ────────────────────────
 
 INSERT INTO employees (id , email, first_name ,last_name , contact_number, job_title, team_name, `rank`, manager_id, created_at,updated_at) VALUES
   (1,'test_manager@gmail.com', 'Mark' ,'Chan' , '81234567', 'Tech Manager', 'Team 1', 'PROFESSIONAL', NULL, '2026-04-01 00:00:00','2026-04-01 00:00:00'), --Manager record
   (2, 'test_employeeA@gmail.com', 'Amy' , 'Lim' , '9777777', 'Associate Software Engineer', 'Team 1', 'NON_EXECUTIVE', 1, '2026-04-01 00:00:00','2026-04-01 00:00:00'), 
-  (3, 'test_employeeB@gmail.com', 'Ben' , 'White' , '95555555', 'Principal Software Engineer', 'Team 1', 'NON_EXECUTIVE', 1, '2026-04-01 00:00:00','2026-04-01 00:00:00'); 
+  (3, 'test_employeeB@gmail.com', 'Ben' , 'White' , '95555555', 'Principal Software Engineer', 'Team 1', 'NON_EXECUTIVE', 1, '2026-04-01 00:00:00','2026-04-01 00:00:00'),
+  (4, 'test_adminA@gmail.com', 'Alice', 'Tan', '90001111', 'System Administrator', 'Admin Team', 'PROFESSIONAL', NULL, '2026-04-01 00:00:00', '2026-04-01 00:00:00');
 --- employees id hardcode
 
 -- ── leave_types (OnetoMany → leave_applications, ManytoOne → leave_records) ───────────────────────────

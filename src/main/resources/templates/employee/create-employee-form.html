@@ -19,25 +19,27 @@
 	<h1>Create New Employee</h1>
 	<form th:action="@{/admin/employees/create}" th:object="${employee}" method="post">
 		<div>
-			<label for="firstName">First name:</label>
+			<label for="firstName">First Name:</label>
 			<input type="text" th:field="*{firstName}" placeholder="First name"><br> 
 			<span class="error" th:if="${#fields.hasErrors('firstName')}"
 				th:errors="*{first_name}"></span>
 		</div>
 		
 		<div>	
-			<label for="lastName">Last name:</label>
+			<label for="lastName">Last Name:</label>
 			<input type="text" th:field="*{lastName}" placeholder="Last name"><br>
 			<span class="error" th:if="${#fields.hasErrors('lastName')}"
 				th:errors="*{lastName}"></span>
 		</div>
 		
+		<!--
 		<div>                 
 		    <label for="email">Employee's email:</label>
 			<input type="email" th:field="*{email}" autofocus placeholder="name@company.com"><br> 
 			<span class="error" th:if="${#fields.hasErrors('email')}"
 				th:errors="*{email}"></span>
 		</div>
+		-->
 		
 		<div>	
 			<label for="contactNumber">Contact number:</label> 
@@ -47,22 +49,27 @@
 		</div>
 
 		<div>
-			<label for="roleName">Employee's role:</label>
+			<label for="roleName">Employee's User Role:</label>
 			<select th:field="*{roleName}">
-				<option value="" disabled selected>Select a role</option>
+				<option value="" disabled>-- Select User Role --</option>
 				<option th:each="role : ${roleList}"
 						th:value="${role.name}"
-						th:text="${role.name}"></option>
+						th:text="${role.name}">
+				</option>
 			</select>
 			<span class="error" th:if="${#fields.hasErrors('roleName')}"
 				th:errors="*{roleName}"></span>
 		</div>
 		
 		<div>	
-			<label for="rank">Employee's rank:</label>
+			<label for="rank">Employee's Rank:</label>
 			<select th:field="*{rank}">
-				<option value="NON_EXECUTIVE">Non-Executive</option>
-				<option value="PROFESSIONAL">Professional</option>
+				<option value="" th:selected="${employee.rank == null}">-- Select Employee's Rank --</option>
+				<option th:each="r : ${rankList}"
+						th:value="${r}"
+						th:text="${r}"
+						th:selected="${employee.rank == r}">
+				</option>
 			</select><br>
 			<span class="error" th:if="${#fields.hasErrors('rank')}"
 				th:errors="*{rank}"></span>
@@ -70,7 +77,7 @@
 			
 		<div>	
 			<label for="managerId">Manager's ID:</label>
-			<input type="text" th:field="*{managerId}""><br>
+			<input type="text" th:field="*{managerId}"><br>
 			<span class="error" th:if="${#fields.hasErrors('managerId')}"
 				th:errors="*{managerId}"></span>
 		</div>
