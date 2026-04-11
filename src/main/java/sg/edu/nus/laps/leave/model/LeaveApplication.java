@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotNull;
 import sg.edu.nus.laps.employee.model.Employee;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "leave_applications")
@@ -26,6 +25,8 @@ public class LeaveApplication {
     @Column(name = "to_date", nullable = false)
     private LocalDate toDate;
 
+    @Column(name = "proof", nullable = true)
+    private String proof; // For medical proof url (Nullable)
 
     @NotBlank(message = "Reason is mandatory")
     @Column(nullable = false, length = 255)
@@ -46,10 +47,10 @@ public class LeaveApplication {
     @Column(nullable = false)
     private LeaveStatus status;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    // Set via common/util/SetCreatedUpdated.java
+    // @Column(name = "created_at")
+    // private LocalDateTime createdAt;
 
-  
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "leave_type_id")
     private LeaveType leaveType;
@@ -62,11 +63,10 @@ public class LeaveApplication {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        // this.createdAt = LocalDateTime.now();
         if (this.status == null) this.status = LeaveStatus.APPLIED;
     }
 
-   
 
     public LeaveApplication() {}
 

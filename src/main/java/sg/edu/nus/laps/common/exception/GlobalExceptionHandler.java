@@ -40,15 +40,14 @@ public class GlobalExceptionHandler {
     }
 
     // TO BE IMPLEMENTED
-    @ExceptionHandler(InvalidUserException.class) 
-    public String handleInvalidUserException(InvalidUserException ex) {
-        return "";
-    }
+    // @ExceptionHandler(InvalidUserException.class) 
+    // public String handleInvalidUserException(InvalidUserException ex) {
+    //     return "";
+    // }
 
-    // TO BE IMPLEMENTED
-    @ExceptionHandler(UserAlreadyExistsException.class) 
-    public String handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-        return "";
-    }
+    // @ExceptionHandler(UserAlreadyExistsException.class) 
+    // public String handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+    //     return "";
+    // }
 
 }
