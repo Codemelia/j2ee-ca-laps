@@ -7,9 +7,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import jakarta.servlet.http.HttpServletRequest;
 import sg.edu.nus.laps.auth.security.AuthUserDetails;
-import sg.edu.nus.laps.common.exception.auth.InvalidUserException;
 import sg.edu.nus.laps.common.exception.auth.UnauthenticatedUserException;
-import sg.edu.nus.laps.common.exception.auth.UserAlreadyExistsException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

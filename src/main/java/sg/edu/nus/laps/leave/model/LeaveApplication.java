@@ -1,17 +1,30 @@
 package sg.edu.nus.laps.leave.model;
 
 
-import jakarta.persistence.*;
+import java.time.LocalDate;
+// import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+// import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import sg.edu.nus.laps.common.util.SetCreatedUpdated;
 import sg.edu.nus.laps.employee.model.Employee;
-
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "leave_applications")
 
-public class LeaveApplication {
+public class LeaveApplication extends SetCreatedUpdated {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,7 +58,7 @@ public class LeaveApplication {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LeaveStatus status;
+    private LeaveStatus status = LeaveStatus.DRAFT;
 
     // Set via common/util/SetCreatedUpdated.java
     // @Column(name = "created_at")
@@ -59,13 +72,11 @@ public class LeaveApplication {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
-
-
-    @PrePersist
-    protected void onCreate() {
-        // this.createdAt = LocalDateTime.now();
-        if (this.status == null) this.status = LeaveStatus.APPLIED;
-    }
+    // @PrePersist
+    // protected void onCreate() {
+    //    this.createdAt = LocalDateTime.now();
+    //    if (this.status == null) this.status = LeaveStatus.DRAFT;
+    // }
 
 
     public LeaveApplication() {}
@@ -103,4 +114,11 @@ public class LeaveApplication {
 
     public Employee getEmployee() { return employee; }
     public void setEmployee(Employee employee) { this.employee = employee; }
+
+	public String getWorkDissemination() { return workDissemination; }
+	public void setWorkDissemination(String workDissemination) { this.workDissemination = workDissemination; }
+
+	public String getContactDetails() { return contactDetails; }
+	public void setContactDetails(String contactDetails) { this.contactDetails = contactDetails; }
+    
 }

@@ -61,22 +61,22 @@ CREATE TABLE leave_types (
 
 -- ── leave_applications (ManytoOne → employees, ManytoOne → leave_types) ───────────────────────────────────────────────────────────────
 CREATE TABLE leave_applications (
-    id                  BIGINT      AUTO_INCREMENT  PRIMARY KEY, 
-    employee_id         BIGINT      NOT NULL,
-    leave_type_id       BIGINT      NOT NULL,
-    from_date           DATETIME    NOT NULL,
-    to_date             DATETIME    NOT NULL,
+    id                  BIGINT          AUTO_INCREMENT  PRIMARY KEY, 
+    employee_id         BIGINT          NOT NULL,
+    leave_type_id       BIGINT          NOT NULL,
+    from_date           DATETIME        NOT NULL,
+    to_date             DATETIME        NOT NULL,
     proof               VARCHAR(1048),
-    reason              VARCHAR(100),
+    reason              VARCHAR(100)    NOT NULL,
     work_dissemination  VARCHAR(255),
     contact_details     VARCHAR(100),
     manager_comment     VARCHAR(100),
-    is_half_day         BOOLEAN     NOT NULL        DEFAULT FALSE,
+    is_half_day         BOOLEAN         NOT NULL        DEFAULT FALSE,
     status              ENUM('DRAFT', 'APPLIED', 'UPDATED', 'DELETED', 'CANCELLED', 'APPROVED', 'REJECTED')   NOT NULL,
-    created_at	        DATETIME	NOT NULL        DEFAULT CURRENT_TIMESTAMP,
-    updated_at          DATETIME    NOT NULL        DEFAULT CURRENT_TIMESTAMP	ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_leave_applications_employees      FOREIGN KEY (employee_id)   REFERENCES employees(id),
-    CONSTRAINT fk_leave_applications_types          FOREIGN KEY (leave_type_id) REFERENCES leave_types(id)
+    created_at	        DATETIME	    NOT NULL        DEFAULT CURRENT_TIMESTAMP,
+    updated_at          DATETIME        NOT NULL        DEFAULT CURRENT_TIMESTAMP	ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_leave_applications_employees          FOREIGN KEY (employee_id)   REFERENCES employees(id),
+    CONSTRAINT fk_leave_applications_types              FOREIGN KEY (leave_type_id) REFERENCES leave_types(id)
 );
 
 -- ── leave_records ( ManytoOne → leave_types, ManytoOne → employees) ───────────────────────────────────────────────────────────────

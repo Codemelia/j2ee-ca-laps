@@ -48,27 +48,12 @@ INSERT INTO leave_types (id, name, description) VALUES
   (1, 'Annual', 'Annual leave'),
   (2, 'Medical', 'Medical leave'),
   (3, 'Compensation', 'Compensation leave');
-
+  
 -- ── leave_applications (ManytoOne → employees, ManytoOne → leave_types) ───────────────────────────────────────────────────────────────
-INSERT INTO leave_applications (
-  id,
-  employee_id,
-  leave_type_id,
-  from_date,
-  to_date,
-  proof,
-  reason,
-  work_dissemination,
-  contact_details,
-  manager_comment,
-  is_half_day,
-  status,
-  created_at,
-  updated_at
-) VALUES
-  (1, 1, 1, '2026-04-30', '2026-05-01', 'https://iss-files.local/proofs/annual-leave-family-note.pdf', 'Family matters', 'Handed project support to Amy Lim', 'mark.chan@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
-  (2, 1, 2, '2026-04-05', '2026-04-05', 'https://iss-files.local/proofs/medical-appointment-slip.pdf', 'Clinic follow-up appointment', 'Team stand-up covered by Ben White', 'mark.chan@iss.nus.edu.sg', NULL, TRUE, 'APPLIED', '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
-  (3, 2, 3, '2026-04-08', '2026-04-08', 'https://iss-files.local/proofs/overtime-approval-ticket.pdf', 'Claiming overtime compensation', 'Bug triage reassigned to Mark Chan', 'amy.lim@iss.nus.edu.sg', 'Approved for release deployment support', TRUE, 'APPROVED', '2026-04-01 00:00:00', '2026-04-02 09:30:00');
+  INSERT INTO leave_applications (id,  employee_id  ,  leave_type_id,  from_date ,  to_date, proof, reason, status, created_at, updated_at) VALUES
+  (1, 1, 1, '2026-04-30 00:00:00', '2026-05-01 00:00:00', 'https://proofurl.com/MCBen20260428', NULL, 'APPLIED', '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
+  (2, 1, 2, '2026-04-05 00:00:00', '2026-04-05 12:00:00', 'https://proofurl.com/MCBen20260428', NULL, 'APPLIED', '2026-04-01 00:00:00', '2026-04-01 00:00:00'), -- half day AL
+  (3, 2, 3, '2026-04-08 00:00:00', '2026-04-09 00:00:00', 'https://proofurl.com/MCBen20260428', NULL, 'APPLIED', '2026-04-01 00:00:00', '2026-04-01 00:00:00');
 
 
 -- ── leave_records ( ManytoOne → leave_types, ManytoOne → employees) ───────────────────────────────────────────────────────────────
