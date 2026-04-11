@@ -68,7 +68,7 @@ CREATE TABLE leave_applications (
     to_date         DATETIME    NOT NULL,
     proof_url       VARCHAR(2048),
     reason          VARCHAR(100),
-    status          ENUM('DRAFT', 'PENDING', 'CANCELLED', 'APPROVED', 'REJECTED')   NOT NULL    DEFAULT 'PENDING',
+    status          ENUM('DRAFT', 'APPLIED', 'UPDATED', 'DELETED', 'CANCELLED', 'APPROVED', 'REJECTED')   NOT NULL,
     created_at	    DATETIME	DEFAULT CURRENT_TIMESTAMP		                    NOT NULL,
     updated_at      DATETIME    DEFAULT CURRENT_TIMESTAMP		                    NOT NULL,
     CONSTRAINT fk_leave_applications_employees FOREIGN KEY (employee_id) REFERENCES employees(id),

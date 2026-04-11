@@ -12,8 +12,10 @@ public enum LeaveStatus {
 	 * Once a LA is submitted, it will immediately be in the PENDING review state.
 	*/
 	DRAFT("Your leave request has been created, but not yet submitted."),
+	APPLIED("Your leave request is awaiting review from your reporting manager."),
+	UPDATED("Your leave request is awaiting review from your reporting manager."),
+	DELETED("Your leave request has been deleted."),
 	CANCELLED("Your leave request has been withdrawn."),
-	PENDING("Your leave request is awaiting review from your reporting manager."),
 	APPROVED("Your leave request has been approved by your reporting manager."),
 	REJECTED("Your leave request has been rejected by your reporting manager.");
 	

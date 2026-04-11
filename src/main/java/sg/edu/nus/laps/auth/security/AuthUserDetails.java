@@ -67,7 +67,7 @@ public class AuthUserDetails implements UserDetails {
     public boolean isEnabled() { return enabled; }
 
     public Long getEmployeeId() { return employeeId; }
-    public String getEmail() { return email; }
+    // public String getEmail() { return email; }
     public String getRoleName() { return roleName; }
 
 }

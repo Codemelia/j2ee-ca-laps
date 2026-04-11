@@ -4,8 +4,11 @@ package sg.edu.nus.laps.leave.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import sg.edu.nus.laps.employee.model.Employee;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "leave_applications")
 

@@ -38,7 +38,7 @@ public class MeController {
     @GetMapping
     public String getDashboard(@AuthenticationPrincipal AuthUserDetails user, 
         Model model) {
-        model.addAttribute("userEmail", user.getEmail());
+        model.addAttribute("userEmail", user.getUsername());
 
         String userRole = user.getRoleName();
         model.addAttribute("userRole", userRole);

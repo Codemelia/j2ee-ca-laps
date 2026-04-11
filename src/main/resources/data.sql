@@ -51,9 +51,9 @@ INSERT INTO leave_types (id, name, description) VALUES
   
 -- ── leave_applications (ManytoOne → employees, ManytoOne → leave_types) ───────────────────────────────────────────────────────────────
   INSERT INTO leave_applications (id,  employee_id  ,  leave_type_id,  from_date ,  to_date, proof_url, reason, status, created_at, updated_at) VALUES
-  (1, 1, 1, '2026-04-30 00:00:00', '2026-05-01 00:00:00', 'https://proofurl.com/MCBen20260428', NULL, 'PENDING', '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
-  (2, 1, 2, '2026-04-05 00:00:00', '2026-04-05 12:00:00', 'https://proofurl.com/MCBen20260428', NULL, 'PENDING', '2026-04-01 00:00:00', '2026-04-01 00:00:00'), -- half day AL
-  (3, 2, 3, '2026-04-08 00:00:00', '2026-04-09 00:00:00', 'https://proofurl.com/MCBen20260428', NULL, 'PENDING', '2026-04-01 00:00:00', '2026-04-01 00:00:00');
+  (1, 1, 1, '2026-04-30 00:00:00', '2026-05-01 00:00:00', 'https://proofurl.com/MCBen20260428', NULL, 'APPLIED', '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
+  (2, 1, 2, '2026-04-05 00:00:00', '2026-04-05 12:00:00', 'https://proofurl.com/MCBen20260428', NULL, 'APPLIED', '2026-04-01 00:00:00', '2026-04-01 00:00:00'), -- half day AL
+  (3, 2, 3, '2026-04-08 00:00:00', '2026-04-09 00:00:00', 'https://proofurl.com/MCBen20260428', NULL, 'APPLIED', '2026-04-01 00:00:00', '2026-04-01 00:00:00');
 
 
 -- ── leave_records ( ManytoOne → leave_types, ManytoOne → employees) ───────────────────────────────────────────────────────────────
