@@ -38,7 +38,11 @@ public class MeController {
     @GetMapping
     public String getDashboard(@AuthenticationPrincipal AuthUserDetails user, 
         Model model) {
-        model.addAttribute("userEmail", user.getUsername());
+        if (user == null) {
+            return "redirect:/auth/login";
+        }
+
+        model.addAttribute("userEmail", user.getEmail());
 
         String userRole = user.getRoleName();
         model.addAttribute("userRole", userRole);
