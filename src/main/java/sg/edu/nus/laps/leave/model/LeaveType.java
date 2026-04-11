@@ -14,10 +14,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import sg.edu.nus.laps.common.util.SetCreatedUpdated;
 
 @Entity
 @Table(name = "leave_type")
-public class LeaveType extends SetCreatedUpdated{
+public class LeaveType extends SetCreatedUpdated {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
