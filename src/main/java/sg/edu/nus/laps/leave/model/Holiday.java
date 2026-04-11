@@ -1,6 +1,6 @@
 package sg.edu.nus.laps.leave.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,14 +21,14 @@ public class Holiday {
 	private String name;
 
 	@Column(name = "date", nullable = false)
-	private LocalDateTime date;
+	private LocalDate date;
 
 	// Default Constructor
 	public Holiday() {
 	}
 
 	// Parameterized Constructor
-	public Holiday(String name, LocalDateTime date) {
+	public Holiday(String name, LocalDate date) {
 		this.name = name;
 		this.date = date;
 	}
@@ -46,11 +46,11 @@ public class Holiday {
 		this.name = name;
 	}
 
-	public LocalDateTime getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
 
-	public void setDate(LocalDateTime date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 }
