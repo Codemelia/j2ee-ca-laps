@@ -38,12 +38,6 @@ public class User extends SetCreatedUpdated {
 	@Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
 	private boolean enabled = true;
 
-	// @Column(name = "created_at", nullable = false, updatable = false) // JPA - MySQL constraints
-	// private LocalDateTime createdAt;
-	
-	// @Column(name = "updated_at", nullable = false) // JPA - MySQL constraints
-	// private LocalDateTime updatedAt;
-
 	// ASSOCIATIONS
 
 	// User to Role: Many to One
@@ -81,8 +75,6 @@ public class User extends SetCreatedUpdated {
 	public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 	public boolean isEnabled() { return this.enabled; }
 	public void setEnabled(boolean enabled) { this.enabled = enabled; }
-	// public LocalDateTime getCreatedAt() { return this.createdAt; }
-	// public LocalDateTime getUpdatedAt() { return this.updatedAt; }
 	public Role getRole() { return this.role; }
 	public void setRole(Role role) { this.role = role; }
 	public Employee getEmployee() { return this.employee; }

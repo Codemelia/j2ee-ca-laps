@@ -99,9 +99,13 @@ public class Employee extends SetCreatedUpdated {
 	// Employee to User: One to One
 	// Employee as Owning Side bc User may not be Employee, but Employee must be User
 	// CascadeType.REMOVE - On delete employee, delete associated user
+	// CascadeType.PERSIST - Saves User on Save Employee
+	// CascadeType.MERGE - Updates User on Update Employee
 	// orphanRemoval=true - On setUser(null), detaches old user and deletes it
-	@OneToOne(optional = false, fetch = FetchType.LAZY, 
-		cascade = CascadeType.REMOVE, orphanRemoval = true) // optional to reinforce Employee must be User
+	@OneToOne(optional = false, 
+		fetch = FetchType.LAZY, 
+		cascade = { CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE }, 
+		orphanRemoval = true)
 	@JoinColumn(name = "email", referencedColumnName = "email",
 		nullable = false, unique = true)
 	private User user;
@@ -118,18 +122,19 @@ public class Employee extends SetCreatedUpdated {
 		super();
 	}
 
-	public Employee(Long id, String firstName, String lastName, 
-			String contactNumber, EmployeeRank rank, Long managerId) {
-		super();
-		this.id = id;
+	public Employee(String firstName, String lastName, 
+		String contactNumber, EmployeeRank rank, Long managerId, 
+		String teamName, String jobTitle, String roleName, 
+		User user) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.contactNumber = contactNumber;
 		this.rank = rank;
 		this.managerId = managerId;
-		// Not needed, auto update via JPA/MySQL
-		// this.createdAt = createdAt;
-		// this.updatedAt = updatedAt;
+		this.teamName = teamName;
+		this.jobTitle = jobTitle;
+		this.roleName = roleName;
+		this.user = user;
 	}
 
 	public Long getId() {

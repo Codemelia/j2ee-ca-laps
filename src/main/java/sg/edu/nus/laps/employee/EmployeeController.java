@@ -108,18 +108,15 @@ public class EmployeeController {
 	public String createEmployee(@Valid @ModelAttribute Employee employee, 
 		BindingResult bindingResult, RedirectAttributes redirectAttrs) {
 		// Use the bound roleName from the Employee object
-		String roleName = employee.getRoleName();
-		buildCustomRoleError(bindingResult, roleName);
+		buildInvalidRoleError(bindingResult, employee.getRoleName());
 		if (bindingResult.hasErrors()) {
 			return "employee/create-employee-form";
 		}
         
-		// Get role by name
-		Role role = rService.findRoleByName(roleName).get();
-		eService.saveNewEmployee(employee, role);
+		eService.saveNewEmployee(employee);
 		redirectAttrs.addFlashAttribute("success", "Employee has been created.");
         
-		return "redirect:/";
+		return "redirect:/admin/employees";
 	}
 	@GetMapping("/update/{id}")
 	public String showUpdateEmployeeForm(@PathVariable Long id, 
@@ -133,12 +130,10 @@ public class EmployeeController {
 		Optional<Employee> empToUpdate = eService.findById(id);
 		if (empToUpdate.isPresent()) {
 			model.addAttribute("employee", empToUpdate.get());
-		}
-		
-		if (empToUpdate.isEmpty()) {
+		} else {
 			redirectAttrs.addFlashAttribute("errorMessage", 
 					"Employee does not exist.");
-			return "redirect:/admin/employees"; // employee-list
+			return "redirect:/admin/employees";
 		}
 		
 		return "employee/update-employee-form";
@@ -148,15 +143,13 @@ public class EmployeeController {
 	public String updateEmployeeDetails(@PathVariable Long id, @Valid @ModelAttribute Employee employee, 
 		BindingResult bindingResult, RedirectAttributes redirectAttrs) {
 		String roleName = employee.getRoleName();
-		buildCustomRoleError(bindingResult, roleName);
+		buildInvalidRoleError(bindingResult, roleName);
 		if (bindingResult.hasErrors()) {
 			return "employee/update-employee-form";
 		}
-		employee.setId(id);
 
-		// Get role by name
-		Role role = rService.findRoleByName(roleName).get();
-		eService.updateEmployee(employee, role);
+		employee.setId(id);
+		eService.updateEmployee(employee);
 		redirectAttrs.addFlashAttribute("success", "Employee #" + id + " has been updated.");
 		return "redirect:/admin/employees"; // employee-list
 	}
@@ -177,9 +170,9 @@ public class EmployeeController {
 	}
 
 	// HELPER
-	private void buildCustomRoleError(BindingResult bindingResult, String roleName) {
-		// Custom field error for invalid role
-		if (roleName == null || roleName.isBlank()
+	// Custom field error for invalid role
+	private void buildInvalidRoleError(BindingResult bindingResult, String roleName) {
+		if (!EmployeeUtil.roleIsValid(roleName)
         || !rService.roleExistsByName(roleName)) {
 			bindingResult.rejectValue("roleName", "invalid.role", 
 				"Employee role is invalid.");

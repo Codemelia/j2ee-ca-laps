@@ -82,43 +82,51 @@ public class EmployeeService {
 		return Optional.empty();
 	}
 	
-	// Update existing employee
+	// Partially update existing employee
 	// Propagation.REQUIRED: Keep user and employee saves in same transaction
 	// Isolation.READ_COMMITTED: Prevent dirty reads
-	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
-	public void updateEmployee(Employee employee, Role role) {
-		checkValidEmployee(employee); // Check if employee valid
-		if (!eRepo.existsById(employee.getId())) { // Check if employee exists
-			throw new InvalidEmployeeException();
+	@Transactional(propagation = Propagation.REQUIRED, 
+		isolation = Isolation.READ_COMMITTED)
+	public void updateEmployee(Employee employee) {
+		checkEmployeeValid(employee); // Check if employee valid
+		checkEmployeeExistsForUpdate(employee.getId()); // Check if employee exists
+
+		// Retrieve existing employee from DB (For full fields)
+		Employee existEmployee = eRepo.findById(employee.getId()).get();
+
+		// Map new (editable) fields to existing employee
+		// Prevents unintended overwrites
+		mapEditableFields(employee, existEmployee);
+
+		// Retrieve existing user account
+		// Check if valid and exists
+		User existUser = existEmployee.getUser();
+		checkUserValidAndExists(existUser);
+
+		// Update role if valid and changed
+		if (EmployeeUtil.roleIsValid(employee.getRoleName())) {
+			Role newRole = findRoleByName(employee.getRoleName());
+
+			if (!existUser.getRole().equals(newRole)) {
+				existUser.setRole(newRole); // JPA will update users automatically
+			}
 		}
 
-		// if admin has assigned new role, update user repo
-		User user = employee.getUser();
-		if (user.getRole() != role) {
-			user.setRole(role);
-			uRepo.save(user);
-		}
-
-		eRepo.save(employee); // Save employee
+		// Update employee - updates user in DB too
+		eRepo.save(existEmployee);
 	}
 
 	// Save new employee and user
 	// Propagation.REQUIRED: Keep user and employee saves in same transaction
 	// Isolation.READ_COMMITTED: Prevent dirty reads
-	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
-	public void saveNewEmployee(Employee employee, Role role) {
-		checkValidEmployee(employee); // Check if employee valid
-		if (role == null 
-			|| !rRepo.existsByName(role.getName())) { // Check if role null or invalid
-			throw new InvalidEmployeeException("Invalid user account for employee"); 
-		}
+	@Transactional(propagation = Propagation.REQUIRED, 
+		isolation = Isolation.READ_COMMITTED)
+	public void saveNewEmployee(Employee employee) {
+		checkEmployeeValid(employee); // Check if employee valid
+		checkEmployeeExistsForNew(employee.getId()); // Check if employee already has ID
 
-		// If employee exists and already linked to user, update it and exit
-		if (eRepo.existsById(employee.getId())
-			|| employee.getUser() != null) {
-			updateEmployee(employee, role);
-			return;
-		}
+		String roleName = employee.getRoleName();
+		checkRoleValid(roleName); // Check if selected role is valid
 
 		// Retrieve employee name and generate email
 		// Replace all non-letter characters
@@ -128,40 +136,126 @@ public class EmployeeService {
 		String lastName = employee.getLastName()
 			.replaceAll("[^A-Za-z]", "")
 			.toLowerCase();
+
+		// Check if first/last name valid for email generation
+		// Covers edge cases of names containing only spaces, ', -
+		checkEmailValidForNew(firstName, lastName);
+
 		String email = String.format("%s.%s@%s", 
 			firstName, lastName, EMAIL_DOMAIN);
 
+		// Check if email already exists
+		checkEmailExistsForNew(email);
+
 		// Auto generate employee password - 15 chars
 		// Hash for storage
-		String passwordRaw = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+		String passwordRaw = UUID.randomUUID()
+			.toString()
+			.replace("-", "")
+			.substring(0, 16);
 		String passwordHash = encoder.encode(passwordRaw);
+
+		// Retrieve role
+		Role newRole = findRoleByName(roleName);
 
 		// Create and save new user with enabled account and assigned role
 		// Fields: email, passwordHash, enabled, role
-		User user = new User(email, passwordHash, true, role);
-		uRepo.save(user);
+		User user = new User(email, passwordHash, true, newRole);
 
 		// Set employee's user account and save
-		employee.setUser(user);
+		employee.setUser(user); // JPA maps to User and saves
 		eRepo.save(employee);
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
+	// Delete employee and user account
+	// Propagation.REQUIRED: Keep user and employee deletes in same transaction
+	// Isolation.READ_COMMITTED: Prevent dirty reads
+	@Transactional(propagation = Propagation.REQUIRED, 
+		isolation = Isolation.READ_COMMITTED)
 	public void delete(Employee employee) {
+		checkEmployeeValid(employee); // Check if employee valid
+		checkEmployeeExistsForUpdate(employee.getId()); // Check if employee exists
+
+		// Delete employee - cascades to delete
 		eRepo.delete(employee);
 	}
 
 	// HELPERS
-	// Check existing employee validity
-	private void checkValidEmployee(Employee employee) {
+	// Check employee validity
+	private void checkEmployeeValid(Employee employee) {
 		if (employee == null || employee.getUser() == null) {
 			throw new InvalidEmployeeException();
 		}
 	}
 
+	// Check if employee exists for update
+	private void checkEmployeeExistsForUpdate(Long employeeId) {
+		if (!eRepo.existsById(employeeId)) {
+			throw new InvalidEmployeeException("Employee not found");
+		}
+	}
+
+	// Check if employee exists for new save
+	private void checkEmployeeExistsForNew(Long employeeId) {
+		if (employeeId != null) {
+			throw new InvalidEmployeeException("New employee should not have ID");
+		}
+	}
+
+	// Check if employee user email validity
+	private void checkUserValidAndExists(User user) {
+		if (user == null 
+			|| user.getEmail() == null 
+			|| !uRepo.existsByEmail(user.getEmail())) {
+			throw new InvalidEmployeeException("Employee has invalid user account");
+		}
+	}
+
+	// Check if user role is valid
+	private void checkRoleValid(String roleName) {
+		if (!EmployeeUtil.roleIsValid(roleName)) {
+			throw new InvalidEmployeeException("Invalid role");
+		}
+	}
+
+	// Retrieve valid user role
+	private Role findRoleByName(String roleName) {
+		return rRepo.findByName(roleName)
+				.orElseThrow(() -> 
+					new InvalidEmployeeException("User Role is invalid"));
+	}
+
+	// Map only fields that admin can update
+	private void mapEditableFields(Employee employee, Employee existEmployee) {
+		if (employee.getFirstName() != null) { existEmployee.setFirstName(employee.getFirstName()); }
+		if (employee.getLastName() != null) { existEmployee.setLastName(employee.getLastName()); }
+		if (employee.getContactNumber() != null) { existEmployee.setContactNumber(employee.getContactNumber()); }
+		if (employee.getRank() != null) { existEmployee.setRank(employee.getRank()); }
+		if (employee.getManagerId() != null) { existEmployee.setManagerId(employee.getManagerId()); }
+		if (employee.getTeamName() != null) { existEmployee.setTeamName(employee.getTeamName()); }
+		if (employee.getRoleName() != null) { existEmployee.setRoleName(employee.getRoleName()); }
+	}
+
+	// Check new email valid
+	private void checkEmailValidForNew(String firstName, String lastName) {
+		if (firstName.isBlank() || lastName.isBlank()) {
+			throw new InvalidEmployeeException("Invalid name for email generation");
+		}
+	}
+
+	// Check new email already exists
+	private void checkEmailExistsForNew(String email) {
+		if (uRepo.existsById(email)) {
+			throw new InvalidEmployeeException(
+				"Employee with same name already exists"
+			);
+		}
+	}
+
 	// Saves details in record for later retrieval
 	@SuppressWarnings("unused")
-	private NewEmployeeRecord getNewEmployeeRecord(Employee employee, String email, String passwordRaw) {
+	private NewEmployeeRecord getNewEmployeeRecord(
+		Employee employee, String email, String passwordRaw) {
 		return new NewEmployeeRecord(employee, email, passwordRaw);
 	}
 

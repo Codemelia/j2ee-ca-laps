@@ -11,9 +11,6 @@ import jakarta.validation.constraints.NotNull;
 @Entity
 @Table(name = "roles")
 public class Role {
-
-	// No Bean Validation bc roles are seed data only
-	// App never creates/ updates roles for now
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +20,7 @@ public class Role {
 	@NotNull(message = "User role cannot be null")
 	private String name;
 
-	@Column(length = 100) // default nullable
+	@Column(length = 100)
 	private String description;
 
 	// CONSTRUCTORS
@@ -53,6 +50,5 @@ public class Role {
 			", description='" + getDescription() + "'" +
 			"}";
 	}
-
 
 }
