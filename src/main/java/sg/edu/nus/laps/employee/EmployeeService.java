@@ -104,7 +104,7 @@ public class EmployeeService {
 		checkUserValidAndExists(existUser);
 
 		// Update role if valid and changed
-		if (EmployeeUtil.roleIsValid(employee.getRoleName())) {
+		if (!employee.getRoleName().isBlank()) {
 			Role newRole = findRoleByName(employee.getRoleName());
 
 			if (!existUser.getRole().equals(newRole)) {
@@ -176,7 +176,7 @@ public class EmployeeService {
 		checkEmployeeValid(employee); // Check if employee valid
 		checkEmployeeExistsForUpdate(employee.getId()); // Check if employee exists
 
-		// Delete employee - cascades to delete
+		// Delete employee - cascades to User
 		eRepo.delete(employee);
 	}
 
@@ -213,7 +213,7 @@ public class EmployeeService {
 
 	// Check if user role is valid
 	private void checkRoleValid(String roleName) {
-		if (!EmployeeUtil.roleIsValid(roleName)) {
+		if (roleName.isBlank()) {
 			throw new InvalidEmployeeException("Invalid role");
 		}
 	}

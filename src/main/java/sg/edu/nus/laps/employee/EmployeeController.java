@@ -19,6 +19,7 @@ import jakarta.validation.Valid;
 import sg.edu.nus.laps.auth.security.AuthUserDetails;
 import sg.edu.nus.laps.auth.user.RoleService;
 import sg.edu.nus.laps.auth.user.model.Role;
+import sg.edu.nus.laps.common.exception.employee.InvalidEmployeeException;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
 
@@ -64,7 +65,7 @@ public class EmployeeController {
 		List<Employee> allEmployees = eService.findAll();
 		model.addAttribute("allEmployees", allEmployees);
 
-		// Retrieve user email from session attribute
+		// Retrieve user email from session
 		// String userEmail = (String) session.getAttribute("userEmail");
 		String userEmail = user.getEmail();
 		Optional<Employee> loggedInUser = eService.findByEmail(userEmail);
@@ -107,16 +108,19 @@ public class EmployeeController {
 	@PostMapping("/create")
 	public String createEmployee(@Valid @ModelAttribute Employee employee, 
 		BindingResult bindingResult, RedirectAttributes redirectAttrs) {
-		// Use the bound roleName from the Employee object
-		buildInvalidRoleError(bindingResult, employee.getRoleName());
 		if (bindingResult.hasErrors()) {
 			return "employee/create-employee-form";
 		}
         
-		eService.saveNewEmployee(employee);
-		redirectAttrs.addFlashAttribute("success", "Employee has been created.");
-        
-		return "redirect:/admin/employees";
+		try { 
+			eService.saveNewEmployee(employee);
+			redirectAttrs.addFlashAttribute("success", "Employee has been created.");
+			return "redirect:/admin/employees";
+		} catch (InvalidEmployeeException ex) { // Handles all Employee CRUD exceptions
+			bindingResult.reject("error", "Error on save: " + ex.getMessage());
+			return "employee/create-employee-form";
+		}
+		
 	}
 	@GetMapping("/update/{id}")
 	public String showUpdateEmployeeForm(@PathVariable Long id, 
@@ -130,28 +134,36 @@ public class EmployeeController {
 		Optional<Employee> empToUpdate = eService.findById(id);
 		if (empToUpdate.isPresent()) {
 			model.addAttribute("employee", empToUpdate.get());
-		} else {
-			redirectAttrs.addFlashAttribute("errorMessage", 
-					"Employee does not exist.");
-			return "redirect:/admin/employees";
-		}
+		} 
+
+		// Not needed - can set if/else on Thymeleaf
+		// else {
+		// 	// redirectAttrs.addFlashAttribute("errorMessage", 
+		// 	// 		"Employee does not exist.");
+		// 	// return "redirect:/admin/employees";
+		// }
 		
 		return "employee/update-employee-form";
 	}
 	
 	@PostMapping("/update/{id}")
-	public String updateEmployeeDetails(@PathVariable Long id, @Valid @ModelAttribute Employee employee, 
+	public String updateEmployeeDetails(@PathVariable Long id, 
+		@Valid @ModelAttribute Employee employee, 
 		BindingResult bindingResult, RedirectAttributes redirectAttrs) {
-		String roleName = employee.getRoleName();
-		buildInvalidRoleError(bindingResult, roleName);
 		if (bindingResult.hasErrors()) {
 			return "employee/update-employee-form";
 		}
 
 		employee.setId(id);
-		eService.updateEmployee(employee);
-		redirectAttrs.addFlashAttribute("success", "Employee #" + id + " has been updated.");
-		return "redirect:/admin/employees"; // employee-list
+
+		try {
+			eService.updateEmployee(employee);
+			redirectAttrs.addFlashAttribute("success", "Employee #" + id + " has been updated.");
+			return "redirect:/admin/employees";
+		} catch (InvalidEmployeeException ex) { // Handles all Employee CRUD exceptions
+			bindingResult.reject("error", "Error on update: " + ex.getMessage());
+			return "employee/create-employee-form";
+		}
 	}
 	
 	@DeleteMapping("/delete/{id}")
@@ -161,22 +173,10 @@ public class EmployeeController {
 		if (empOpt.isPresent()) {
 			redirectAttrs.addFlashAttribute("success", "Employee #" + id + " has been deleted.");
 			eService.delete(empOpt.get());
-		}
-		
-		if (empOpt.isEmpty()) {
+		} else {
 			redirectAttrs.addFlashAttribute("failure", "Employee does not exist.");
 		}
 		return "redirect:/";
-	}
-
-	// HELPER
-	// Custom field error for invalid role
-	private void buildInvalidRoleError(BindingResult bindingResult, String roleName) {
-		if (!EmployeeUtil.roleIsValid(roleName)
-        || !rService.roleExistsByName(roleName)) {
-			bindingResult.rejectValue("roleName", "invalid.role", 
-				"Employee role is invalid.");
-		}
 	}
 
 }

@@ -82,8 +82,9 @@ public class Employee extends SetCreatedUpdated {
 	private String jobTitle;
 
 	// ADDED for form binding
-	// Will not affect DB
+	// Will not persist to DB
 	@Transient
+	@NotBlank(message = "Role must not be blank")
 	private String roleName;
 
 	// Set by /common/util/SetCreatedUpdated.java
