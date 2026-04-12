@@ -8,11 +8,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import sg.edu.nus.laps.leave.model.Holiday;
 
 public record HolidayRecordDto(
-		@JsonProperty("Date")
+		@JsonProperty("date")
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 		LocalDate date,
-		@JsonProperty("Holiday") String holiday,
-		@JsonProperty("Day") String day) {
+		@JsonProperty("holiday") String holiday,
+		@JsonProperty("day") String day) {
 	
 	// 1. Convert DTO to JPA Entity
 	public Holiday toEntity() {
