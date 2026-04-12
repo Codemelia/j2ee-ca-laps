@@ -1,6 +1,11 @@
 package sg.edu.nus.laps.leave;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
+
+import sg.edu.nus.laps.leave.model.LeaveApplication;
+import sg.edu.nus.laps.leave.repository.LeaveApplicationRepository;
 
 /*
     LeaveService handles all leave CRUD operations (Employee)
@@ -19,5 +24,21 @@ import org.springframework.stereotype.Service;
 */
 @Service
 public class LeaveService {
+
+    private final LeaveApplicationRepository laRepo;
+
+    public LeaveService(LeaveApplicationRepository laRepo) {
+        this.laRepo = laRepo;
+    }
+
+    // TEST leave-details.html - DELETE when updated
+    public Optional<LeaveApplication> findLeaveById(Long id) {
+        return laRepo.findById(id);
+    }
+
+    // Check if ID exists
+    public boolean existsByLeaveId(Long id) {
+        return laRepo.existsById(id);
+    }
 
 }

@@ -23,12 +23,12 @@ public class LeaveType extends SetCreatedUpdated {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name="leaveType" ,nullable=false,length = 20)
+	@Column(name="leave_type" ,nullable=false,length = 20)
 	@NotNull(message = "Leave type is mandatory")
 	@Size(max = 20, message = "Leave type cannot exceed 20 characters")
 	private String leaveType;
 	
-	@Column(name="leaveDescription", length = 200)
+	@Column(name="leave_description", length = 200)
 	@Size(max = 200, message = "Description cannot exceed 200 characters")
 	private String leaveDescription;
 	

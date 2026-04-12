@@ -12,15 +12,15 @@ import sg.edu.nus.laps.leave.model.LeaveType;
 public interface LeaveTypeRepository extends JpaRepository<LeaveType, Long> {
 
 	// 1. Read-Method: Find Leave Type by Name
-	Optional<LeaveType> findLeaveType(String leaveType);
+	Optional<LeaveType> findByLeaveType(String leaveType);
 	
 	// 2. Read-Method: Validate Leave Type by Name
 	boolean existsByLeaveType(String leaveType);
 	
 	// 3. Read-Method: Find Leave Type by Partial Name
-	List<LeaveType> findLeaveTypeContainingIgnoreCase(String leaveType);
+	List<LeaveType> findByLeaveTypeContainingIgnoreCase(String leaveType);
 	
 	// 4. Read-Method: Find Leave Type by Description
-	List<LeaveType> findLeaveDescriptionContainingIgnoreCase(String description);
+	List<LeaveType> findByLeaveDescriptionContainingIgnoreCase(String description);
 
 }

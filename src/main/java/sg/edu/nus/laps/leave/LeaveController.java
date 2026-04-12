@@ -1,7 +1,14 @@
 package sg.edu.nus.laps.leave;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.ui.Model;
+
+import sg.edu.nus.laps.employee.EmployeeService;
+import sg.edu.nus.laps.employee.model.Employee;
+import sg.edu.nus.laps.leave.model.LeaveApplication;
 
 /*
     LeaveController handles employee's OWN leaves
@@ -26,5 +33,38 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/leaves")
 @Controller
 public class LeaveController {
+
+    private final LeaveService lService;
+    private final EmployeeService eService;
+    
+    public LeaveController(LeaveService lService, EmployeeService eService) {
+        this.lService = lService;
+        this.eService = eService;
+    }
+
+    // TEST leave-details.html - DELETE when updated
+    @GetMapping("/{id}")
+    public String showLeaves(@PathVariable Long id, Model model) {
+
+        // Retrieve leave app info
+        if (id != null && lService.existsByLeaveId(id)) {
+            LeaveApplication leaveApp = lService.findLeaveById(id).get();
+
+            // On employee, find Manager ID
+            Employee employee = leaveApp.getEmployee();
+            Long managerId = employee.getManagerId();
+
+            // Retrieve manager name by manager ID
+            if (managerId != null) {
+                Employee manager = eService.findById(managerId).get();
+                String managerName = manager.getFirstName() + " " + manager.getLastName();
+                model.addAttribute("managerName", managerName);
+            }
+
+            model.addAttribute("leaveApplication", leaveApp);
+        }        
+
+        return "leave/leave-details.html";
+    }
 
 }
