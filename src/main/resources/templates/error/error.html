@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+
+	<head th:replace="~{fragments/head ::head('Error', ~{::extra})}"></head>
+
+	<!-- For scripts - DELETE if unused -->
+	<th:block th:fragment="extra"></th:block>
+
+	<body>
+		<header th:replace="~{fragment/header :: header}"></header>
+		
+        <div class="page-wrapper">
+            <!-- Page Content -->
+		</div>
+
+        <footer th:replace="~{fragment/footer :: footer}"></footer>
+	</body>
+
+</html>

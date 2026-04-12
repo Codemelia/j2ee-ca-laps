@@ -1,40 +1,48 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-	<title>View Employee Details</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 
-<body>
-    
-    <div th:if="${employee}">
-        <h1 th:text="${employee.firstName} + ' ' + ${employee.lastName} + '\'s Details'">Employee's Details</h1>
-        <dl>
-            <dt><b>Employee ID</b></dt>
-            <dd th:text="${employee.id}">Employee ID</dd><br>
-            
-            <dt><b>First Name</b></dt>
-            <dd th:text="${employee.firstName}">First Name</dd><br>
-            
-            <dt><b>Last Name</b></dt>
-            <dd th:text="${employee.lastName}">Last Name</dd><br>
-            
-            <dt><b>Email</b></dt>
-            <dd th:text="${employee.email}">Employee's email</dd><br>
-            
-            <dt><b>Contact Number</b></dt>
-            <dd th:text="${employee.contactNumber}">Contact Number</dd><br>
-            
-            <dt><b>Employee's Rank</b></dt>
-            <dd th:text="${employee.rank}">Employee's Rank</dd><br>
-            
-            <dt><b>Manager's ID</b></dt>
-            <dd th:text="${employee.managerId}">Manager's ID</dd><br>
-        </dl>
-    </div>
+	<head th:replace="~{fragments/head ::head('Employee Details', ~{::extra})}"></head>
 
-	<div th:unless="${employee}">
-		Employee does not exist.
-	</div>
+	<!-- For scripts - DELETE if unused -->
+	<th:block th:fragment="extra"></th:block>
 
-</body>
+	<body>
+		<header th:replace="~{fragment/header :: header}"></header>
+		
+        <div class="page-wrapper">
+            <div th:if="${employee}">
+                <h1 th:text="${employee.firstName} + ' ' + ${employee.lastName} + '\'s Details'">Employee's Details</h1>
+                <dl>
+                    <dt><b>Employee ID</b></dt>
+                    <dd th:text="${employee.id}">Employee ID</dd><br>
+                    
+                    <dt><b>First Name</b></dt>
+                    <dd th:text="${employee.firstName}">First Name</dd><br>
+                    
+                    <dt><b>Last Name</b></dt>
+                    <dd th:text="${employee.lastName}">Last Name</dd><br>
+                    
+                    <dt><b>Email</b></dt>
+                    <dd th:text="${employee.email}">Employee's email</dd><br>
+                    
+                    <dt><b>Contact Number</b></dt>
+                    <dd th:text="${employee.contactNumber}">Contact Number</dd><br>
+                    
+                    <dt><b>Employee's Rank</b></dt>
+                    <dd th:text="${employee.rank}">Employee's Rank</dd><br>
+                    
+                    <dt><b>Manager's ID</b></dt>
+                    <dd th:text="${employee.managerId}">Manager's ID</dd><br>
+                </dl>
+            </div>
+
+            <div th:unless="${employee}">
+                Employee does not exist.
+            </div>
+		</div>
+
+        <footer th:replace="~{fragment/footer :: footer}"></footer>
+	</body>
+
 </html>

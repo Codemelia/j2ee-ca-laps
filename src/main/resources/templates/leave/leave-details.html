@@ -2,19 +2,19 @@
 <html xmlns:th="http://www.thymeleaf.org"
     xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 
-	<head>
-		<meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="/css/style.css" th:href=@{/css/style.css}>
-        <title>G3LAPS - Employee Leave Details</title>
-	</head>
+	<head th:replace="~{fragments/head ::head('Leave Details', ~{::extra})}"></head>
+
+	<!-- For scripts - DELETE if unused -->
+	<th:block th:fragment="extra"></th:block>
 
 	<body>
-		<!-- Values from dashboard accessible in header -->
 		<header th:replace="~{fragment/header :: header}"></header>
-		<div class="page-wrapper">
-			<h1>Welcome, <span th:if="${userEmail}" th:text="${userEmail}">User</span>!</h1>
+		
+        <div class="page-wrapper">
+            <!-- Page Content -->
 		</div>
+
+        <footer th:replace="~{fragment/footer :: footer}"></footer>
 	</body>
 
 </html>

@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.common.exception.employee;
+package sg.edu.nus.laps.employee.exception;
 
 public class InvalidEmployeeException extends RuntimeException {
     // Default message

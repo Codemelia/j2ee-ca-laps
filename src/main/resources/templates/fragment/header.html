@@ -1,69 +1,53 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-    xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<header th:fragment="header">
+    <div class="topbar">
 
-	<head>
-		<meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="/css/style.css" th:href=@{/css/style.css}>
-	</head>
+        <!-- Logo -->
+        <a th:href="@{/}" class="site-title" th:text="${appName} ?: 'G3LAPS'"></a>
 
-    <body>
+        <!-- Nav links -->
+        <nav class="nav-links">
 
-        <header th:fragment="header">
-            <div class="topbar">
+            <!-- Spring Security user role auth -->
 
-                <!-- Company logo -->
-                <a th:href="@{/}" class="site-title">G3LAPS</a>
+            <!-- ROLE_EMPLOYEE: Dashboard, My Leaves -->
+            <th:block sec:authorize="hasRole('EMPLOYEE')">
+                <a th:href="@{/me}">Dashboard</a>
+                <a th:href="@{/leaves}">My Leave History</a>
+            </th:block>
 
-                <!-- Nav links -->
-                <nav class="nav-links">
+            <!-- ROLE_MANAGER: Dashboard, My Leaves, Team Leaves -->
+            <th:block sec:authorize="hasRole('MANAGER')">
+                <a th:href="@{/me}">Dashboard</a>
+                <a th:href="@{/leaves}">My Leave History</a>
+                <a th:href="@{/manager/leaves}">Subordinate Leave History</a>
+            </th:block>
 
-                    <!-- Spring Security user role auth -->
+            <!-- INTERNAL ROLE_ADMIN: Dashboard, My Leaves, Employee Management -->
+            <th:block sec:authorize="hasRole('ADMIN') and hasAuthority('AUTH_INTERNAL_ADMIN')">
+                <a th:href="@{/me}">Dashboard</a>
+                <a th:href="@{/leaves}">My Leave History</a>
+                <a th:href="@{/admin/employees}">Employee Management</a>
+            </th:block>
 
-                    <!-- ROLE_EMPLOYEE: Dashboard, My Leaves -->
-                    <th:block sec:authorize="hasRole('EMPLOYEE')">
-                        <a th:href="@{/me}">Dashboard</a>
-                        <a th:href="@{/leaves}">My Leave History</a>
-                    </th:block>
+            <!-- EXTERNAL ROLE_ADMIN: Employee Management -->
+            <th:block sec:authorize="hasRole('ADMIN') and hasAuthority('AUTH_EXTERNAL_ADMIN')">
+                <a th:href="@{/admin/employees}">Employee Management</a>
+            </th:block>
 
-                    <!-- ROLE_MANAGER: Dashboard, My Leaves, Team Leaves -->
-                    <th:block sec:authorize="hasRole('MANAGER')">
-                        <a th:href="@{/me}">Dashboard</a>
-                        <a th:href="@{/leaves}">My Leave History</a>
-						<a th:href="@{/manager/leaves}">Subordinate Leave History</a>
-                    </th:block>
+        </nav>
 
-                    <!-- INTERNAL ROLE_ADMIN: Dashboard, My Leaves, Employee Management -->
-                    <th:block sec:authorize="hasRole('ADMIN') and hasAuthority('AUTH_INTERNAL_ADMIN')">
-                        <a th:href="@{/me}">Dashboard</a>
-                        <a th:href="@{/leaves}">My Leave History</a>
-						<a th:href="@{/admin/employees}">Employee Management</a>
-                    </th:block>
+        <!-- Logged in user and logout button -->
+        <div class="user-info" sec:authorize="isAuthenticated()">
+            <span>
+                <strong th:text="${employeeFullName}"></strong>
+                <strong th:text="${employeeTeam}"></strong>
+                <strong th:text="${employeeTitle}"></strong>
+            </span>
+            <form th:action="@{/auth/logout}" method="POST" style="display:inline">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button type="submit" class="btn">Logout</button>
+            </form>
+        </div>
 
-                    <!-- EXTERNAL ROLE_ADMIN: Employee Management -->
-                    <th:block sec:authorize="hasRole('ADMIN') and hasAuthority('AUTH_EXTERNAL_ADMIN')">
-						<a th:href="@{/admin/employees}">Employee Management</a>
-                    </th:block>
-
-                </nav>
-
-                <!-- Logged in user and logout button -->
-                <div class="user-info" sec:authorize="isAuthenticated()">
-                    <span>
-                        <strong th:text="${employeeFullName}"></strong>
-                        <strong th:text="${employeeTeam}"></strong>
-                        <strong th:text="${employeeTitle}"></strong>
-                    </span>
-                    <form th:action="@{/auth/logout}" method="POST" style="display:inline">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <button type="submit" class="btn">Logout</button>
-                    </form>
-                </div>
-
-            </div>
-        </header>
-
-    </body>
-
-</html>
+    </div>
+</header>

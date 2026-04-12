@@ -1,0 +1,10 @@
+<head th:fragment="head(title, extra)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title th:text="(${appName} ?: 'G3LAPS') + ' - ' + (${title} ?: 'App')"></title>
+
+    <link rel="stylesheet" th:ref="@{/css/style.css}">
+
+    <th:block th:if="${extra != null}" th:replace="${extra}"></th:block>
+</head>
