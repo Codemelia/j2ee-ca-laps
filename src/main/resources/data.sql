@@ -47,7 +47,7 @@ INSERT INTO employees (id , email, first_name ,last_name , contact_number, job_t
 --- employees id hardcode
 
 -- ── leave_types (OnetoMany → leave_applications, ManytoOne → leave_records) ───────────────────────────
-INSERT INTO leave_types (id, leaveType, leaveDescription) VALUES
+INSERT INTO leave_types (id, leave_type, leave_description) VALUES
   (1, 'Annual', 'Annual leave'),
   (2, 'Medical', 'Medical leave'),
   (3, 'Compensation', 'Compensation leave');

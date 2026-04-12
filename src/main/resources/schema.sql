@@ -55,8 +55,10 @@ CREATE TABLE employees (
 -- ── leave_types (OnetoMany → leave_applications, ManytoOne → leave_records) ───────────────────────────────────────────────────────────────
 CREATE TABLE leave_types (
     id               BIGINT          AUTO_INCREMENT  PRIMARY KEY,
-    leaveType        VARCHAR(20)     NOT NULL,
-    leaveDescription VARCHAR(100)    NOT NULL
+    leave_type        VARCHAR(20)     NOT NULL,
+    leave_description VARCHAR(100)    NOT NULL,
+    created_at       DATETIME       NOT NULL                     DEFAULT CURRENT_TIMESTAMP,
+    updated_at       DATETIME       NOT NULL                     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- ── leave_applications (ManytoOne → employees, ManytoOne → leave_types) ───────────────────────────────────────────────────────────────
