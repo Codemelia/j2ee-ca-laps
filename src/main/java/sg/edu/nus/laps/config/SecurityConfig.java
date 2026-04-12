@@ -17,8 +17,18 @@ public class SecurityConfig {
     @Bean // Indicate bean to be managed by Spring
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(auth -> 
-            	auth.anyRequest().permitAll() // Permit all HTTP requests
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/css/**", 
+                    "/favicon.ico") // TO BE IMPLEMENTED
+                    .permitAll() // Allow static
+                .requestMatchers(
+                    "/auth/login", 
+                    "/auth/employee/login", 
+                    "/auth/admin/login",
+                    "/contact") // TO BE IMPLEMENTED
+                    .permitAll() // Allow public pages
+                .anyRequest().authenticated() // All other routes require login
             ).formLogin(form -> form
                 .loginPage("/auth/login") // GET /auth/login
                 .loginProcessingUrl("/auth/login") // POST /auth/login

@@ -31,10 +31,10 @@ public class AuthController {
     // Fallback - GET /auth/login
     @GetMapping("/login")
     public String getLogin(
-        @RequestParam(value = "unauthorised", required = false) String unauth,
-        @RequestParam(value = "error", required = false) String error,
-        @RequestParam(value = "logout", required = false) String logout,
-        @RequestParam(value = "expired", required = false) String expired) {
+        @RequestParam(required = false) String unauth,
+        @RequestParam(required = false) String error,
+        @RequestParam(required = false) String logout,
+        @RequestParam(required = false) String expired) {
 
         // Build redirect string - default to employee login
         StringBuilder redirect = new StringBuilder("redirect:/auth/employee/login");
