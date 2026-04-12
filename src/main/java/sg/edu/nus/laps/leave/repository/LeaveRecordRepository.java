@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import sg.edu.nus.laps.leave.model.LeaveRecord;
@@ -25,4 +26,8 @@ public interface LeaveRecordRepository extends JpaRepository<LeaveRecord, Long> 
 	
 	// 5. Read-Method: Find by Manager ID
 	List<LeaveRecord> findByEmployeeManagerId(Long managerId);
+	
+	// 6. Custom Query: Check for Deficit Records
+	@Query("SELECT lr FROM LeaveRecord lr WHERE (lr.entitledDays - lr.consumedDays) < 0")
+	List<LeaveRecord> findDeficitRecords();
 }
