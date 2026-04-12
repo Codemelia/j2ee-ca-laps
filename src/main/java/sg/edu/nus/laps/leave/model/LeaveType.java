@@ -38,45 +38,16 @@ public class LeaveType extends SetCreatedUpdated {
 	@OneToMany(mappedBy = "leaveType", fetch = FetchType.LAZY)
 	private List<LeaveApplication> leaveApplication = new ArrayList<>();
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getLeaveType() {
-		return leaveType;
-	}
-
-	public void setLeaveType(String leaveType) {
-		this.leaveType = leaveType;
-	}
-
-	public String getLeaveDescription() {
-		return leaveDescription;
-	}
-
-	public void setLeaveDescription(String leaveDescription) {
-		this.leaveDescription = leaveDescription;
-	}
-
-	public List<LeaveRecord> getLeaveRecords() {
-		return leaveRecords;
-	}
-
-	public void setLeaveRecords(List<LeaveRecord> leaveRecords) {
-		this.leaveRecords = leaveRecords;
-	}
-
-	public List<LeaveApplication> getLeaveApplication() {
-		return leaveApplication;
-	}
-
-	public void setLeaveApplication(List<LeaveApplication> leaveApplication) {
-		this.leaveApplication = leaveApplication;
-	}
+	public Long getId() 														{ return id; }
+	public void setId(Long id) 													{ this.id = id; }
+	public String getLeaveType() 												{ return leaveType; }
+	public void setLeaveType(String leaveType) 									{ this.leaveType = leaveType; }
+	public String getLeaveDescription() 										{ return leaveDescription; }
+	public void setLeaveDescription(String leaveDescription) 					{ this.leaveDescription = leaveDescription; }
+	public List<LeaveRecord> getLeaveRecords() 									{ return leaveRecords; }
+	public void setLeaveRecords(List<LeaveRecord> leaveRecords) 				{ this.leaveRecords = leaveRecords; }
+	public List<LeaveApplication> getLeaveApplication() 						{ return leaveApplication; }
+	public void setLeaveApplication(List<LeaveApplication> leaveApplication) 	{ this.leaveApplication = leaveApplication; }
 
 	public LeaveType(Long id,
 		@NotNull(message = "Leave type is mandatory") @Size(max = 20, message = "Leave type cannot exceed 20 characters") String leaveType,
