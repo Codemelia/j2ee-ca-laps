@@ -152,7 +152,7 @@ public class EmployeeService {
 		String passwordRaw = UUID.randomUUID()
 			.toString()
 			.replace("-", "")
-			.substring(0, 16);
+			.substring(0, 15);
 		String passwordHash = encoder.encode(passwordRaw);
 
 		// Retrieve role
