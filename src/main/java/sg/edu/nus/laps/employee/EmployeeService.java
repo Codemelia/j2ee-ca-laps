@@ -15,7 +15,7 @@ import sg.edu.nus.laps.auth.user.model.Role;
 import sg.edu.nus.laps.auth.user.model.User;
 import sg.edu.nus.laps.auth.user.repository.RoleRepository;
 import sg.edu.nus.laps.auth.user.repository.UserRepository;
-import sg.edu.nus.laps.common.exception.employee.InvalidEmployeeException;
+import sg.edu.nus.laps.employee.exception.InvalidEmployeeException;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.NewEmployeeRecord;
 import sg.edu.nus.laps.employee.repository.EmployeeRepository;
@@ -141,11 +141,18 @@ public class EmployeeService {
 		// Covers edge cases of names containing only spaces, ', -
 		checkEmailValidForNew(firstName, lastName);
 
-		String email = String.format("%s.%s@%s", 
-			firstName, lastName, EMAIL_DOMAIN);
+		// Build email
+		String lead = firstName + "." + lastName;
+		String trail = "@" + EMAIL_DOMAIN;
+		String email = lead + trail;
 
-		// Check if email already exists
-		checkEmailExistsForNew(email);
+		// If email already exists, add a random suffix to ensure unique
+		if (uRepo.existsByEmail(email)) {
+			String suffix = UUID.randomUUID()
+				.toString()
+				.substring(0, 4);
+			email = lead + "." + suffix + trail;
+		}
 
 		// Auto generate employee password - 15 chars
 		// Hash for storage
@@ -240,15 +247,6 @@ public class EmployeeService {
 	private void checkEmailValidForNew(String firstName, String lastName) {
 		if (firstName.isBlank() || lastName.isBlank()) {
 			throw new InvalidEmployeeException("Invalid name for email generation");
-		}
-	}
-
-	// Check new email already exists
-	private void checkEmailExistsForNew(String email) {
-		if (uRepo.existsById(email)) {
-			throw new InvalidEmployeeException(
-				"Employee with same name already exists"
-			);
 		}
 	}
 
