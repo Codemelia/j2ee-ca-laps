@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import jakarta.servlet.http.HttpServletRequest;
+import sg.edu.nus.laps.auth.exception.UnauthenticatedUserException;
 import sg.edu.nus.laps.auth.security.AuthUserDetails;
-import sg.edu.nus.laps.common.exception.auth.UnauthenticatedUserException;
 
 @ControllerAdvice
 public class GlobalModelAttributes {

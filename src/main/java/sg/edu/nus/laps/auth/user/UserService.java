@@ -5,10 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import sg.edu.nus.laps.auth.exception.InvalidUserException;
 import sg.edu.nus.laps.auth.user.model.User;
 import sg.edu.nus.laps.auth.user.repository.UserRepository;
-import sg.edu.nus.laps.common.exception.auth.InvalidUserException;
-import sg.edu.nus.laps.common.exception.auth.UserAlreadyExistsException;
 
 /*
     UserService handles all user data operations
@@ -52,7 +51,7 @@ public class UserService {
             
         // Check if user already exists in DB
         if (userRepo.existsByEmail(user.getEmail()))
-            throw new UserAlreadyExistsException();
+            throw new InvalidUserException("User already exists");
         
         // Encode password and store in User
         user.setPasswordHash(encoder.encode(user.getPasswordHash()));

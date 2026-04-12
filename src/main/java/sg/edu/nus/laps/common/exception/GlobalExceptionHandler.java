@@ -3,7 +3,7 @@ package sg.edu.nus.laps.common.exception;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import sg.edu.nus.laps.common.exception.auth.UnauthenticatedUserException;
+import sg.edu.nus.laps.auth.exception.UnauthenticatedUserException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

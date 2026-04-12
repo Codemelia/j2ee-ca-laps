@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.common.exception.auth;
+package sg.edu.nus.laps.auth.exception;
 
 public class InvalidUserException extends RuntimeException {
     // Default message
