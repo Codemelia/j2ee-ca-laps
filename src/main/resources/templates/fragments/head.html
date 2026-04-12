@@ -4,7 +4,7 @@
 
     <title th:text="(${appName} ?: 'G3LAPS') + ' - ' + (${title} ?: 'App')"></title>
 
-    <link rel="stylesheet" th:ref="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 
     <th:block th:if="${extra != null}" th:replace="${extra}"></th:block>
 </head>

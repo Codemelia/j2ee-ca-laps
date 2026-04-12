@@ -8,7 +8,7 @@
 	<th:block th:fragment="extra"></th:block>
 
 	<body>
-		<header th:replace="~{fragment/header :: header}"></header>
+		<header th:replace="~{fragments/header :: header}"></header>
 		
         <div class="page-wrapper">
             <div th:if="${employee}">
@@ -42,7 +42,7 @@
             </div>
 		</div>
 
-        <footer th:replace="~{fragment/footer :: footer}"></footer>
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
 	</body>
 
 </html>

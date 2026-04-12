@@ -44,7 +44,10 @@ body {
     line-height: 1.7;
     color: var(--text);
     background-color: var(--cream);
-    padding: 0 0 60px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
 }
 
 /* --- Typography -------------------------------------------- */
@@ -75,6 +78,7 @@ a:hover { color: var(--blue-dark); }
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 0 24px;
+    flex: 1 0 auto;
 }
 
 /* --- Top Navigation Bar ------------------------------------ */
@@ -115,6 +119,7 @@ a:hover { color: var(--blue-dark); }
 .topbar a.logout-link:hover { color: #ffffff; }
 
 /* --- Card (used for login form, centred forms) ------------- */
+
 .card {
     background: var(--white);
     border: 1px solid var(--border);
@@ -123,6 +128,58 @@ a:hover { color: var(--blue-dark); }
     padding: 36px 40px;
     max-width: 440px;
     margin: 48px auto 0;
+}
+
+/* --- Card Section Headings and Layout --- */
+.card h2, .card h3 {
+    margin-top: 0;
+    margin-bottom: 18px;
+}
+
+.card section {
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+}
+.card section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* --- Card Footer --- */
+.card-footer {
+    padding: 18px 0 0 0;
+    border-top: 1px solid var(--border);
+    text-align: right;
+    margin-top: 24px;
+}
+
+/* --- Card Body --- */
+.card-body {
+    padding: 0;
+}
+
+/* --- Leave Details Card (wider) --- */
+.card.leave-details {
+    max-width: 700px;
+    margin: 48px auto 0;
+    padding: 36px 40px;
+}
+
+/* --- Description List Styling --- */
+.card dl {
+    margin: 0 0 12px 0;
+}
+.card dt {
+    font-weight: 600;
+    color: var(--navy);
+    margin-top: 10px;
+}
+.card dd {
+    margin: 0 0 10px 0;
+    color: var(--text-light);
+    padding-left: 0;
 }
 
 /* --- Alert Messages ---------------------------------------- */
@@ -295,6 +352,21 @@ textarea {
     font-size: 0.88rem;
     color: var(--text-light);
     margin-top: 18px;
+}
+
+footer {
+    background: var(--navy);
+    color: #fff;
+    padding: 12px 0;
+    text-align: center;
+    font-size: 0.97rem;
+    margin-top: 24px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 /* --- Responsive: smaller screens --------------------------- */
