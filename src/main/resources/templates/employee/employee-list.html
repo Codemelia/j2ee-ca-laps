@@ -5,6 +5,9 @@
 </head>
 
 <body>
+	<!-- Display success or failure messages -->
+	<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+	<div th:if="${failure}" class="alert alert-danger" th:text="${failure}"></div>
 	<div>
 		<a href="/admin/employees/create">
 			<button type="button">Add New Employee</button>

@@ -19,7 +19,6 @@ import jakarta.validation.Valid;
 import sg.edu.nus.laps.auth.security.AuthUserDetails;
 import sg.edu.nus.laps.auth.user.RoleService;
 import sg.edu.nus.laps.auth.user.model.Role;
-import sg.edu.nus.laps.common.exception.employee.InvalidEmployeeException;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
 
@@ -116,8 +115,8 @@ public class EmployeeController {
 			eService.saveNewEmployee(employee);
 			redirectAttrs.addFlashAttribute("success", "Employee has been created.");
 			return "redirect:/admin/employees";
-		} catch (InvalidEmployeeException ex) { // Handles all Employee CRUD exceptions
-			bindingResult.reject("error", "Error on save: " + ex.getMessage());
+		} catch (Exception ex) { // Catches SQL + Custom exceptions
+			bindingResult.reject("error", "Save failed: " + ex.getMessage());
 			return "employee/create-employee-form";
 		}
 		
@@ -160,8 +159,8 @@ public class EmployeeController {
 			eService.updateEmployee(employee);
 			redirectAttrs.addFlashAttribute("success", "Employee #" + id + " has been updated.");
 			return "redirect:/admin/employees";
-		} catch (InvalidEmployeeException ex) { // Handles all Employee CRUD exceptions
-			bindingResult.reject("error", "Error on update: " + ex.getMessage());
+		} catch (Exception ex) { // Catches SQL + Custom exceptions
+			bindingResult.reject("error", "Update failed: " + ex.getMessage());
 			return "employee/create-employee-form";
 		}
 	}
@@ -171,12 +170,16 @@ public class EmployeeController {
 		Optional<Employee> empOpt = eService.findById(id);
 		
 		if (empOpt.isPresent()) {
-			redirectAttrs.addFlashAttribute("success", "Employee #" + id + " has been deleted.");
-			eService.delete(empOpt.get());
+			try {
+				eService.delete(empOpt.get());
+				redirectAttrs.addFlashAttribute("success", "Employee #" + id + " has been deleted.");
+			} catch (Exception ex) { // Catches SQL + Custom exceptions
+				redirectAttrs.addFlashAttribute("failure", "Delete failed: " + ex.getMessage());
+			}
 		} else {
 			redirectAttrs.addFlashAttribute("failure", "Employee does not exist.");
 		}
-		return "redirect:/";
+		return "redirect:/admin/employees";
 	}
 
 }
