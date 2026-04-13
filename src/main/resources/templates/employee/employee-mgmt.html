@@ -25,6 +25,20 @@
 				<p>Welcome, <span th:text="${userFirstName}">User</span>!</p>
 			</div>	
 			
+			<div>
+				<div id="empCount">
+					<h3>Employee Count</h3>
+					<p th:text="${empCount}">Employee Count</p>
+				</div>
+				<div id="mgrCount">
+					<h3>Manager Count</h3>
+					<p th:text="${mgrCount}">Manager Count</p>
+				</div>
+				<div id="adminCount">
+					<h3>Admin Count</h3>
+					<p th:text="${adminCount}"></p>
+				</div>
+			</div>
 			<!-- Employees table -->
 			<!-- All employees table only displays when user role is ADMIN -->
 			<div>	
@@ -33,12 +47,13 @@
 					<thead>
 						<tr>
 							<th>ID</th><th>First Name</th><th>Last Name</th>
-							<th>Email</th><th>Contact Number</th><th>Rank</th>
+							<th>Email</th><th>Contact Number</th>
+							<th>Manager's ID</th><th>Team Name</th><th>Job Title</th>
+							<th>Rank</th>
 							<th>User Role</th>
-							<th>Manager's ID</th>
-							<!-- <th>Created At</th><th>Updated At</th> -->
-							<th>Update</th>
-							<th>Delete</th>
+							<th>Created At</th><th>Updated At</th>
+							<th>Actions</th>
+							
 						</tr>
 					</thead>
 					<tbody>
@@ -48,13 +63,16 @@
 							<td th:text="${e.lastName}">Last Name</td>
 							<td th:text="${e.user.email}">Email</td>
 							<td th:text="${e.contactNumber}">Contact Number</td>
+							<td th:text="${e.managerId}">Manager's ID</td>
+							<td th:text="${e.teamName}">Team Name</td>
+							<td th:text="${e.jobTitle}">Job Title</td>
 							<td th:text="${e.rank}">Rank</td>
 							<td th:text="${e.user.role.name}">User Role</td>
-							<td th:text="${e.managerId}">Manager's ID</td>
-							<!-- <td th:text="${#temporals.format(e.createdAt,'dd MMM yyyy')}">Created At</td>
-							<td th:text="${#temporals.format(e.updatedAt,'dd MMM yyyy')}">Updated At</td> -->
-							<td><a th:href="@{/admin/employees/update/{id}(id=${e.id})}">Update Details</a></td>
-							<td><a th:href="@{/admin/employees/delete/{id}(id=${e.id})}">Delete Employee</a></td>
+							<td th:text="${#temporals.format(e.createdAt,'dd MMM yyyy')}">Created At</td>
+							<td th:text="${#temporals.format(e.updatedAt,'dd MMM yyyy')}">Updated At</td>
+							<td><a th:href="@{/admin/employees/update/{id}(id=${e.id})}">Update Details</a>
+							<a th:href="@{/admin/employees/delete/{id}(id=${e.id})}">Delete Employee</a></td>
+							
 						</tr>
 					</tbody>
 				</table>
