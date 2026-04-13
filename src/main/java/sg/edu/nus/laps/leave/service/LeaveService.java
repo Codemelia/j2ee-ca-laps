@@ -65,15 +65,10 @@ public class LeaveService {
 
 	/* 
 	 * 2. Update Method: submitLeave --> Allows User to Submit the Leave Application.
-	 * 		Here a More Complex Validation is Implemented. In addition to validateDate,
-	 * 		the fromDate and toDate will be validate against previously submitted Leave Application
-	 * 		(status = 'APPROVED'), regardless of Leave Type. Current/New Leave Application should not 
-	 * 		overlap.
-	 * 
-	 * 		Additionally, if the New Leave Application Start Date is 1-Day after the End-Date of 
-	 * 		previously submitted Leave Application (status = "APPROVED"), regardless of Leave Type, the New
-	 * 		Leave Application End-Date cannot be more than 14 successive days, inclusive of Weekends and Public Holidays.
-	 * 		This is to discourage back-to-back Leave Application.
+	 * 		Here a More Complex Validation is Implemented. In addition to validateDate, if the 
+	 * 		Current Leave Type is'ANNUAL', the fromDate and toDate will be validate against 
+	 * 		previously submitted Leave Application (leaveType = 'ANNUAL' AND status = 'APPROVED'). 
+	 * 		Current/New Leave Application should not overlap.
 	 * 
 	 * 		If Leave Type is 'Medical', both 'proof' and'reason' ATTR cannot be NULL.
 	 */
@@ -136,17 +131,61 @@ public class LeaveService {
 					|| (updatedLeave.getProof() == null || updatedLeave.getProof().isBlank())) {
 				throw new RuntimeException("Proof and Reason are mandatory for Medical Leave Application.");
 			}
-			existingLeave.setProof(updatedLeave.getProof());
-			existingLeave.setReason(updatedLeave.getReason());
 		}
 		
 		existingLeave.setFromDate(updatedLeave.getFromDate());
 		existingLeave.setToDate(updatedLeave.getToDate());
+		existingLeave.setProof(updatedLeave.getProof());
+		existingLeave.setReason(updatedLeave.getReason());
 		existingLeave.setWorkDissemination(updatedLeave.getWorkDissemination());
 		existingLeave.setContactDetails(updatedLeave.getContactDetails());
 		
 		existingLeave.setStatus(LeaveStatus.UPDATED);
 		laRepo.save(existingLeave);
+	}
+	
+	/* 
+	 * 4. Delete Method: deleteLeave --> Allows User to Soft-Delete Existing Leave Application.
+	 * 		This Method is applicable if and only if the Current Leave Status is 'APPLIED' or 'UPDATED'.
+	 * 		Once deleted, the record remains in the DB but is locked from further edits or approval.
+	 */
+	@Transactional
+	public void deleteLeave(Long id) {
+		LeaveApplication leave = laRepo.findById(id)
+				.orElseThrow(() -> new RuntimeException("Leave Application does not Exist."));
+		
+		if (leave.getStatus() != LeaveStatus.APPLIED && leave.getStatus() != LeaveStatus.UPDATED) {
+			throw new RuntimeException("Only Leave Application in 'APPLIED' or'UPDATED' state can be DELETED. "
+					+ "Current Status : " + leave.getStatus());
+		}
+		
+		leave.setStatus(LeaveStatus.DELETED);
+		laRepo.save(leave);
+	}
+
+	/*
+	 * 5. Update Method: processApproveOrRejectLeave --> Allows Manager to Approve or Reject Existing Leave Application.
+	 * 		This Method is applicable if and only if the Current Leave Status is 'APPLIED' or 'UPDATED'.
+	 * 		Once 'APPROVED', the 14-Day Successive Rules Applies, where if the leave period span over 14 calendar days,
+	 * 		then, both weekends and public holidays are included, otherwise they are excluded in the Effective Leave Duration
+	 * 		period. Additional Validation includes
+	 * 		Year Crossover Leave Application.
+	 */
+	@Transactional
+	public void processApproveOrRejectLeave(Long id, LeaveStatus decision, String managerComment) {
+		LeaveApplication leave = laRepo.findById(id)
+				.orElseThrow(() -> new RuntimeException("Leave Application does not Exist."));
+		
+		if (leave.getStatus() != LeaveStatus.APPLIED && leave.getStatus() != LeaveStatus.UPDATED) {
+			throw new RuntimeException("Leave Application has been Processed. Current Status : " + leave.getStatus());
+		}
+		
+		if (decision == LeaveStatus.REJECTED) {
+			if (managerComment == null || managerComment.isBlank()) {
+				throw new RuntimeException("Manager Comment is Mandatory for Rejection of Leave Application.");
+				}
+			leave.setStatus(LeaveStatus.REJECTED);
+		}
 	}
 	// --- COMPUTATION & LOGIC ---
 	/*
@@ -223,18 +262,7 @@ public class LeaveService {
 	public boolean existsByLeaveId(Long id) {
 		return laRepo.existsById(id);
 	}
-
-
-	// For deleting an 'Applied' leave
-	@Transactional
-	public void deleteLeave(Long id) {
-		LeaveApplication leave = laRepo.findById(id).orElse(null);
-		if (leave != null && leave.getStatus() == LeaveStatus.APPLIED) {
-			leave.setStatus(LeaveStatus.DELETED);
-			laRepo.save(leave);
-		}
-	}
-
+	
 	// COMPUTATION
 
 	// 1. The Calculation Logic
