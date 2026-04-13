@@ -101,7 +101,8 @@
 						<span class="error" th:if="${#fields.hasErrors('jobTitle')}"
 							th:errors="*{jobTitle}"></span>
 					</div>
-		
+					
+					<button type="button" th:onclick="history.back()}">Back</button>
 					<button type="submit">Update Employee</button>
 				</form>
 			</div>
