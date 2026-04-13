@@ -1,23 +1,21 @@
 package sg.edu.nus.laps.leave.service;
 
-import sg.edu.nus.laps.leave.model.LeaveApplication;
-import sg.edu.nus.laps.leave.model.LeaveStatus;
-
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
-import sg.edu.nus.laps.employee.repository.EmployeeRepository;
-import sg.edu.nus.laps.leave.repository.HolidayRepository;
-import sg.edu.nus.laps.leave.repository.LeaveApplicationRepository;
-import sg.edu.nus.laps.leave.repository.LeaveRecordRepository;
-import sg.edu.nus.laps.leave.repository.LeaveTypeRepository;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import sg.edu.nus.laps.employee.repository.EmployeeRepository;
+import sg.edu.nus.laps.leave.model.LeaveApplication;
+import sg.edu.nus.laps.leave.model.LeaveStatus;
+import sg.edu.nus.laps.leave.repository.HolidayRepository;
+import sg.edu.nus.laps.leave.repository.LeaveApplicationRepository;
+import sg.edu.nus.laps.leave.repository.LeaveRecordRepository;
+import sg.edu.nus.laps.leave.repository.LeaveTypeRepository;
 
 /*
     LeaveService handles all leave CRUD operations (Employee)
@@ -55,7 +53,7 @@ public class LeaveService {
 	// --- CRUD OPERATIONS ---
 	
 	/* 
-	 * 1. Method: saveAsDraft --> Allows User to Soft-Save their Leave Application.
+	 * 1. Create Method: saveAsDraft --> Allows User to Soft-Save their Leave Application.
 	 * 		Here a Simple Validation will be Done on the fromDate and toDate
 	 */
 	@Transactional
@@ -66,7 +64,7 @@ public class LeaveService {
 	}
 
 	/* 
-	 * 2. Method: submitLeave --> Allows User to Submit the Leave Application.
+	 * 2. Update Method: submitLeave --> Allows User to Submit the Leave Application.
 	 * 		Here a More Complex Validation is Implemented. In addition to validateDate,
 	 * 		the fromDate and toDate will be validate against previously submitted Leave Application
 	 * 		(status = 'APPROVED'), regardless of Leave Type. Current/New Leave Application should not 
@@ -106,7 +104,7 @@ public class LeaveService {
 		}
 		
 		if ("Medical".equalsIgnoreCase(leave.getLeaveType().getLeaveType())) {
-			if ((leave.getReason() == null || leave.getReason().isBlank())
+			if ((leave.getReason() == null || leave.getReason().isBlank()) 
 					|| (leave.getProof() == null || leave.getProof().isBlank())) {
 				throw new RuntimeException("Proof and Reason are mandatory for Medical Leave Application.");
 			}
@@ -115,9 +113,72 @@ public class LeaveService {
 		leave.setStatus(LeaveStatus.APPLIED);
 		return laRepo.save(leave);
 	}
+	
+	/* 
+	 * 3. Update Method: updateLeave --> Allows User to Update Existing Leave Application.
+	 * 		This Method is applicable if and only if the Current Leave Status is 'APPLIED' or 'UPDATED'.
+	 * 		All ATTRs are Editable except for Leave Type. Here Validation should still be Enforced.
+	 */
+	@Transactional
+	public void updateLeave(LeaveApplication updatedLeave) {
+		
+		LeaveApplication existingLeave = laRepo.findById(updatedLeave.getId())
+				.orElseThrow(() -> new RuntimeException("Leave Application does not Exist."));
+		if (existingLeave.getStatus() != LeaveStatus.APPLIED 
+				|| existingLeave.getStatus() != LeaveStatus.UPDATED) {
+			throw new RuntimeException("Only Leave Application in 'APPLIED' or 'UPDATED' statecan be Edited. "
+					+ "Current Status : " + existingLeave.getStatus());
+		}
+		if (!existingLeave.getLeaveType().getId().equals(updatedLeave.getLeaveType().getId())) {
+			throw new RuntimeException("Leave Type cannot be Edited. Please create a New Leave Application instead.");
+		}
+		
+		validateDate(updatedLeave.getFromDate(), updatedLeave.getToDate());
+		
+		List<LeaveApplication> overlaps = laRepo.findOverlappingApplication(
+				updatedLeave.getEmployee(), 
+				updatedLeave.getFromDate(), 
+				updatedLeave.getToDate());
+		boolean trueOverlap = overlaps.stream()
+				.anyMatch(l -> !l.getId().equals(updatedLeave.getId()));
+		if (trueOverlap) {
+			throw new RuntimeException("Updated Date Range overlaps with Existing Approved Leave Application.");
+		}
+		
+		int dialback = (updatedLeave.getFromDate().getDayOfWeek() == DayOfWeek.MONDAY) ? 3 : 1;
+		LocalDate dialbackDate = updatedLeave.getFromDate().minusDays(dialback);
+		List<LeaveApplication> preLeaves = laRepo.findOverlappingApplication(
+				updatedLeave.getEmployee(), 
+				dialbackDate, 
+				updatedLeave.getFromDate().minusDays(1));
+		if (!preLeaves.isEmpty()) {
+			LeaveApplication preLeave = preLeaves.get(0);
+			long leaveDuration = ChronoUnit.DAYS.between(preLeave.getFromDate(), updatedLeave.getToDate()) + 1;
+			if (leaveDuration > 14) {
+				throw new RuntimeException("Total Back-to-Back Leave Application cannot exceed 14 Successive Calendar Days.");
+			}
+		}
+		
+		if ("Medical".equalsIgnoreCase(updatedLeave.getLeaveType().getLeaveType())) {
+			if ((updatedLeave.getReason() == null || updatedLeave.getReason().isBlank()) 
+					|| (updatedLeave.getProof() == null || updatedLeave.getProof().isBlank())) {
+				throw new RuntimeException("Proof and Reason are mandatory for Medical Leave Application.");
+			}
+			existingLeave.setProof(updatedLeave.getProof());
+			existingLeave.setReason(updatedLeave.getReason());
+		}
+		
+		existingLeave.setFromDate(updatedLeave.getFromDate());
+		existingLeave.setToDate(updatedLeave.getToDate());
+		existingLeave.setWorkDissemination(updatedLeave.getWorkDissemination());
+		existingLeave.setContactDetails(updatedLeave.getContactDetails());
+		
+		existingLeave.setStatus(LeaveStatus.UPDATED);
+		laRepo.save(existingLeave);
+	}
 	// --- COMPUTATION & LOGIC ---
 	/*
-	 * a. Helper ValidateDate Method --> Validate if the fromDate and toDate is in Chronological Order.
+	 * a. Helper Method: ValidateDate --> Validate if the fromDate and toDate is in Chronological Order.
 	 * 		Validate if the fromDate is later or equals to Today's Date.
 	 * 		Validate if the fromDate and toDate is on WEEKDAY
 	 */
@@ -137,7 +198,7 @@ public class LeaveService {
 	}
 	
 	/*
-	 * b. Helper isWeekend Method --> Check if Selected Date falls on SAT or SUN
+	 * b. Helper Method: isWeekend --> Check if Selected Date falls on SAT or SUN
 	 */
 	private boolean isWeekend(LocalDate date) {
 		DayOfWeek day = date.getDayOfWeek();
@@ -187,12 +248,6 @@ public class LeaveService {
 		return laRepo.existsById(id);
 	}
 
-	// Update 'Applied' leave
-	@Transactional
-	public void updateLeave(LeaveApplication updatedLeave) {
-		updatedLeave.setStatus(LeaveStatus.UPDATED);
-		laRepo.save(updatedLeave);
-	}
 
 	// For deleting an 'Applied' leave
 	@Transactional
