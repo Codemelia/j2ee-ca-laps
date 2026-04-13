@@ -91,38 +91,27 @@ public class LeaveApplication extends SetCreatedUpdated {
 
     
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public LocalDate getFromDate() { return fromDate; }
-    public void setFromDate(LocalDate fromDate) { this.fromDate = fromDate; }
-
-    public LocalDate getToDate() { return toDate; }
-    public void setToDate(LocalDate toDate) { this.toDate = toDate; }
-
-    public String getReason() { return reason; }
-    public void setReason(String reason) { this.reason = reason; }
-
-    public LeaveStatus getStatus() { return status; }
-    public void setStatus(LeaveStatus status) { this.status = status; }
-
-    public String getManagerComment() { return managerComment; }
-    public void setManagerComment(String comment) { this.managerComment = comment; }
-
-    public LeaveType getLeaveType() { return leaveType; }
-    public void setLeaveType(LeaveType leaveType) { this.leaveType = leaveType; }
-
-    public Employee getEmployee() { return employee; }
-    public void setEmployee(Employee employee) { this.employee = employee; }
-
-	public String getWorkDissemination() { return workDissemination; }
-	public void setWorkDissemination(String workDissemination) { this.workDissemination = workDissemination; }
-
-	public String getContactDetails() { return contactDetails; }
-	public void setContactDetails(String contactDetails) { this.contactDetails = contactDetails; }
-
-    public String getProof() { return this.proof; }
-    public void setProof(String proof) { this.proof = proof; }
-
+    public Long getId() 										{ return id; }
+    public void setId(Long id) 									{ this.id = id; }
+    public LocalDate getFromDate() 								{ return fromDate; }
+    public void setFromDate(LocalDate fromDate) 				{ this.fromDate = fromDate; }
+    public LocalDate getToDate() 								{ return toDate; }
+    public void setToDate(LocalDate toDate) 					{ this.toDate = toDate; }
+    public String getReason() 									{ return reason; }
+    public void setReason(String reason) 						{ this.reason = reason; }
+    public LeaveStatus getStatus() 								{ return status; }
+    public void setStatus(LeaveStatus status) 					{ this.status = status; }
+    public String getManagerComment() 							{ return managerComment; }
+    public void setManagerComment(String comment) 				{ this.managerComment = comment; }
+    public LeaveType getLeaveType() 							{ return leaveType; }
+    public void setLeaveType(LeaveType leaveType) 				{ this.leaveType = leaveType; }
+    public Employee getEmployee() 								{ return employee; }
+    public void setEmployee(Employee employee) 					{ this.employee = employee; }
+	public String getWorkDissemination() 						{ return workDissemination; }
+	public void setWorkDissemination(String workDissemination) 	{ this.workDissemination = workDissemination; }
+	public String getContactDetails() 							{ return contactDetails; }
+	public void setContactDetails(String contactDetails) 		{ this.contactDetails = contactDetails; }
+    public String getProof() 									{ return this.proof; }
+    public void setProof(String proof) 							{ this.proof = proof; }
     
 }
