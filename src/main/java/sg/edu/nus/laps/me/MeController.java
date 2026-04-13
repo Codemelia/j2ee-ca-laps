@@ -37,6 +37,9 @@ public class MeController {
         this.empSvc = empSvc;
     }
     
+    // @Autowired
+    private MeService meSvc;
+    
     // AuthenticationPrincipal is used to retrieve user auth details
     // From user auth, we manage the session by accessing its details
     @GetMapping
@@ -57,6 +60,15 @@ public class MeController {
             model.addAttribute("employeeFullName", emp.getFirstName() + " " +emp.getLastName());
             model.addAttribute("employeeTeam", emp.getTeamName());
             model.addAttribute("employeeTitle", emp.getJobTitle());
+            
+        if (user.getEmployeeId() != null) {
+                Long empId = user.getEmployeeId();
+
+                model.addAttribute("leaveBalances",
+                    meSvc.getLeaveBalances(empId));
+                model.addAttribute("recentRequests",
+                    meSvc.getRecentLeaveRequests(empId));
+            }
         }
 
         return "me/dashboard";
