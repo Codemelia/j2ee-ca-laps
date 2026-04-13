@@ -52,7 +52,7 @@ public class EmployeeController {
     //     return session.getAttribute("user") != null;
     // }
 	
-	@GetMapping("/admin/employees")
+	@GetMapping
 	public String showEmployees(@AuthenticationPrincipal AuthUserDetails user,
 		Model model, RedirectAttributes redirectAttrs) {
 		// if (!isLoggedIn(session)) {
