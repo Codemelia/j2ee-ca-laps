@@ -22,5 +22,4 @@ public interface LeaveTypeRepository extends JpaRepository<LeaveType, Long> {
 	
 	// 4. Read-Method: Find Leave Type by Description
 	List<LeaveType> findByLeaveDescriptionContainingIgnoreCase(String description);
-
 }
