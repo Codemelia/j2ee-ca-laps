@@ -36,7 +36,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     List<User> findByRole_IdOrderByUpdatedAtDesc(Long roleId);
     
     @Query("select count(u) from User u where u.role.id = :roleId")
-    Integer countByRole_Id(String roleId);
+    Integer countByRoleId(String roleId);
     
 
 }
