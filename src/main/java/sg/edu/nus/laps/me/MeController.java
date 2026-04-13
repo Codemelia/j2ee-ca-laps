@@ -70,13 +70,14 @@ public class MeController {
                 .get(); // Employee is not empty
             
             // Bind employee details
+            model.addAttribute("employeeFirstName", emp.getFirstName());
             model.addAttribute("employeeFullName", emp.getFirstName() + " " +emp.getLastName());
             model.addAttribute("employeeTeam", emp.getTeamName());
             model.addAttribute("employeeTitle", emp.getJobTitle());
 
             // Bind leave balances + recentApplications
-            model.addAttribute("leaveBalances", lrSvc.getLeaveBalances(empId));
-            model.addAttribute("recentApplications", leaveSvc.getRecentLeaveRequests(empId));
+            model.addAttribute("leaveRecords", lrSvc.getLeaveRecords(empId));
+            model.addAttribute("recentApplications", leaveSvc.getRecentLeaveApplications(empId));
         }
 
         return "me/dashboard";

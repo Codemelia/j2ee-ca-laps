@@ -158,7 +158,7 @@ public class LeaveService {
 	
 	    
     // Gets recent leave requests
-    public List<LeaveApplication> getRecentLeaveRequests(Long employeeId) {
+    public List<LeaveApplication> getRecentLeaveApplications(Long employeeId) {
         return laRepo.findTop5ByEmployeeIdOrderByFromDateDesc(employeeId);
     }
 	

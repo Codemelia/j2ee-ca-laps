@@ -11,14 +11,14 @@
 		<header th:replace="~{fragments/header :: header}"></header>
 	
 		<div class="page-wrapper">
-			<h1>Welcome, <span th:if="${userEmail}" th:text="${userEmail}">User</span>!</h1>
+			<h1>Welcome, <span th:if="${employeeFirstName}" th:text="${employeeFirstName} ?: 'User"></span>!</h1>
 				
 
 		    <!-- Leave Balance Cards -->
 		    <h2>My Leave Balance</h2>
 		    <div class="cards-container">
-		        <div class="card" th:each="rec : ${leaveBalances}">
-		            <h3 th:text="${rec.leaveType.name}">Leave Type</h3>
+		        <div class="card" th:each="rec : ${leaveRecords}">
+		            <h3 th:text="${rec.leaveType.leaveType}">Leave Type</h3>
 		            <p>Entitled: <span th:text="${rec.entitledDays}">0</span></p>
 		            <p>Consumed: <span th:text="${rec.consumedDays}">0</span></p>
 		            <p>Balance: 
@@ -27,7 +27,7 @@
 		            </p>
 		        </div>
 		        <!-- Fallback if no records -->
-		        <p th:if="${#lists.isEmpty(leaveBalances)}">
+		        <p th:if="${#lists.isEmpty(leaveRecords)}">
 		            No leave records found.
 		        </p>
 		    </div>
@@ -45,9 +45,9 @@
 		        </thead>
 		        <tbody>
 		            <tr th:each="app : ${recentApplications}">
-		                <td th:text="${app.leaveType.name}">-</td>
-		                <td th:text="${app.fromDate}">-</td>
-		                <td th:text="${app.toDate}">-</td>
+		                <td th:text="${app.leaveType.leaveType}">-</td>
+		                <td th:text="${#temporals.format(app.fromDate, 'dd MMM yyyy')}">-</td>
+		                <td th:text="${#temporals.format(app.toDate, 'dd MMM yyyy')}">-</td>
 		                <td th:text="${app.status}">-</td>
 		            </tr>
 		            <tr th:if="${#lists.isEmpty(recentApplications)}">

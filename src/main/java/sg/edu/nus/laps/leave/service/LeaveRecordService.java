@@ -2,9 +2,12 @@ package sg.edu.nus.laps.leave.service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import sg.edu.nus.laps.leave.model.LeaveRecord;
 import sg.edu.nus.laps.leave.repository.LeaveRecordRepository;
 
+@Service
 public class LeaveRecordService {
 
     private final LeaveRecordRepository lrRepo;
@@ -14,7 +17,7 @@ public class LeaveRecordService {
     }
 
     // Gets leave balances (all leave types for this employee)
-    public List<LeaveRecord> getLeaveBalances(Long employeeId) {
+    public List<LeaveRecord> getLeaveRecords(Long employeeId) {
         return lrRepo.findByEmployeeId(employeeId);
     }
 
