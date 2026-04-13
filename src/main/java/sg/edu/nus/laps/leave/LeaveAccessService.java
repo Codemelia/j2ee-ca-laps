@@ -33,6 +33,7 @@ public class LeaveAccessService {
 
     public boolean canAccessLeaveDetails(AuthUserDetails user, LeaveApplication leaveApp) {
         Long leaveEmployeeId = leaveApp.getEmployee().getId();
+		return false;
     }
 
 	// Check if user can view leave details page

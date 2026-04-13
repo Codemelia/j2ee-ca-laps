@@ -11,10 +11,72 @@
 		<header th:replace="~{fragments/header :: header}"></header>
 		
         <div class="page-wrapper">
-            <!-- Page Content -->
+			<h1>My Leave Requests</h1>
+			<a th:href="@{/}">Back to Home</a>
+            <!-- th:if checks whether the list is empty -->
+	
+			<p th:if="${#lists.isEmpty (leaveList)} ">
+				You have not applied for any leave yet.
+			</p>
+
+			<table th:unless="${#lists. isEmpty (leaveList)}">
+				<thead>
+					<tr>
+						<th>Leave Type</th>
+						<th>Start Date</th>
+						<th>End Date</th>
+						<th>Days</th>
+						<th>Status</th>
+						<th>Submitted</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				
+				
+				<tbody>
+					<!-- th:each loops over the "leaveApplication" list from the Model -->
+					<tr th:each="leave : ${leaveList} ">
+					
+						<td th:text="${leave.leaveType.name}">Annual</td>
+						<td th:text="${#temporals.format(leave.fromDate, 'dd MMM yyyy')}">01 Jan 2026</td>
+						<td th:text="${#temporals.format(leave.toDate, 'dd MMM yyyy')}">02 Jan 2026</td>
+						<td th:text="${leave.duration}">1</td>
+							<span th:text="${leave.status}" 
+								class="badge rounded-pill"
+								th:classappend="${leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).APPROVED ? 'bg-success' : 
+												${leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).REJECTED ? 'bg-danger' : 
+												${leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).CANCELLED ? 'bg-secondary' :
+												${leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).DELETED ? 'bg-secondary' : 
+												'bg-warning'}">
+							</span>
+						<td>
+						<!--Link to detail page, passing leave id in the URL -->
+							<a th:href="@{/leaves/details/{id}(id=${leave.id})}" 
+							class="btn btn-sm btn-info text-white">View details</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<br>
 		</div>
 
         <footer th:replace="~{fragments/footer :: footer}"></footer>
 	</body>
 
 </html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>My Leave Requests</title>
+</head>
+<body>
+
+
+
+
+
+
+	</body>
+	</html>

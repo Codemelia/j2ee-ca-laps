@@ -4,11 +4,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import sg.edu.nus.laps.employee.model.Employee;
+import jakarta.transaction.Transactional;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
 import sg.edu.nus.laps.leave.model.LeaveType;
@@ -55,4 +58,12 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 			@Param("today") LocalDate today
 			);
 	
+	// 1. Read-Method: Find by LeaveApplication by Employee ID
+	List<LeaveApplication> findAllByEmployeeId(Long employeeId);
+	List<LeaveApplication> findByEmployeeIdOrderByFromDateDesc(Long employeeId);
+	// 2. update-method: Cancel a leave application
+	@Modifying
+	@Transactional
+	@Query("UPDATE LeaveApplication l SET l.status = 'CANCELLED' WHERE l.id = :id")
+	void cancelLeave(@Param("id") Long id);
 }

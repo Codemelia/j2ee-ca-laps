@@ -1,14 +1,21 @@
 package sg.edu.nus.laps.leave;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import sg.edu.nus.laps.auth.security.AuthUserDetails;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
+
+import jakarta.servlet.http.HttpSession;
+import sg.edu.nus.laps.employee.model.Employee;
 
 /*
     LeaveController handles employee's OWN leaves
@@ -33,8 +40,12 @@ import sg.edu.nus.laps.leave.model.LeaveApplication;
 @RequestMapping("/leaves")
 @Controller
 public class LeaveController {
+	@Autowired
+    private LeaveService leaveService;
+	// View personal leave history
 
     private final LeaveAccessService lacService;
+
     private final LeaveService lService;
 
     public LeaveController(LeaveAccessService lacService, LeaveService lService) {
@@ -63,6 +74,19 @@ public class LeaveController {
         }
 
         return "leave/leave-details.html";
+    }
+
+    @GetMapping("/leave/history") 
+        public String viewHistory(HttpSession session, Model model) {
+    Employee currentEmployee = (Employee) session.getAttribute("userSession");
+        
+        if (currentEmployee == null) {
+            return "redirect:/login";
+        }
+        List<LeaveApplication> leaveList = leaveService.getLeaveApplicationsforEmployee(currentEmployee.getId());
+        model.addAttribute("leaveList", leaveList);
+        
+        return "leave/leave-list"; // The Thymeleaf template
     }
 
 }
