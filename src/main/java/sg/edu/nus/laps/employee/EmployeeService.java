@@ -58,6 +58,8 @@ public class EmployeeService {
 		this.EMAIL_DOMAIN = EMAIL_DOMAIN;
 		this.encoder = encoder;
 	}
+
+	// CRUD
 	
 	@Transactional(readOnly=true)
 	public List<Employee> findAll() {

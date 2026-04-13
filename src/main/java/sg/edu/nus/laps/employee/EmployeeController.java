@@ -17,8 +17,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
 import sg.edu.nus.laps.auth.security.AuthUserDetails;
-import sg.edu.nus.laps.auth.user.RoleService;
 import sg.edu.nus.laps.auth.user.model.Role;
+import sg.edu.nus.laps.auth.user.service.RoleService;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
 
