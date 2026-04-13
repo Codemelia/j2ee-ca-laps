@@ -9,9 +9,52 @@
 
 	<body>
 		<header th:replace="~{fragments/header :: header}"></header>
-		
+	
 		<div class="page-wrapper">
 			<h1>Welcome, <span th:if="${userEmail}" th:text="${userEmail}">User</span>!</h1>
+				
+
+		    <!-- Leave Balance Cards -->
+		    <h2>My Leave Balance</h2>
+		    <div class="cards-container">
+		        <div class="card" th:each="rec : ${leaveBalances}">
+		            <h3 th:text="${rec.leaveType.name}">Leave Type</h3>
+		            <p>Entitled: <span th:text="${rec.entitledDays}">0</span></p>
+		            <p>Consumed: <span th:text="${rec.consumedDays}">0</span></p>
+		            <p>Balance: 
+		                <span th:text="${rec.entitledDays - rec.consumedDays}">
+		                </span>
+		            </p>
+		        </div>
+		        <!-- Fallback if no records -->
+		        <p th:if="${#lists.isEmpty(leaveBalances)}">
+		            No leave records found.
+		        </p>
+		    </div>
+
+		    <!-- My Recent Leave Requests -->
+		    <h2>My Leave Requests</h2>
+		    <table class="table">
+		        <thead>
+		            <tr>
+		                <th>Leave Type</th>
+		                <th>From</th>
+		                <th>To</th>
+		                <th>Status</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		            <tr th:each="app : ${recentRequests}">
+		                <td th:text="${app.leaveType.name}">-</td>
+		                <td th:text="${app.fromDate}">-</td>
+		                <td th:text="${app.toDate}">-</td>
+		                <td th:text="${app.status}">-</td>
+		            </tr>
+		            <tr th:if="${#lists.isEmpty(recentRequests)}">
+		                <td colspan="4">No leave requests found.</td>
+		            </tr>
+		        </tbody>
+		    </table>
 		</div>
 
 		<footer th:replace="~{fragments/footer :: footer}"></footer>
