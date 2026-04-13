@@ -89,20 +89,20 @@ public class EmployeeService {
 	}
 	
 	@Transactional(readOnly=true)
-	public Integer countEmployeesById() {
-		Integer empCount = eRepo.countId();
+	public Integer countEmployeesByRoleIdEmployee() {
+		Integer empCount = uRepo.countByRoleId("3");
 		return empCount;
 	}
 	
 	@Transactional(readOnly=true)
-	public Integer countEmployeesByIdRolenameManager() {
-		Integer mgrCount = uRepo.countByRole_Id("2");
+	public Integer countEmployeesByRoleIdManager() {
+		Integer mgrCount = uRepo.countByRoleId("2");
 		return mgrCount;
 	}
 	
 	@Transactional(readOnly=true)
-	public Integer countEmployeesByIdRolenameAdmin() {
-		Integer adminCount = uRepo.countByRole_Id("1");
+	public Integer countEmployeesByRoleIdAdmin() {
+		Integer adminCount = uRepo.countByRoleId("1");
 		return adminCount;
 	}
 	
