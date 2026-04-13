@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.leave;
+package sg.edu.nus.laps.leave.service;
 
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveStatus;

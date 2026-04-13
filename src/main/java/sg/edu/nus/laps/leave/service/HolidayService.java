@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.leave;
+package sg.edu.nus.laps.leave.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
