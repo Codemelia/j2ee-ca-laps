@@ -32,13 +32,9 @@ public class LeaveAccessService {
 
 	// Check access perms to leave details page
     public boolean canAccessLeaveDetails(AuthUserDetails user, LeaveApplication leaveApp) {
-        Long leaveEmployeeId = leaveApp.getEmployee().getId();
-		Long currViewerId = user.getEmployeeId();
-		boolean isSelf = currViewerId != null && currViewerId.equals(leaveEmployeeId);
-
-		// Set internal/external admin access
+		// Set internal/external admin access to false
 		if (user.isExternalAdmin()) return false;
-		if (user.isInternalAdmin() && !isSelf) return false;
+		if (user.isInternalAdmin() && !isSelf(user, leaveApp)) return false;
 		return true;
     }
 
