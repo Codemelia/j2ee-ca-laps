@@ -4,14 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import sg.edu.nus.laps.employee.model.Employee;
-import jakarta.transaction.Transactional;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
 import sg.edu.nus.laps.leave.model.LeaveType;
@@ -50,20 +47,26 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 			);
 	
 	// 8. Custom-Query: Manager's Team Leave Check
-	@Query("SELECT l from LeaveApplication l WHERE l.status = sg.edu.nus.laps.leave.model.LeaveStatus.APPROVED"
-			+ "AND l.employee.managerID = :managerId"
+	@Query("SELECT l from LeaveApplication l WHERE l.status = sg.edu.nus.laps.leave.model.LeaveStatus.APPROVED "
+			+ "AND l.employee.managerId = :managerId "
 			+ "AND :today BETWEEN l.fromDate AND l.toDate")
 	List<LeaveApplication> findTeamActiveLeaves(
 			@Param("managerId") Long managerId,
 			@Param("today") LocalDate today
 			);
 	
-	// 1. Read-Method: Find by LeaveApplication by Employee ID
+	// 9. Read-Method: Find Leave Application by Employee ID
 	List<LeaveApplication> findAllByEmployeeId(Long employeeId);
+	
+	// 10. Read-Method: Find Leave Application by Employee, Sorted by From Date in DESC
 	List<LeaveApplication> findByEmployeeIdOrderByFromDateDesc(Long employeeId);
-	// 2. update-method: Cancel a leave application
+	
+	/*
+	// Remove, SET of Status should be Managed in the Service Layer
+	// 11. Update-Method: Cancel a Leave Application
 	@Modifying
 	@Transactional
 	@Query("UPDATE LeaveApplication l SET l.status = 'CANCELLED' WHERE l.id = :id")
 	void cancelLeave(@Param("id") Long id);
+	*/
 }
