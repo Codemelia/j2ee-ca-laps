@@ -84,6 +84,20 @@
 							th:errors="*{managerId}"></span>
 					</div>
 					
+					<div>	
+						<label for="teamName">Team Name:</label>
+						<input type="text" th:field="*{teamName}"><br>
+						<span class="error" th:if="${#fields.hasErrors('teamName')}"
+							th:errors="*{teamName}"></span>
+					</div>
+					
+					<div>	
+						<label for="jobTitle">Job Title:</label>
+						<input type="text" th:field="*{jobTitle}"><br>
+						<span class="error" th:if="${#fields.hasErrors('jobTitle')}"
+							th:errors="*{jobTitle}"></span>
+					</div>
+					
 					<button type="submit">Create Employee</button>
 				</form>
 			</div>
