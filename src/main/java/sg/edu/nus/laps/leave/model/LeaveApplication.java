@@ -16,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 // import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import sg.edu.nus.laps.common.util.SetCreatedUpdated;
@@ -59,12 +60,19 @@ public class LeaveApplication extends SetCreatedUpdated {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LeaveStatus status = LeaveStatus.DRAFT;
+    
+    @Transient // This tells JPA not to create a column in MySQL
+    private double duration;
 
     // Set via common/util/SetCreatedUpdated.java
     // @Column(name = "created_at")
     // private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    public double getDuration() { return duration;	}
+	public void setDuration(double duration) {this.duration = duration;}
+	
+	
+	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "leave_type_id")
     private LeaveType leaveType;
 

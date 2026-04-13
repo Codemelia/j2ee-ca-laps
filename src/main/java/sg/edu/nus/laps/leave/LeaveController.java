@@ -1,12 +1,25 @@
 package sg.edu.nus.laps.leave;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Controller;
+<<<<<<< Updated upstream
 import org.springframework.web.bind.annotation.PathVariable;
+=======
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+>>>>>>> Stashed changes
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
 
 import sg.edu.nus.laps.employee.EmployeeService;
+import sg.edu.nus.laps.employee.model.Employee;
+import sg.edu.nus.laps.leave.model.LeaveApplication;
+
+import jakarta.servlet.http.HttpSession;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 
@@ -33,7 +46,19 @@ import sg.edu.nus.laps.leave.model.LeaveApplication;
 @RequestMapping("/leaves")
 @Controller
 public class LeaveController {
+	@Autowired
+    private LeaveService leaveService;
+	// View personal leave history
+	
+	@GetMapping("/leave/history") 
+	public String viewHistory(HttpSession session, Model model) {
+Employee currentEmployee = (Employee) session.getAttribute("userSession");
+        
+        if (currentEmployee == null) {
+            return "redirect:/login";
+        }
 
+<<<<<<< Updated upstream
     private final LeaveService lService;
     private final EmployeeService eService;
     
@@ -68,3 +93,11 @@ public class LeaveController {
     }
 
 }
+=======
+        List<LeaveApplication> leaveList = leaveService.getLeaveRecordsforEmployee(currentEmployee.getId());
+        model.addAttribute("leaveList", leaveList);
+        
+        return "employee-leave-list"; // The Thymeleaf template
+    }
+	}
+>>>>>>> Stashed changes
