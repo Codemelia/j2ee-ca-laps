@@ -70,4 +70,17 @@ public class AuthUserDetails implements UserDetails {
     public String getEmail() { return email; }
     public String getRoleName() { return roleName; }
 
+    // Check internal vs external admin
+    public boolean isInternalAdmin() {
+        return getAuthorities().stream()
+            .anyMatch(auth -> auth
+                .getAuthority().equals("AUTH_INTERNAL_ADMIN"));
+    }
+
+    public boolean isExternalAdmin() {
+        return getAuthorities().stream()
+            .anyMatch(auth -> auth
+                .getAuthority().equals("AUTH_EXTERNAL_ADMIN"));
+    }
+
 }

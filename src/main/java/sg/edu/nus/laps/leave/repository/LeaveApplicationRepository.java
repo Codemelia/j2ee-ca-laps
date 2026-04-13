@@ -1,25 +1,17 @@
 package sg.edu.nus.laps.leave.repository;
 
-<<<<<<< Updated upstream
 import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-=======
-import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
->>>>>>> Stashed changes
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-<<<<<<< Updated upstream
 import sg.edu.nus.laps.employee.model.Employee;
-=======
 import jakarta.transaction.Transactional;
->>>>>>> Stashed changes
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
 import sg.edu.nus.laps.leave.model.LeaveType;
@@ -27,7 +19,6 @@ import sg.edu.nus.laps.leave.model.LeaveType;
 @Repository
 public interface LeaveApplicationRepository extends JpaRepository<LeaveApplication, Long> {
 
-<<<<<<< Updated upstream
 	// 1. Read-Method: Find By Leave Type
 	List<LeaveApplication> findByLeaveType(LeaveType leaveType);
 	
@@ -67,7 +58,6 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 			@Param("today") LocalDate today
 			);
 	
-=======
 	// 1. Read-Method: Find by LeaveApplication by Employee ID
 	List<LeaveApplication> findAllByEmployeeId(Long employeeId);
 	List<LeaveApplication> findByEmployeeIdOrderByFromDateDesc(Long employeeId);
@@ -76,5 +66,4 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 	@Transactional
 	@Query("UPDATE LeaveApplication l SET l.status = 'CANCELLED' WHERE l.id = :id")
 	void cancelLeave(@Param("id") Long id);
->>>>>>> Stashed changes
 }

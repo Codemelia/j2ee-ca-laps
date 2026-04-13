@@ -2,24 +2,18 @@ package sg.edu.nus.laps.leave.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-<<<<<<< Updated upstream
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-=======
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
->>>>>>> Stashed changes
 import org.springframework.stereotype.Repository;
 
 import sg.edu.nus.laps.leave.model.Holiday;
 
 @Repository
 public interface HolidayRepository extends JpaRepository<Holiday, Long> {
-<<<<<<< Updated upstream
 	
 	// 1. Read-Method: Check if Holiday is in DB
 	boolean existsByDate(LocalDate date);
@@ -31,13 +25,12 @@ public interface HolidayRepository extends JpaRepository<Holiday, Long> {
 	@Query("SELECT h FROM Holiday h WHERE YEAR(h.date) = :year")
 	List<Holiday> findByYear(@Param("year") int year);
 	
-	// 4. Read-Methdo: List All Holiday within Specified Date Range
+	// 4. Read-Method: List All Holiday within Specified Date Range
 	List<Holiday> findByDateBetween(LocalDate fromDate, LocalDate toDate);
 	
 	//5. Calc-Method: Count No. of Holiday within Specified Date Range
 	long countByDateBetween(LocalDate fromDate, LocalDate toDate);
-=======
+
 	@Query("SELECT h.date FROM Holiday h")
     List<LocalDate> findAllHolidayDates();
->>>>>>> Stashed changes
 }

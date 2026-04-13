@@ -1,30 +1,21 @@
 package sg.edu.nus.laps.leave;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
-import sg.edu.nus.laps.leave.model.LeaveRecord;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
-import sg.edu.nus.laps.leave.repository.*;
 
-<<<<<<< Updated upstream
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import sg.edu.nus.laps.employee.repository.EmployeeRepository;
-import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.repository.HolidayRepository;
 import sg.edu.nus.laps.leave.repository.LeaveApplicationRepository;
 import sg.edu.nus.laps.leave.repository.LeaveRecordRepository;
 import sg.edu.nus.laps.leave.repository.LeaveTypeRepository;
-=======
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import jakarta.transaction.Transactional;
->>>>>>> Stashed changes
+import org.springframework.transaction.annotation.Transactional;
 
 /*
     LeaveService handles all leave CRUD operations (Employee)
@@ -43,23 +34,7 @@ import jakarta.transaction.Transactional;
 */
 @Service
 public class LeaveService {
-	 @Autowired private LeaveApplicationRepository leaveApplicationRepository;
-	 @Autowired private HolidayRepository holidayRepository;
-	 
-	public  List<LeaveApplication> getLeaveRecordsforEmployee(Long employeeId){
-		return leaveApplicationRepository.findAllByEmployeeId(employeeId);
-	}
-	public LeaveApplication getLeaveById(Long id) {
-	    // .findById() is built into JpaRepository by default
-	    // .orElse(null) handles the case where the ID doesn't exist in the DB
-	    return leaveApplicationRepository.findById(id).orElse(null);
-	}
-	public LeaveApplication save(LeaveApplication leaveApplication) {
-	    
-	    return leaveApplicationRepository.save(leaveApplication);
-	}
 
-<<<<<<< Updated upstream
 	private final LeaveApplicationRepository laRepo;
 	private final LeaveTypeRepository ltRepo;
 	private final LeaveRecordRepository lrRepo;
@@ -77,19 +52,58 @@ public class LeaveService {
 		this.lrRepo = lrRepo;
 		this.holRepo = holRepo;
 		this.empRepo = empRepo;
-		}
+    }
 
-    // TEST leave-details.html - DELETE when updated
+    // CRUD
+
+    // Save Leave App
+    public LeaveApplication save(LeaveApplication leaveApplication) {
+        return laRepo.save(leaveApplication);
+	}
+
+    // Retrieve Leave App by employee ID
+    @Transactional(readOnly=true)
+    public List<LeaveApplication> getLeaveApplicationsforEmployee(Long employeeId){
+		return laRepo.findAllByEmployeeId(employeeId);
+	}
+
+	// public LeaveApplication getLeaveById(Long id) {
+	//     // .findById() is built into JpaRepository by default
+	//     // .orElse(null) handles the case where the ID doesn't exist in the DB
+    //     return laRepo.findById(id).orElse(null);
+	// }
+
+    // Find Leave App by ID
+    @Transactional(readOnly=true)
     public Optional<LeaveApplication> findLeaveById(Long id) {
         return laRepo.findById(id);
     }
 
     // Check if ID exists
+    @Transactional(readOnly=true)
     public boolean existsByLeaveId(Long id) {
         return laRepo.existsById(id);
     }
 
-=======
+    // Update 'Applied' leave
+    @Transactional
+    public void updateLeave(LeaveApplication updatedLeave) {
+        updatedLeave.setStatus(LeaveStatus.UPDATED);
+        laRepo.save(updatedLeave);
+    }
+
+    // For deleting an 'Applied' leave
+    @Transactional
+    public void deleteLeave(Long id) {
+        LeaveApplication leave = laRepo.findById(id).orElse(null);
+        if (leave != null && leave.getStatus() == LeaveStatus.APPLIED) {
+            leave.setStatus(LeaveStatus.DELETED);
+            laRepo.save(leave);
+        }
+    }
+
+    // COMPUTATION
+
 	// 1. The Calculation Logic
     public int calculateActualLeaveDays(LocalDate start, LocalDate end, List<LocalDate> holidays) {
         int count = 0;
@@ -107,9 +121,10 @@ public class LeaveService {
     }
 
     // 2. The Retrieval Logic (Sharing the count into the entity)
+    @Transactional(readOnly=true)
     public List<LeaveApplication> getEmployeeLeaveHistory(Long employeeId) {
-        List<LeaveApplication> history = leaveApplicationRepository.findByEmployeeIdOrderByFromDateDesc(employeeId);
-        List<LocalDate> holidays = holidayRepository.findAllHolidayDates();
+        List<LeaveApplication> history = laRepo.findByEmployeeIdOrderByFromDateDesc(employeeId);
+        List<LocalDate> holidays = holRepo.findAllHolidayDates();
 
         for (LeaveApplication leave : history) {
             // Calculate the count
@@ -120,31 +135,15 @@ public class LeaveService {
         }
         return history;
     
-}
+    }
+
 	// RULE: Only 'APPROVED' leaves can be 'CANCELLED'
     @Transactional
     public void cancelLeave(Long id) {
-        LeaveApplication leaveApplication = leaveApplicationRepository.findById(id).orElse(null);
+        LeaveApplication leaveApplication = laRepo.findById(id).orElse(null);
         if (leaveApplication != null && leaveApplication.getStatus() == LeaveStatus.APPROVED) {
-        	leaveApplication.setStatus(LeaveStatus.CANCELLED);
-            leaveApplicationRepository.save(leaveApplication);
+            leaveApplication.setStatus(LeaveStatus.CANCELLED);
+            laRepo.save(leaveApplication);
         }
     } 
-    
- // For deleting an 'Applied' leave
-    @Transactional
-    public void deleteLeave(Long id) {
-        LeaveApplication leave = leaveApplicationRepository.findById(id).orElse(null);
-        if (leave != null && leave.getStatus() == LeaveStatus.APPLIED) {
-            leave.setStatus(LeaveStatus.DELETED);
-            leaveApplicationRepository.save(leave);
-        }
-    }
-    // update 'Applied' leave
-    @Transactional
-    public void updateLeave(LeaveApplication updatedLeave) {
-        updatedLeave.setStatus(LeaveStatus.UPDATED);
-        leaveApplicationRepository.save(updatedLeave);
-    }
->>>>>>> Stashed changes
 }
