@@ -64,6 +64,15 @@ public class EmployeeService {
 	}
 
 	// CRUD
+
+	// Get manager name by id
+	@Transactional(readOnly=true)
+	public String getManagerName(Long managerId) {
+		if (managerId == null) { return null; }
+		return eRepo.findById(managerId)
+			.map(mgr -> mgr.getFirstName() + " " + mgr.getLastName())
+			.orElse(null);
+	}
 	
 	@Transactional(readOnly=true)
 	public List<Employee> findAll() {

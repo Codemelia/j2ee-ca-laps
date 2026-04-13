@@ -33,7 +33,7 @@
 		    </div>
 
 		    <!-- My Recent Leave Requests -->
-		    <h2>My Leave Requests</h2>
+		    <h2>My Latest Leave Applications</h2>
 		    <table class="table">
 		        <thead>
 		            <tr>
@@ -44,14 +44,14 @@
 		            </tr>
 		        </thead>
 		        <tbody>
-		            <tr th:each="app : ${recentRequests}">
+		            <tr th:each="app : ${recentApplications}">
 		                <td th:text="${app.leaveType.name}">-</td>
 		                <td th:text="${app.fromDate}">-</td>
 		                <td th:text="${app.toDate}">-</td>
 		                <td th:text="${app.status}">-</td>
 		            </tr>
-		            <tr th:if="${#lists.isEmpty(recentRequests)}">
-		                <td colspan="4">No leave requests found.</td>
+		            <tr th:if="${#lists.isEmpty(recentApplications)}">
+		                <td colspan="4">No leave applications found.</td>
 		            </tr>
 		        </tbody>
 		    </table>

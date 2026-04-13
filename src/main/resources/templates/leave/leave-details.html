@@ -97,8 +97,7 @@
                         </section>
                     </div>
 
-                    <div th:unless="${leaveApplication}">
-                        Leave Application does not exist.
+                    <div th:if="${errorMessage}" th:text="${errorMessage}">
                     </div>
 
                     <div class="card-footer">

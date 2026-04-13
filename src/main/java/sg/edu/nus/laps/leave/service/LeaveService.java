@@ -156,8 +156,11 @@ public class LeaveService {
 	
 	
 	
-	
-	
+	    
+    // Gets recent leave requests
+    public List<LeaveApplication> getRecentLeaveRequests(Long employeeId) {
+        return laRepo.findTop5ByEmployeeIdOrderByFromDateDesc(employeeId);
+    }
 	
 	// Retrieve Leave App by employee ID
 	@Transactional(readOnly = true)
@@ -165,17 +168,18 @@ public class LeaveService {
 		return laRepo.findAllByEmployeeId(employeeId);
 	}
 
-	// public LeaveApplication getLeaveById(Long id) {
-	// // .findById() is built into JpaRepository by default
-	// // .orElse(null) handles the case where the ID doesn't exist in the DB
-	// return laRepo.findById(id).orElse(null);
-	// }
-
-	// Find Leave App by ID
 	@Transactional(readOnly = true)
 	public Optional<LeaveApplication> findLeaveById(Long id) {
+	// .findById() is built into JpaRepository by default
+	// .orElse(null) handles the case where the ID doesn't exist in the DB
 		return laRepo.findById(id);
 	}
+
+	// // Find Leave App by ID
+	// @Transactional(readOnly = true)
+	// public Optional<LeaveApplication> findLeaveById(Long id) {
+	// 	return laRepo.findById(id);
+	// }
 
 	// Check if ID exists
 	@Transactional(readOnly = true)

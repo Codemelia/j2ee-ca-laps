@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import sg.edu.nus.laps.auth.security.AuthUserDetails;
 import sg.edu.nus.laps.employee.EmployeeService;
 import sg.edu.nus.laps.employee.model.Employee;
+import sg.edu.nus.laps.leave.service.LeaveRecordService;
+import sg.edu.nus.laps.leave.service.LeaveService;
 
 /*
     MeController handles user/employee-facing pages (Authenticated users only)
@@ -33,12 +35,19 @@ public class MeController {
 
     // @Autowired
     private final EmployeeService empSvc;
-    public MeController(EmployeeService empSvc) {
+    private final LeaveService leaveSvc;
+    private final MeService meSvc;
+    private final LeaveRecordService lrSvc;
+    public MeController(
+        EmployeeService empSvc, 
+        LeaveService leaveSvc, 
+        MeService meSvc,
+        LeaveRecordService lrSvc) {
         this.empSvc = empSvc;
+        this.leaveSvc = leaveSvc;
+        this.meSvc = meSvc;
+        this.lrSvc = lrSvc;
     }
-    
-    // @Autowired
-    private MeService meSvc;
     
     // AuthenticationPrincipal is used to retrieve user auth details
     // From user auth, we manage the session by accessing its details
@@ -50,25 +59,24 @@ public class MeController {
 
         String userRole = user.getRoleName();
         model.addAttribute("userRole", userRole);
+
+        // Get Employee ID
+        Long empId = user.getEmployeeId();
         
         // if admin, check whether internal or external
-        if (user.getEmployeeId() != null) {
+        if (empId != null) {
             Employee emp = empSvc
                 .findById(user.getEmployeeId())
                 .get(); // Employee is not empty
             
+            // Bind employee details
             model.addAttribute("employeeFullName", emp.getFirstName() + " " +emp.getLastName());
             model.addAttribute("employeeTeam", emp.getTeamName());
             model.addAttribute("employeeTitle", emp.getJobTitle());
-            
-        if (user.getEmployeeId() != null) {
-                Long empId = user.getEmployeeId();
 
-                model.addAttribute("leaveBalances",
-                    meSvc.getLeaveBalances(empId));
-                model.addAttribute("recentRequests",
-                    meSvc.getRecentLeaveRequests(empId));
-            }
+            // Bind leave balances + recentApplications
+            model.addAttribute("leaveBalances", lrSvc.getLeaveBalances(empId));
+            model.addAttribute("recentApplications", leaveSvc.getRecentLeaveRequests(empId));
         }
 
         return "me/dashboard";

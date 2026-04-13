@@ -61,6 +61,9 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 	// 10. Read-Method: Find Leave Application by Employee, Sorted by From Date in DESC
 	List<LeaveApplication> findByEmployeeIdOrderByFromDateDesc(Long employeeId);
 	
+	// 11. For Dashboard: Limit leave applications to top 5
+	List<LeaveApplication> findTop5ByEmployeeIdOrderByFromDateDesc(Long employeeId);
+
 	/*
 	// Remove, SET of Status should be Managed in the Service Layer
 	// 11. Update-Method: Cancel a Leave Application

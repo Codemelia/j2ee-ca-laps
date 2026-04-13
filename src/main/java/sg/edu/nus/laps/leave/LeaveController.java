@@ -2,6 +2,7 @@ package sg.edu.nus.laps.leave;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,8 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import sg.edu.nus.laps.auth.security.AuthUserDetails;
+import sg.edu.nus.laps.employee.EmployeeService;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
-import sg.edu.nus.laps.leave.service.LeaveAccessService;
 import sg.edu.nus.laps.leave.service.LeaveService;
 
 /*
@@ -43,13 +44,13 @@ public class LeaveController {
     private LeaveService leaveService;
 	// View personal leave history
 
-    private final LeaveAccessService lacService;
-
+    private final EmployeeService empService;
     private final LeaveService lService;
 
-    public LeaveController(LeaveAccessService lacService, LeaveService lService) {
-        this.lacService = lacService;
+    public LeaveController(LeaveService lService,
+        EmployeeService empService) {
         this.lService = lService;
+        this.empService = empService;
     }
 
     // TEST leave-details.html - DELETE when updated
@@ -57,20 +58,36 @@ public class LeaveController {
     public String showLeaves(@AuthenticationPrincipal AuthUserDetails user,
         @PathVariable Long id, Model model) {
 
-        if (id != null && lService.existsByLeaveId(id)) {
-            LeaveApplication leaveApp = lService.findLeaveById(id).get();
+        // Get curr leave app and viewer id
+        Optional<LeaveApplication> leaveAppOpt = lService.findLeaveById(id);
 
-            if (!lacService.canAccessLeaveDetails(user, leaveApp)) {
-                return "error/forbidden";
-            }
-
-            boolean isSelf = lacService.isSelf(user, leaveApp);
-            String managerName = lacService.getManagerName(leaveApp.getEmployee().getManagerId());
-
-            model.addAttribute("isSelf", isSelf);
-            model.addAttribute("managerName", managerName);
-            model.addAttribute("leaveApplication", leaveApp);
+        // Handle null leave app
+        if (leaveAppOpt.isEmpty()) {
+            model.addAttribute("errorMessage", "No such leave application exists");
+            return "leave/leave-details";
         }
+            
+        LeaveApplication leaveApp = leaveAppOpt.get();
+        Long leaveEmpId = leaveApp.getEmployee().getId();
+        Long currViewerId = user.getEmployeeId();
+
+        // External admins cannot access leave details
+        // Internal admins cannot access others' leave details
+        if (user.isExternalAdmin()
+            || (user.isInternalAdmin() 
+            && (currViewerId == null || !currViewerId.equals(leaveEmpId)))) {
+            return "error/forbidden";
+        }
+
+        // If current session user = id, employee is viewing own page
+        boolean isSelf = currViewerId != null && currViewerId.equals(leaveEmpId);
+    
+        // Else, manager is viewing employee's page
+        String managerName = isSelf ? null : empService.getManagerName(leaveEmpId);
+        model.addAttribute("managerName", managerName);
+
+        model.addAttribute("isSelf", isSelf);
+        model.addAttribute("leaveApplication", leaveApp);
 
         return "leave/leave-details";
     }
