@@ -46,9 +46,9 @@ public class LeaveService {
 		this.lrRepo = lrRepo;
 		this.holRepo = holRepo;
 		this.empRepo = empRepo;
-		}
+    }
 
-    // TEST leave-details.html - DELETE when updated
+    // Find Leave App by ID
     public Optional<LeaveApplication> findLeaveById(Long id) {
         return laRepo.findById(id);
     }

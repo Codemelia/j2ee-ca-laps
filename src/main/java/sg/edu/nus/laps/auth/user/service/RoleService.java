@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.auth.user;
+package sg.edu.nus.laps.auth.user.service;
 
 import java.util.List;
 import java.util.Optional;

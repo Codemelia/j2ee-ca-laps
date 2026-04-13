@@ -104,6 +104,21 @@
                     <div class="card-footer">
                         <!-- Goes back to previous page -->
                         <button class="btn" type="button" id="backBtn">Back</button>
+
+                        <!-- Employee (self view) buttons -->
+                        <div sec:authorize="hasAnyRole('ROLE_EMPLOYEE','ROLE_MANAGER')" 
+                            th:if="${isSelf}">
+                            <button class="btn" type="button" id="updateBtn">Update</button>
+                            <button class="btn" type="button" id="cancelBtn">Cancel</button>
+                            <button class="btn" type="button" id="deleteBtn">Delete</button>
+                        </div>
+
+                        <!-- Manager (view subordinate) buttons -->
+                        <div sec:authorize="hasRole('ROLE_MANAGER')" 
+                            th:if="${!isSelf}">
+                            <button class="btn" type="button" id="approveBtn">Approve</button>
+                            <button class="btn" type="button" id="rejectBtn">Reject</button>
+                        </div>
                     </div>
                 </div>
             </div>

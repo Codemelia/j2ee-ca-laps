@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.auth.user;
+package sg.edu.nus.laps.auth.user.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
