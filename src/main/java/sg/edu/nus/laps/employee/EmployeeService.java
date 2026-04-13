@@ -29,6 +29,10 @@ import sg.edu.nus.laps.employee.repository.EmployeeRepository;
     findAll()          - Retrieve list of all employees
     findByEmail(email) - Retrieve employee by email
     findById(id)       - Retrieve employee by ID
+    
+    countEmployees()   - Retrieve count of all employees
+    countManagers()    - Retrieve count of all managers
+    countAdmin()       - Retrieve count of all admin
 
     -- CREATE / UPDATE --
     save(employee)     - Create or update employee record (JPA maps by ID)
@@ -80,6 +84,24 @@ public class EmployeeService {
 			return empOpt;
 		}
 		return Optional.empty();
+	}
+	
+	@Transactional(readOnly=true)
+	public Integer countEmployeesById() {
+		Integer empCount = eRepo.countId();
+		return empCount;
+	}
+	
+	@Transactional(readOnly=true)
+	public Integer countEmployeesByIdRolenameManager() {
+		Integer mgrCount = uRepo.countByRole_Id("2");
+		return mgrCount;
+	}
+	
+	@Transactional(readOnly=true)
+	public Integer countEmployeesByIdRolenameAdmin() {
+		Integer adminCount = uRepo.countByRole_Id("1");
+		return adminCount;
 	}
 	
 	// Partially update existing employee
