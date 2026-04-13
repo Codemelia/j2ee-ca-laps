@@ -14,6 +14,7 @@ import sg.edu.nus.laps.leave.repository.LeaveRecordRepository;
 import sg.edu.nus.laps.leave.repository.LeaveTypeRepository;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -88,6 +89,27 @@ public class LeaveService {
 				leave.getToDate());
 		if (!overlaps.isEmpty()) {
 			throw new RuntimeException("Selected Dates overlap with an Existing Approved Leave Application.");
+		}
+		
+		int dialback = (leave.getFromDate().getDayOfWeek() == DayOfWeek.MONDAY) ? 3 : 1;
+		LocalDate dialbackDate = leave.getFromDate().minusDays(dialback);
+		List<LeaveApplication> preLeaves = laRepo.findOverlappingApplication(
+				leave.getEmployee(), 
+				dialbackDate, 
+				leave.getFromDate().minusDays(1));
+		if (!preLeaves.isEmpty()) {
+			LeaveApplication preLeave = preLeaves.get(0);
+			long leaveDuration = ChronoUnit.DAYS.between(preLeave.getFromDate(), leave.getToDate()) + 1;
+			if (leaveDuration > 14) {
+				throw new RuntimeException("Total Back-to-Back Leave Application cannot exceed 14 Successive Calendar Days.");
+			}
+		}
+		
+		if ("Medical".equalsIgnoreCase(leave.getLeaveType().getLeaveType())) {
+			if ((leave.getReason() == null || leave.getReason().isBlank())
+					|| (leave.getProof() == null || leave.getProof().isBlank())) {
+				throw new RuntimeException("Proof and Reason are mandatory for Medical Leave Application.");
+			}
 		}
 		
 		leave.setStatus(LeaveStatus.APPLIED);
