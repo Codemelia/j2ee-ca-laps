@@ -70,7 +70,7 @@ public class LeaveController {
             model.addAttribute("leaveApplication", leaveApp);
         }
 
-        return "leave/leave-details.html";
+        return "leave/leave-details";
     }
 
     @GetMapping("/history") 
