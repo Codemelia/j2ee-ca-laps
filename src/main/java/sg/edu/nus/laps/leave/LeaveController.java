@@ -14,9 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import sg.edu.nus.laps.auth.security.AuthUserDetails;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 
-import jakarta.servlet.http.HttpSession;
-import sg.edu.nus.laps.employee.model.Employee;
-
 /*
     LeaveController handles employee's OWN leaves
     
@@ -61,29 +58,30 @@ public class LeaveController {
         if (id != null && lService.existsByLeaveId(id)) {
             LeaveApplication leaveApp = lService.findLeaveById(id).get();
 
-            if (!lacService.canViewLeave(user, leaveApp)) {
+            if (!lacService.canAccessLeaveDetails(user, leaveApp)) {
                 return "error/forbidden";
             }
 
             boolean isSelf = lacService.isSelf(user, leaveApp);
-            String managerName = lacService.getManagerName(leaveApp.getEmployee());
+            String managerName = lacService.getManagerName(leaveApp.getEmployee().getManagerId());
 
             model.addAttribute("isSelf", isSelf);
             model.addAttribute("managerName", managerName);
             model.addAttribute("leaveApplication", leaveApp);
         }
 
-        return "leave/leave-details.html";
+        return "leave/leave-details";
     }
 
-    @GetMapping("/leave/history") 
-        public String viewHistory(HttpSession session, Model model) {
-    Employee currentEmployee = (Employee) session.getAttribute("userSession");
+    @GetMapping("/history") 
+    public String viewHistory(@AuthenticationPrincipal AuthUserDetails user, Model model) {
+        // Employee currentEmployee = (Employee) session.getAttribute("userSession");
         
-        if (currentEmployee == null) {
-            return "redirect:/login";
-        }
-        List<LeaveApplication> leaveList = leaveService.getLeaveApplicationsforEmployee(currentEmployee.getId());
+        // if (currentEmployee == null) {
+        //     return "redirect:/login";
+        // }
+        List<LeaveApplication> leaveList = leaveService
+            .getLeaveApplicationsforEmployee(user.getEmployeeId());
         model.addAttribute("leaveList", leaveList);
         
         return "leave/leave-list"; // The Thymeleaf template
