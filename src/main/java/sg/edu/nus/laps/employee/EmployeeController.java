@@ -61,13 +61,13 @@ public class EmployeeController {
         //     return "redirect:/login";
         // }
 		
-		Integer empCount = eService.countEmployeesById();
+		Integer empCount = eService.countEmployeesByRoleIdEmployee();
 		model.addAttribute("empCount", empCount);
 		
-		Integer mgrCount = eService.countEmployeesByIdRolenameAdmin();
+		Integer mgrCount = eService.countEmployeesByRoleIdManager();
 		model.addAttribute("mgrCount", mgrCount);
 		
-		Integer adminCount = eService.countEmployeesByIdRolenameAdmin();
+		Integer adminCount = eService.countEmployeesByRoleIdAdmin();
 		model.addAttribute("adminCount", adminCount);
 		
 		List<Employee> allEmployees = eService.findAll();
