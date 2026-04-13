@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.employee;
+ package sg.edu.nus.laps.employee;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +52,7 @@ public class EmployeeController {
     //     return session.getAttribute("user") != null;
     // }
 	
-	@GetMapping
+	@GetMapping("/admin/employees")
 	public String showEmployees(@AuthenticationPrincipal AuthUserDetails user,
 		Model model, RedirectAttributes redirectAttrs) {
 		// if (!isLoggedIn(session)) {
@@ -60,6 +60,15 @@ public class EmployeeController {
         //             "Please log in to view employees.");
         //     return "redirect:/login";
         // }
+		
+		Integer empCount = eService.countEmployeesById();
+		model.addAttribute("empCount", empCount);
+		
+		Integer mgrCount = eService.countEmployeesByIdRolenameAdmin();
+		model.addAttribute("mgrCount", mgrCount);
+		
+		Integer adminCount = eService.countEmployeesByIdRolenameAdmin();
+		model.addAttribute("adminCount", adminCount);
 		
 		List<Employee> allEmployees = eService.findAll();
 		model.addAttribute("allEmployees", allEmployees);
@@ -77,10 +86,10 @@ public class EmployeeController {
 		
 		model.addAttribute("userFirstName", userFirstName);
 		
-		return "employee/employee-list";
+		return "employee/employee-mgmt";
 	}
 	
-	@GetMapping("/create")
+	@GetMapping("/admin/employees/create")
 	public String showCreateEmployeeForm(Model model) {
 		// if (!isLoggedIn(session)) {
         //     redirectAttrs.addFlashAttribute("errorMessage",
@@ -104,7 +113,7 @@ public class EmployeeController {
 		return "employee/create-employee-form";
 	}
 	
-	@PostMapping("/create")
+	@PostMapping("/admin/employees/create")
 	public String createEmployee(@Valid @ModelAttribute Employee employee, 
 		BindingResult bindingResult, RedirectAttributes redirectAttrs) {
 		if (bindingResult.hasErrors()) {
@@ -121,7 +130,7 @@ public class EmployeeController {
 		}
 		
 	}
-	@GetMapping("/update/{id}")
+	@GetMapping("/admin/employees/update/{id}")
 	public String showUpdateEmployeeForm(@PathVariable Long id, 
 			Model model, RedirectAttributes redirectAttrs) {
 		// if (!isLoggedIn(session)) {
@@ -145,7 +154,7 @@ public class EmployeeController {
 		return "employee/update-employee-form";
 	}
 	
-	@PostMapping("/update/{id}")
+	@PostMapping("/admin/employees/update/{id}")
 	public String updateEmployeeDetails(@PathVariable Long id, 
 		@Valid @ModelAttribute Employee employee, 
 		BindingResult bindingResult, RedirectAttributes redirectAttrs) {
@@ -165,7 +174,7 @@ public class EmployeeController {
 		}
 	}
 	
-	@DeleteMapping("/delete/{id}")
+	@DeleteMapping("/admin/employees/delete/{id}")
 	public String deleteEmployee(@PathVariable Long id, RedirectAttributes redirectAttrs) {
 		Optional<Employee> empOpt = eService.findById(id);
 		
