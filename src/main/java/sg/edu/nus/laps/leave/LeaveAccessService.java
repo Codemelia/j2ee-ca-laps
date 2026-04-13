@@ -36,9 +36,8 @@ public class LeaveAccessService {
 		Long currViewerId = user.getEmployeeId();
 		boolean isSelf = currViewerId != null && currViewerId.equals(leaveEmployeeId);
 
-		// External admin: no access
+		// Set internal/external admin access
 		if (user.isExternalAdmin()) return false;
-		// Internal admin: only self
 		if (user.isInternalAdmin() && !isSelf) return false;
 		return true;
     }
