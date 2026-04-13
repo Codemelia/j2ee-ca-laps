@@ -89,7 +89,7 @@ public class EmployeeController {
 		return "employee/employee-mgmt";
 	}
 	
-	@GetMapping("/admin/employees/create")
+	@GetMapping("/create")
 	public String showCreateEmployeeForm(Model model) {
 		// if (!isLoggedIn(session)) {
         //     redirectAttrs.addFlashAttribute("errorMessage",
@@ -113,7 +113,7 @@ public class EmployeeController {
 		return "employee/create-employee-form";
 	}
 	
-	@PostMapping("/admin/employees/create")
+	@PostMapping("/create")
 	public String createEmployee(@Valid @ModelAttribute Employee employee, 
 		BindingResult bindingResult, RedirectAttributes redirectAttrs) {
 		if (bindingResult.hasErrors()) {
@@ -130,7 +130,7 @@ public class EmployeeController {
 		}
 		
 	}
-	@GetMapping("/admin/employees/update/{id}")
+	@GetMapping("/update/{id}")
 	public String showUpdateEmployeeForm(@PathVariable Long id, 
 			Model model, RedirectAttributes redirectAttrs) {
 		// if (!isLoggedIn(session)) {
@@ -154,7 +154,7 @@ public class EmployeeController {
 		return "employee/update-employee-form";
 	}
 	
-	@PostMapping("/admin/employees/update/{id}")
+	@PostMapping("/update/{id}")
 	public String updateEmployeeDetails(@PathVariable Long id, 
 		@Valid @ModelAttribute Employee employee, 
 		BindingResult bindingResult, RedirectAttributes redirectAttrs) {
@@ -174,7 +174,7 @@ public class EmployeeController {
 		}
 	}
 	
-	@DeleteMapping("/admin/employees/delete/{id}")
+	@DeleteMapping("/delete/{id}")
 	public String deleteEmployee(@PathVariable Long id, RedirectAttributes redirectAttrs) {
 		Optional<Employee> empOpt = eService.findById(id);
 		
