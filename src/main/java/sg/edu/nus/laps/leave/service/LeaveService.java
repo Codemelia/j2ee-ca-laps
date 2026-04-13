@@ -89,20 +89,6 @@ public class LeaveService {
 			throw new RuntimeException("Selected Dates overlap with an Existing Approved Leave Application.");
 		}
 		
-		int dialback = (leave.getFromDate().getDayOfWeek() == DayOfWeek.MONDAY) ? 3 : 1;
-		LocalDate dialbackDate = leave.getFromDate().minusDays(dialback);
-		List<LeaveApplication> preLeaves = laRepo.findOverlappingApplication(
-				leave.getEmployee(), 
-				dialbackDate, 
-				leave.getFromDate().minusDays(1));
-		if (!preLeaves.isEmpty()) {
-			LeaveApplication preLeave = preLeaves.get(0);
-			long leaveDuration = ChronoUnit.DAYS.between(preLeave.getFromDate(), leave.getToDate()) + 1;
-			if (leaveDuration > 14) {
-				throw new RuntimeException("Total Back-to-Back Leave Application cannot exceed 14 Successive Calendar Days.");
-			}
-		}
-		
 		if ("Medical".equalsIgnoreCase(leave.getLeaveType().getLeaveType())) {
 			if ((leave.getReason() == null || leave.getReason().isBlank()) 
 					|| (leave.getProof() == null || leave.getProof().isBlank())) {
@@ -143,20 +129,6 @@ public class LeaveService {
 				.anyMatch(l -> !l.getId().equals(updatedLeave.getId()));
 		if (trueOverlap) {
 			throw new RuntimeException("Updated Date Range overlaps with Existing Approved Leave Application.");
-		}
-		
-		int dialback = (updatedLeave.getFromDate().getDayOfWeek() == DayOfWeek.MONDAY) ? 3 : 1;
-		LocalDate dialbackDate = updatedLeave.getFromDate().minusDays(dialback);
-		List<LeaveApplication> preLeaves = laRepo.findOverlappingApplication(
-				updatedLeave.getEmployee(), 
-				dialbackDate, 
-				updatedLeave.getFromDate().minusDays(1));
-		if (!preLeaves.isEmpty()) {
-			LeaveApplication preLeave = preLeaves.get(0);
-			long leaveDuration = ChronoUnit.DAYS.between(preLeave.getFromDate(), updatedLeave.getToDate()) + 1;
-			if (leaveDuration > 14) {
-				throw new RuntimeException("Total Back-to-Back Leave Application cannot exceed 14 Successive Calendar Days.");
-			}
 		}
 		
 		if ("Medical".equalsIgnoreCase(updatedLeave.getLeaveType().getLeaveType())) {
@@ -204,6 +176,10 @@ public class LeaveService {
 		DayOfWeek day = date.getDayOfWeek();
 		return (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY);
 	}
+	
+	/*
+	 * c. Helper Method: validateSuccessiveLeave --> Validate if the Back-to-Back Leave Application is 
+	 */
 
 	
 	
