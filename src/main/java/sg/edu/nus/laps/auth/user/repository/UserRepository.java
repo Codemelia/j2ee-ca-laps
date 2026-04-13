@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import sg.edu.nus.laps.auth.user.model.User;
@@ -33,5 +34,9 @@ public interface UserRepository extends JpaRepository<User, String> {
     // Find list of users by role ordered by latest update
     // SELECT * FROM User u WHERE u.role.id = ?1 ORDER BY updated_at DESC
     List<User> findByRole_IdOrderByUpdatedAtDesc(Long roleId);
+    
+    @Query("select count(u) from User u where u.role.id = :roleId")
+    Integer countByRole_Id(String roleId);
+    
 
 }
