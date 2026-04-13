@@ -17,12 +17,10 @@
     <div class="page-wrapper">
       <h2 class="page-heading">Leave Application Form</h2>
       <div class="card">
-       
         <form
           th:action="@{/leaves/apply}"
           method="post"
-          enctype="multipart/form-data"
-        >
+          enctype="multipart/form-data">
           <div class="form-group">
             <label for="leaveType">Leave Type</label>
             <select id="leaveType" name="leaveType" required>
@@ -77,5 +75,7 @@
         </form>
       </div>
     </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
   </body>
 </html>
