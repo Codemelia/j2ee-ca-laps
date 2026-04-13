@@ -1,20 +1,102 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-    xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apply Leave</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!--top nav-->
+    <header>
+      <div class="topbar">
+        <span class="site-title">G3LAPS</span>
+        <nav
+          style="
+            display: flex;
+            gap: 20px;
+            margin-left: 50px;
+            margin-right: auto;
+          "
+        >
+          <a href="#" class="logout-link">Dashboard</a>
+          <a href="#" class="logout-link">My Leaves</a>
+        </nav>
 
-	<head th:replace="~{fragments/head ::head('Apply for Leave', ~{::extra})}"></head>
-
-	<!-- For scripts - DELETE if unused -->
-	<th:block th:fragment="extra"></th:block>
-
-	<body>
-		<header th:replace="~{fragments/header :: header}"></header>
-		
-        <div class="page-wrapper">
-            <!-- Page Content -->
-		</div>
-
-        <footer th:replace="~{fragments/footer :: footer}"></footer>
-	</body>
-
+        <div class="user-info">
+          <strong>John Doe(VAS-PE)</strong>
+          <br />
+          <small>Associate Software Engineer</small>
+          <i class="fa-regular fa-bell fa-fw"></i>
+          <i class="fa-regular fa-circle-user fa-fw fa-lg"></i>
+        </div>
+      </div>
+    </header>
+    <div class="page-wrapper">
+      <div class="card">
+        <h2 class="page-heading">Leave Application Form</h2>
+        <form
+          th:action="@{/leaves/apply}"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <div class="form-group">
+            <label for="leaveType">Leave Type</label>
+            <select id="leaveType" name="leaveType" required>
+              <option value="" disabled selected>Select Type</option>
+              <option value="ANNUAL">Annual Leave</option>
+              <option value="MEDICAL">Medical Leave</option>
+              <option value="COMPENSATION">Compensation Leave</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>From</label>
+            <input type="date" name="fromDate" required />
+          </div>
+          <div class="form-group">
+            <label>To</label>
+            <input type="date" name="toDate" required />
+            <span class="field-error" th:if="${dateError}"
+              >You have an existing Leave within this date range</span
+            >
+          </div>
+          <div class="form-group">
+            <label>Proof</label>
+            <input type="file" name="proof" />
+            <p class="sub-text">Upload image to S3</p>
+          </div>
+          <div class="form-group">
+            <label>Reason</label>
+            <textarea
+              id="reason"
+              name="reason"
+              placeholder="State your reason"
+            ></textarea>
+          </div>
+          <div class="nav-links">
+            <button
+              type="submit"
+              name="action"
+              value="save"
+              class="btn btn-secondary"
+            >
+              SAVE
+            </button>
+            <button
+              type="submit"
+              name="action"
+              value="submit"
+              class="btn btn-primary"
+            >
+              SUBMIT
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
 </html>
