@@ -39,8 +39,8 @@
         <!-- Logged in user and logout button -->
         <div class="user-info" sec:authorize="isAuthenticated()">
             <span>
-                <strong th:text="${employeeFullName} ?: 'Admin User'"></strong>
-                <strong th:text="${employeeTeam} ?: 'External'"></strong>
+                <strong th:text="${employeeFullName} ?: 'Admin User'"></strong><br>
+                <strong th:text="${employeeTeam} ?: 'External'"></strong><br>
                 <strong th:text="${employeeTitle} ?: 'Administrator'"></strong>
             </span>
             <form th:action="@{/auth/logout}" method="POST" style="display:inline">
