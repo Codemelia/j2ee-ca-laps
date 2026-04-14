@@ -48,7 +48,29 @@ body {
     display: flex;
     flex-direction: column;
     padding: 0;
+    
 }
+
+.page-wrapper {
+	display: flex;
+	margin: 0;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center;    /* This is the "magic" that centers them horizontally */
+    width: 100%;            /* Ensure it spans the whole screen width */
+    padding: 40px 20px;     /* Top/Bottom and Left/Right padding */
+    min-height: 100vh;      /* Use min-height so it expands with the table */
+    box-sizing: border-box; /* Ensures padding doesn't break the width */
+}
+
+.content-container {
+	/* This ensures the container only expands as wide as the table */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* This aligns all text/buttons to the LEFT */
+    width: fit-content;      /* MAGIC: Container shrinks to match the table width */
+    max-width: 95%;          /* Prevents it from hitting screen edges on mobile */
+}
+
 
 /* --- Typography -------------------------------------------- */
 h1, h2, h3 {
@@ -74,12 +96,12 @@ a:hover { color: var(--blue-dark); }
 .error { color: red; font-size: 0.9em; }
 
 /* --- Page Wrapper ------------------------------------------ */
-.page-wrapper {
+/* .page-wrapper {
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 0 24px;
     flex: 1 0 auto;
-}
+} */
 
 /* --- Top Navigation Bar ------------------------------------ */
 .topbar {
@@ -324,6 +346,19 @@ textarea {
 .data-table tbody tr:last-child td { border-bottom: none; }
 
 .data-table tbody tr:hover { background-color: #f0f4f9; }
+
+table, th, td{
+	width: 100%;
+	border: 1px solid black;
+	border-collapse: collapse;
+	padding: 10px;
+	white-space: nowrap;
+	width: 100%;
+}
+
+.logout {
+	border: 0;
+}
 
 /* --- Utility ----------------------------------------------- */
 .page-heading {
