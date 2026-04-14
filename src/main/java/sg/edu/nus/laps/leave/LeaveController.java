@@ -55,7 +55,7 @@ public class LeaveController {
 
     // TEST leave-details.html - DELETE when updated
     @GetMapping("/{id}")
-    public String showLeaves(@AuthenticationPrincipal AuthUserDetails user,
+    public String showLeaveDetails(@AuthenticationPrincipal AuthUserDetails user,
         @PathVariable Long id, Model model) {
 
         // Get curr leave app and viewer id
@@ -92,8 +92,8 @@ public class LeaveController {
         return "leave/leave-details";
     }
 
-    @GetMapping("/history") 
-    public String viewHistory(@AuthenticationPrincipal AuthUserDetails user, Model model) {
+    @GetMapping 
+    public String viewLeaveHistory(@AuthenticationPrincipal AuthUserDetails user, Model model) {
         // Employee currentEmployee = (Employee) session.getAttribute("userSession");
         
         // if (currentEmployee == null) {
