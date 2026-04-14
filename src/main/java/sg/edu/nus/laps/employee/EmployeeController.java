@@ -7,7 +7,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -139,6 +138,8 @@ public class EmployeeController {
         //     return "redirect:/auth/admin/login";
         // }
 		
+		model.addAttribute("rankList", EmployeeRank.values());
+		
 		Optional<Employee> empToUpdate = eService.findById(id);
 		if (empToUpdate.isPresent()) {
 			model.addAttribute("employee", empToUpdate.get());
@@ -174,7 +175,7 @@ public class EmployeeController {
 		}
 	}
 	
-	@DeleteMapping("/delete/{id}")
+	@PostMapping("/delete/{id}")
 	public String deleteEmployee(@PathVariable Long id, RedirectAttributes redirectAttrs) {
 		Optional<Employee> empOpt = eService.findById(id);
 		
