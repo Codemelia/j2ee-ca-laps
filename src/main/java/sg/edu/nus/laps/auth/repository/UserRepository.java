@@ -15,11 +15,8 @@ public interface UserRepository extends JpaRepository<User, String> {
     // READ
     // ID = email, but coding queries by email for readability/reusability
 
-    // CHeck if user exists by email
-    boolean existsByEmail(String email);
-
-    // Find all users by email
-    public Optional<User> findByEmail(String email);
+    // CHeck if user exists by email and enabled
+    boolean existsByEmailAndEnabledTrue(String email);
 
     // Find user by email and enabled
     public Optional<User> findByEmailAndEnabledTrue(String email);

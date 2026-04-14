@@ -189,7 +189,7 @@ public class EmployeeService {
 		String email = lead + trail;
 
 		// If email already exists, add a random suffix to ensure unique
-		if (uRepo.existsByEmail(email)) {
+		if (uRepo.existsByEmailAndEnabledTrue(email)) {
 			String suffix = UUID.randomUUID()
 				.toString()
 				.substring(0, 4);
@@ -247,7 +247,7 @@ public class EmployeeService {
 	// Check if employee exists for new save
 	private void checkEmployeeExistsForNew(Long employeeId) {
 		if (employeeId != null) {
-			throw new InvalidEmployeeException("New employee should not have ID");
+			throw new InvalidEmployeeException("Employee already has an existing profile");
 		}
 	}
 
@@ -255,7 +255,7 @@ public class EmployeeService {
 	private void checkUserValidAndExists(User user) {
 		if (user == null 
 			|| user.getEmail() == null 
-			|| !uRepo.existsByEmail(user.getEmail())) {
+			|| !uRepo.existsByEmailAndEnabledTrue(user.getEmail())) {
 			throw new InvalidEmployeeException("Employee has invalid user account");
 		}
 	}
@@ -263,7 +263,7 @@ public class EmployeeService {
 	// Check if user role is valid
 	private void checkRoleValid(String roleName) {
 		if (roleName.isBlank()) {
-			throw new InvalidEmployeeException("Invalid role");
+			throw new InvalidEmployeeException("Invalid User Role");
 		}
 	}
 

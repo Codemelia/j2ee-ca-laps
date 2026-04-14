@@ -3,13 +3,11 @@
     xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 
 	<head th:replace="~{fragments/head ::head('Employee Management', ~{::extra})}">
-	<style>
-	
-	</style>
+		<!-- For scripts -->
+		<th:block th:fragment="extra">
+			<script th:src="@{/js/main.js}" defer></script>
+		</th:block>
 	</head>
-
-	<!-- For scripts - DELETE if unused -->
-	<th:block th:fragment="extra"></th:block>
 
 	<body>
 		<header th:replace="~{fragments/header :: header}"></header>

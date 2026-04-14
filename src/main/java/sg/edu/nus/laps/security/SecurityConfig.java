@@ -140,10 +140,10 @@ public class SecurityConfig {
         http
             // REQUEST AUTHORISATION
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/me") // Common dashboard for EMPLOYEE / MANAGER / INTERNAL ADMIN
+                .requestMatchers("/", "/me/**", "/leaves/**") // Common dashboard for EMPLOYEE / MANAGER / INTERNAL ADMIN
                     .hasAnyAuthority("ROLE_EMPLOYEE", "ROLE_MANAGER", "AUTH_INTERNAL_ADMIN")
-                .requestMatchers("/leaves/**") // Common leave pages
-                    .hasAnyAuthority("ROLE_EMPLOYEE", "ROLE_MANAGER", "AUTH_INTERNAL_ADMIN")
+                .requestMatchers("/auth/change-password") // Allow all roles to change password
+                    .hasAnyAuthority("ROLE_EMPLOYEE", "ROLE_MANAGER", "ROLE_ADMIN")
                 .anyRequest().authenticated() // All other pages will be authenticated
             )
 

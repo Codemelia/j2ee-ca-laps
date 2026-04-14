@@ -2,23 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org"
     xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 
-	<head th:replace="~{fragments/head ::head('Leave Details', ~{::extra})}"></head>
-
-	<!-- For scripts -->
-	<th:block th:fragment="extra">
-        {% comment %} <script>
-            // On click, go to previous page
-            // Runs after page loads
-            // Checks for btn
-            document.addEventListener('DOMContentLoaded', function() {
-                var btn = document.getElementById('backBtn');
-                if (btn) {
-                    btn.addEventListener('click', function() { history.back(); });
-                }
-            });
-            
-        </script> {% endcomment %}
-    </th:block>
+	<head th:replace="~{fragments/head ::head('Leave Details', ~{::extra})}">
+        <!-- For scripts -->
+		<th:block th:fragment="extra">
+			<script th:src="@{/js/main.js}" defer></script>
+		</th:block>
+    </head>
 
 	<body>
 		<header th:replace="~{fragments/header :: header}"></header>
