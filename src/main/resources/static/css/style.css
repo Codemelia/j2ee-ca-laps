@@ -170,12 +170,15 @@ a:hover { color: var(--blue-dark); }
 .cards-container {
 	text-align: center;
 	display: flex;
-	margin-left: 30%;
-	margin-right: 30%;
+	width: 100%;
+	padding-left: 10%;
+	padding-right: 10%;
 }
 
 .count-card {
 	width: 200px;
+	margin: 20px;
+	
 }
 .card section {
     margin-bottom: 28px;
