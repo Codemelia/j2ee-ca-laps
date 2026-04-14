@@ -1,7 +1,6 @@
 package sg.edu.nus.laps.leave;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +12,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.data.domain.Page;
-import sg.edu.nus.laps.auth.security.AuthUserDetails;
+
 import sg.edu.nus.laps.employee.EmployeeService;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.service.LeaveService;
+import sg.edu.nus.laps.security.AuthUserDetails;
 
 /*
     LeaveController handles employee's OWN leaves

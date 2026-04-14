@@ -1,12 +1,12 @@
-package sg.edu.nus.laps.auth.user.service;
+package sg.edu.nus.laps.auth.service;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import sg.edu.nus.laps.auth.user.model.Role;
-import sg.edu.nus.laps.auth.user.repository.RoleRepository;
+import sg.edu.nus.laps.auth.model.Role;
+import sg.edu.nus.laps.auth.repository.RoleRepository;
 
 @Service
 public class RoleService {

@@ -13,15 +13,14 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import sg.edu.nus.laps.auth.user.model.Role;
-import sg.edu.nus.laps.auth.user.model.User;
-import sg.edu.nus.laps.auth.user.repository.RoleRepository;
-import sg.edu.nus.laps.auth.user.repository.UserRepository;
+import sg.edu.nus.laps.auth.model.Role;
+import sg.edu.nus.laps.auth.model.User;
+import sg.edu.nus.laps.auth.repository.RoleRepository;
+import sg.edu.nus.laps.auth.repository.UserRepository;
 import sg.edu.nus.laps.employee.exception.InvalidEmployeeException;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.NewEmployeeRecord;
 import sg.edu.nus.laps.employee.repository.EmployeeRepository;
-import sg.edu.nus.laps.leave.model.LeaveApplication;
 
 /*
     EmployeeService handles all employee CRUD operations (Admin-only)

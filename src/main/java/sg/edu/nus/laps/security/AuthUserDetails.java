@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.auth.security;
+package sg.edu.nus.laps.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import sg.edu.nus.laps.auth.user.model.User;
+import sg.edu.nus.laps.auth.model.User;
 
 public class AuthUserDetails implements UserDetails {
 

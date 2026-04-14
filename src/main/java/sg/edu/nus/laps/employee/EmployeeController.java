@@ -18,12 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
-import sg.edu.nus.laps.auth.security.AuthUserDetails;
-import sg.edu.nus.laps.auth.user.model.Role;
-import sg.edu.nus.laps.auth.user.service.RoleService;
+import sg.edu.nus.laps.auth.model.Role;
+import sg.edu.nus.laps.auth.service.RoleService;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
-import sg.edu.nus.laps.leave.model.LeaveApplication;
+import sg.edu.nus.laps.security.AuthUserDetails;
 
 /*
     EmployeeController handles employee CRUD operations (Admin only)

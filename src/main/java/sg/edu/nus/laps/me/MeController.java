@@ -6,11 +6,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import sg.edu.nus.laps.auth.security.AuthUserDetails;
 import sg.edu.nus.laps.employee.EmployeeService;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.leave.service.LeaveRecordService;
 import sg.edu.nus.laps.leave.service.LeaveService;
+import sg.edu.nus.laps.security.AuthUserDetails;
 
 /*
     MeController handles user/employee-facing pages (Authenticated users only)
@@ -36,16 +36,13 @@ public class MeController {
     // @Autowired
     private final EmployeeService empSvc;
     private final LeaveService leaveSvc;
-    private final MeService meSvc;
     private final LeaveRecordService lrSvc;
     public MeController(
         EmployeeService empSvc, 
         LeaveService leaveSvc, 
-        MeService meSvc,
         LeaveRecordService lrSvc) {
         this.empSvc = empSvc;
         this.leaveSvc = leaveSvc;
-        this.meSvc = meSvc;
         this.lrSvc = lrSvc;
     }
     

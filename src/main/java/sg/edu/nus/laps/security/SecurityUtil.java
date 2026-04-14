@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.config;
+package sg.edu.nus.laps.security;
 
 import java.util.List;
 

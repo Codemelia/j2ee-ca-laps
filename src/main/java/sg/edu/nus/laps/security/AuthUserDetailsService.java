@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.auth.security;
+package sg.edu.nus.laps.security;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -6,8 +6,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import sg.edu.nus.laps.auth.user.model.User;
-import sg.edu.nus.laps.auth.user.repository.UserRepository;
+import sg.edu.nus.laps.auth.model.User;
+import sg.edu.nus.laps.auth.repository.UserRepository;
 
 /*
     AuthUserDetailsService is used by Spring Security to load user details during authentication

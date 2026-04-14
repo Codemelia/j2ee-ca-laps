@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.auth.user.service;
+package sg.edu.nus.laps.auth.service;
 
 import org.springframework.stereotype.Service;
 

@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import jakarta.servlet.http.HttpServletRequest;
-import sg.edu.nus.laps.auth.security.AuthUserDetails;
 import sg.edu.nus.laps.common.exception.UnauthorisedUserException;
 import sg.edu.nus.laps.employee.EmployeeService;
 import sg.edu.nus.laps.employee.model.Employee;
+import sg.edu.nus.laps.security.AuthUserDetails;
 
 @ControllerAdvice
 public class GlobalModelAttributes {
