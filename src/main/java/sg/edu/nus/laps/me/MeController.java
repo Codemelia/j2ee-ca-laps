@@ -63,17 +63,14 @@ public class MeController {
         // Get Employee ID
         Long empId = user.getEmployeeId();
         
-        // if admin, check whether internal or external
+        // Only add model attributes for internal employees
         if (empId != null) {
             Employee emp = empSvc
                 .findById(user.getEmployeeId())
                 .get(); // Employee is not empty
             
-            // Bind employee details
+            // Bind employee first name
             model.addAttribute("employeeFirstName", emp.getFirstName());
-            model.addAttribute("employeeFullName", emp.getFirstName() + " " +emp.getLastName());
-            model.addAttribute("employeeTeam", emp.getTeamName());
-            model.addAttribute("employeeTitle", emp.getJobTitle());
 
             // Bind leave balances + recentApplications
             model.addAttribute("leaveRecords", lrSvc.getLeaveRecords(empId));

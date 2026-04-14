@@ -69,6 +69,7 @@ public class AuthUserDetails implements UserDetails {
     public Long getEmployeeId() { return employeeId; }
     public String getEmail() { return email; }
     public String getRoleName() { return roleName; }
+    public boolean getEnabled() { return this.enabled; }
 
     // Check internal vs external admin
     public boolean isInternalAdmin() {
