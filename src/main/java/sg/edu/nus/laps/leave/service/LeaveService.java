@@ -86,6 +86,7 @@ public class LeaveService {
 		validateDate(leave);
 		
 		List<LeaveApplication> overlaps = laRepo.findOverlappingApplication(
+				List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED),
 				leave.getEmployee(), 
 				leave.getFromDate(), 
 				leave.getToDate());
@@ -126,6 +127,7 @@ public class LeaveService {
 		validateDate(updatedLeave);
 		
 		List<LeaveApplication> overlaps = laRepo.findOverlappingApplication(
+				List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED),
 				updatedLeave.getEmployee(), 
 				updatedLeave.getFromDate(), 
 				updatedLeave.getToDate());
@@ -259,6 +261,7 @@ public class LeaveService {
 			int dialback = (leave.getFromDate().getDayOfWeek() == DayOfWeek.MONDAY) ? 3 : 1;
 			LocalDate backBridge = leave.getFromDate().minusDays(dialback);
 			List<LeaveApplication> preLeaves = laRepo.findOverlappingApplication(
+					List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED),
 					leave.getEmployee(), 
 					backBridge,
 					leave.getFromDate().minusDays(1));
@@ -267,6 +270,7 @@ public class LeaveService {
 			int dialForward = (leave.getToDate().getDayOfWeek() == DayOfWeek.FRIDAY) ? 3 : 1;
 			LocalDate forwardBridge = leave.getToDate().plusDays(dialForward);
 			List<LeaveApplication> postLeaves = laRepo.findOverlappingApplication(
+					List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED),
 					leave.getEmployee(),
 					leave.getToDate().plusDays(1),
 					forwardBridge);
