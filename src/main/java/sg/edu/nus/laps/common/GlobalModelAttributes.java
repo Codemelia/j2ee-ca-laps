@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import jakarta.servlet.http.HttpServletRequest;
-import sg.edu.nus.laps.auth.exception.UnauthenticatedUserException;
 import sg.edu.nus.laps.auth.security.AuthUserDetails;
+import sg.edu.nus.laps.common.exception.UnauthorisedUserException;
 
 @ControllerAdvice
 public class GlobalModelAttributes {
@@ -34,7 +34,6 @@ public class GlobalModelAttributes {
 
         // All non-authenticated paths
         boolean isPublicPath =
-            uri.equals(path + "/auth/login") ||
             uri.equals(path + "/auth/employee/login") ||
             uri.equals(path + "/auth/admin/login") ||
             uri.startsWith(path + "/css/") ||
@@ -45,7 +44,7 @@ public class GlobalModelAttributes {
         
         // Only do null checks for authenticated paths
         if (!isPublicPath && user == null) {
-            throw new UnauthenticatedUserException();
+            throw new UnauthorisedUserException();
         }
     }
 

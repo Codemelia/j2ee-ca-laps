@@ -5,14 +5,28 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 @Configuration // Declare to generate bean definitions at runtime
 @EnableWebSecurity // Enable Spring Security configuration
 public class SecurityConfig {
+
+    // SET BYPASS ON PUBLIC PAGES
+    @Bean
+    public WebSecurityCustomizer publicCustomizer() {
+        return web -> web.ignoring()
+            .requestMatchers(
+                "/css/**", 
+                "/js/**", 
+                "/images/**", 
+                "/facicon.ico",
+                "/contact");
+    }
 
 	// INTERNAL / EXTERNAL ADMIN AUTH LOGIN LOGOUT
     @Bean // Indicate bean to be managed by Spring
@@ -31,10 +45,21 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/auth/admin/login") // GET /auth/admin/login
                 .loginProcessingUrl("/auth/admin/login") // POST /auth/admin/login
+                .usernameParameter("email") // Change default username > email field
+                .passwordParameter("password") // Default password field
                 .successHandler((request, response, auth) -> { // HttpServletRequest, HttpServletResponse, Authentication
-                    boolean isInternal = auth.getAuthorities().stream() // Check collection of authorities whether ADMIN is INTERNAL
-                        .anyMatch(a -> a.getAuthority().equals("AUTH_INTERNAL_ADMIN"));
-                    if (isInternal) { response.sendRedirect("/"); } // Default landing for internal admin > dashboard
+                    
+                    // If user is not admin and trying to login on admin login page
+                    // Redirect to admin login page with role-invalid param
+                    if (!SecurityUtil.isAdmin(auth)) {
+                        new SecurityContextLogoutHandler()
+                            .logout(request, response, auth); // Logout invalid user
+                        response.sendRedirect("/auth/admin/login?adminInvalid");
+                        return;
+                    }
+
+                    // Else, check whether admin internal or external
+                    if (SecurityUtil.isInternalAdmin(auth)) { response.sendRedirect("/"); } // Default landing for internal admin > dashboard
                     else { response.sendRedirect("/admin/employees"); } // Default landing for external admin > employees page
                 })
                 .failureUrl("/auth/admin/login?error") // If login fails, go to login page with error param
@@ -71,7 +96,23 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/auth/employee/login") // GET /auth/employee/login
                 .loginProcessingUrl("/auth/employee/login") // POST /auth/employee/login
-                .defaultSuccessUrl("/", true) // Go to index (dashboard) after logged in
+                .usernameParameter("email") // Change default username > email field
+                .passwordParameter("password") // Default password field
+                .successHandler((request, response, auth) -> {
+
+                    // If user is admin and trying to login on employee login page
+                    // Redirect to employee login page with role-invalid param
+                    if (SecurityUtil.isAdmin(auth)) {
+                        new SecurityContextLogoutHandler()
+                            .logout(request, response, auth); // Logout invalid user
+                        response.sendRedirect("/auth/employee/login?employeeInvalid");
+                        return;
+                    }
+
+                    // Else successful login > dashboard
+                    response.sendRedirect("/");
+
+                }) // Go to index (dashboard) after logged in
                 .failureUrl("/auth/employee/login?error") // If login fails, go to login page with error param
                 .permitAll()
             )
@@ -94,7 +135,6 @@ public class SecurityConfig {
     @Order(3) // Define priority low
     SecurityFilterChain commonFilterChain(HttpSecurity http) throws Exception {
         http
-
             // REQUEST AUTHORISATION
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/me") // Common dashboard for EMPLOYEE / MANAGER / INTERNAL ADMIN

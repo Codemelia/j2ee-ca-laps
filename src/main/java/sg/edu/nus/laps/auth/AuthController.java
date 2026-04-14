@@ -1,26 +1,17 @@
 package sg.edu.nus.laps.auth;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 /*
     AuthController handles all user auth operations
 
                     CONTROLLER SCOPE
     ------------------------------------------------
-    GET /auth/login           - Fallback route, redirects to employee login
     GET /auth/employee/login  - Employee login entry point
     GET /auth/admin/login     - Admin login entry point
-    POST /auth/login          - Spring Security login processing endpoint
-    POST /auth/logout         - Spring Security logout endpoint
 */
 @RequestMapping("/auth")
 @Controller
