@@ -65,6 +65,7 @@ public class AuthController {
     // }
 
     // ASSIGNMENT: 2 ENTRY POINTS
+    // Param-handling is on Thymeleaf through SpringSecurity6 dependency
 
     // Employee - GET /auth/employee/login
     @GetMapping("/employee/login")
