@@ -53,23 +53,32 @@ body {
 
 .page-wrapper {
 	display: flex;
-	margin: 0;
+	
+	margin: 0 auto;
     flex-direction: column; /* Stack items vertically */
     align-items: center;    /* This is the "magic" that centers them horizontally */
     width: 100%;            /* Ensure it spans the whole screen width */
-    padding: 40px 20px;     /* Top/Bottom and Left/Right padding */
+    max-width: var(--max-width);
+    padding: 0 24px;     /* Top/Bottom and Left/Right padding */
     min-height: 100vh;      /* Use min-height so it expands with the table */
     box-sizing: border-box; /* Ensures padding doesn't break the width */
 }
 
-.content-container {
-	/* This ensures the container only expands as wide as the table */
+/* .page-wrapper {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 24px;
+    flex: 1 0 auto;
+} */
+
+/* .content-container {
+	This ensures the container only expands as wide as the table
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* This aligns all text/buttons to the LEFT */
-    width: fit-content;      /* MAGIC: Container shrinks to match the table width */
-    max-width: 95%;          /* Prevents it from hitting screen edges on mobile */
-}
+    align-items: flex-start; This aligns all text/buttons to the LEFT
+    width: fit-content;      MAGIC: Container shrinks to match the table width
+    max-width: 95%;          Prevents it from hitting screen edges on mobile
+} */
 
 
 /* --- Typography -------------------------------------------- */
@@ -96,12 +105,12 @@ a:hover { color: var(--blue-dark); }
 .error { color: red; font-size: 0.9em; }
 
 /* --- Page Wrapper ------------------------------------------ */
-.page-wrapper {
+/* .page-wrapper {
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 0 24px;
     flex: 1 0 auto;
-}
+} */
 
 /* --- Top Navigation Bar ------------------------------------ */
 .topbar {
@@ -142,7 +151,7 @@ a:hover { color: var(--blue-dark); }
 
 /* --- Card (used for login form, centred forms) ------------- */
 
-.card {
+.card, .count-card {
     background: var(--white);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -158,6 +167,16 @@ a:hover { color: var(--blue-dark); }
     margin-bottom: 18px;
 }
 
+.cards-container {
+	text-align: center;
+	display: flex;
+	margin-left: 30%;
+	margin-right: 30%;
+}
+
+.count-card {
+	width: 200px;
+}
 .card section {
     margin-bottom: 28px;
     padding-bottom: 18px;
