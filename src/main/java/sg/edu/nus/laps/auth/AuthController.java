@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 /*
     AuthController handles all user auth operations
 
@@ -34,10 +36,19 @@ public class AuthController {
         @RequestParam(required = false) String unauth,
         @RequestParam(required = false) String error,
         @RequestParam(required = false) String logout,
-        @RequestParam(required = false) String expired) {
+        @RequestParam(required = false) String expired,
+        HttpServletRequest request) {
 
-        // Build redirect string - default to employee login
+        // Build base redirect string - default to employee login for employee/manager
         StringBuilder redirect = new StringBuilder("redirect:/auth/employee/login");
+
+        // Retrieve referer from request
+        String ref = request.getHeader("Referer");
+        
+        // If user was trying to access admin pages, redirect to admin instead
+        if (ref != null && ref.contains("/admin")) {
+            redirect = new StringBuilder("redirect:/auth/admin/login");
+        }
 
         // set to hold param
         Set<String> params = new HashSet<>();
@@ -52,6 +63,8 @@ public class AuthController {
         if (!params.isEmpty()) { redirect.append("?").append(String.join("&", params)); }
         return redirect.toString();
     }
+
+    // ASSIGNMENT: 2 ENTRY POINTS
 
     // Employee - GET /auth/employee/login
     @GetMapping("/employee/login")

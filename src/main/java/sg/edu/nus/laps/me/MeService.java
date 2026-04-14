@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
     getProfile(employeeId)              - Retrieve employee profile by Employee ID
     getNotifications(employeeId)        - Retrieve notifications by Employee ID
 
-    -- UPDATE --
-    updateProfile(employeeId, profile)  - Update employee profile details
 */
 @Service
 public class MeService {
