@@ -395,17 +395,19 @@ public class LeaveService {
 		return lrRepo.save(newLeaveRecord);		
 	}
 
-	// Gets recent leave requests
-    public List<LeaveApplication> getRecentLeaveApplications(Long employeeId) {
-        return laRepo.findTop5ByEmployeeIdOrderByFromDateDesc(employeeId);
-    }
+	// --- Dash-Board Builder Methods ---
+	// 1. Gets Recent Leave Applications
+	public List<LeaveApplication> getRecentLeaveApplications(Long employeeId) {
+		return laRepo.findTop5ByEmployeeIdOrderByFromDateDesc(employeeId);
+	}
 	
-	// Retrieve Leave App by employee ID
+	// 2. Retrieve Leave Applications by employee ID
 	@Transactional(readOnly = true)
 	public List<LeaveApplication> getLeaveApplicationsforEmployee(Long employeeId) {
 		return laRepo.findAllByEmployeeId(employeeId);
 	}
 
+	// 3. Retrieve Leave Application by Leave Application ID
 	@Transactional(readOnly = true)
 	public Optional<LeaveApplication> findLeaveById(Long id) {
 	// .findById() is built into JpaRepository by default
@@ -413,20 +415,13 @@ public class LeaveService {
 		return laRepo.findById(id);
 	}
 
-	// // Find Leave App by ID
-	// @Transactional(readOnly = true)
-	// public Optional<LeaveApplication> findLeaveById(Long id) {
-	// 	return laRepo.findById(id);
-	// }
-
-	// Check if ID exists
+	// 4. Validate if Leave Application ID exists
 	@Transactional(readOnly = true)
 	public boolean existsByLeaveId(Long id) {
 		return laRepo.existsById(id);
 	}
 	
-	// COMPUTATION
-
+	/*
 	// 1. The Calculation Logic
 	public int calculateActualLeaveDays(LocalDate start, LocalDate end, List<LocalDate> holidays) {
 		int count = 0;
@@ -442,16 +437,17 @@ public class LeaveService {
 		}
 		return count;
 	}
-
-	// 2. The Retrieval Logic (Sharing the count into the entity)
+	 */
+	
+	// 5. The Retrieval Logic (Sharing the count into the entity)
 	@Transactional(readOnly = true)
 	public Page <LeaveApplication> getEmployeeLeaveHistory(Long employeeId , Pageable pageable) {
 		Page<LeaveApplication> history = laRepo.findByEmployeeIdOrderByFromDateDesc(employeeId, pageable);
-		List<LocalDate> holidays = holRepo.findAllHolidayDates();
+		// List<LocalDate> holidays = holRepo.findAllHolidayDates();
 
 		for (LeaveApplication leave : history.getContent()) {
 			// Calculate the count
-			double days = calculateActualLeaveDays(leave.getFromDate(), leave.getToDate(), holidays);
+			double days = calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
 
 			// "Share" the count into the duration field in the entity
 			leave.setDuration(days);
