@@ -2,12 +2,12 @@ package sg.edu.nus.laps.leave.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.data.domain.Page;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
@@ -72,4 +72,5 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 	@Query("UPDATE LeaveApplication l SET l.status = 'CANCELLED' WHERE l.id = :id")
 	void cancelLeave(@Param("id") Long id);
 	*/
+	Page<LeaveApplication> findByEmployeeIdOrderByFromDateDesc(Long employeeId, Pageable pageable);
 }
