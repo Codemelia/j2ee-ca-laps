@@ -36,21 +36,21 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 	
 	// 7. Custom-Query: Overlap Date Check
 	@Query("SELECT l from LeaveApplication l WHERE l.employee = :emp "
-			+ "AND l.status NOT IN (sg.edu.nus.laps.leave.model.LeaveStatus.REJECTED, "
-			+ "sg.edu.nus.laps.leave.model.LeaveStatus.CANCELLED, "
-			+ "sg.edu.nus.laps.leave.model.LeaveStatus.DELETED)"
+			+ "AND l.status NOT IN (:excStatusList) "
 			+ "AND (:fromDate <= l.toDate AND :toDate >= l.fromDate)")
 	List<LeaveApplication> findOverlappingApplication(
+			@Param("excStatusList") List<LeaveStatus> excStatusList,
 			@Param("emp") Employee employee,
 			@Param("fromDate") LocalDate fromDate,
 			@Param("toDate") LocalDate toDate
 			);
 	
 	// 8. Custom-Query: Manager's Team Leave Check
-	@Query("SELECT l from LeaveApplication l WHERE l.status = sg.edu.nus.laps.leave.model.LeaveStatus.APPROVED "
+	@Query("SELECT l from LeaveApplication l WHERE l.status = :approveStatus "
 			+ "AND l.employee.managerId = :managerId "
 			+ "AND :today BETWEEN l.fromDate AND l.toDate")
 	List<LeaveApplication> findTeamActiveLeaves(
+			@Param("approveStatus") LeaveStatus approveStatus,
 			@Param("managerId") Long managerId,
 			@Param("today") LocalDate today
 			);
