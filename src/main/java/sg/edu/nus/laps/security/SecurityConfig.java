@@ -10,10 +10,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
-import sg.edu.nus.laps.security.strategy.LapsExpiredSessionStrategy;
-import sg.edu.nus.laps.security.strategy.LapsInvalidSessionStrategy;
+import sg.edu.nus.laps.security.custom.LapsExpiredSessionStrategy;
+import sg.edu.nus.laps.security.custom.LapsInvalidSessionStrategy;
 
 @Configuration // Declare to generate bean definitions at runtime
 @EnableWebSecurity // Enable Spring Security configuration
@@ -50,22 +51,8 @@ public class SecurityConfig {
                 .loginProcessingUrl("/auth/admin/login") // POST /auth/admin/login
                 .usernameParameter("email") // Change default username > email field
                 .passwordParameter("password") // Default password field
-                .successHandler((request, response, auth) -> { // HttpServletRequest, HttpServletResponse, Authentication
-                    
-                    // If user is not admin and trying to login on admin login page
-                    // Redirect to admin login page with role-invalid param
-                    if (!SecurityUtil.isAdmin(auth)) {
-                        new SecurityContextLogoutHandler()
-                            .logout(request, response, auth); // Logout invalid user
-                        response.sendRedirect("/auth/admin/login?adminInvalid");
-                        return;
-                    }
-
-                    // Else, check whether admin internal or external
-                    if (SecurityUtil.isInternalAdmin(auth)) { response.sendRedirect("/"); } // Default landing for internal admin > dashboard
-                    else { response.sendRedirect("/admin/employees"); } // Default landing for external admin > employees page
-                })
-                .failureUrl("/auth/admin/login?error") // If login fails, go to login page with error param
+                .successHandler(adminSuccessHandler()) // Role-based redirect / successful login redirect
+                .failureForwardUrl("/auth/admin/login?error") // If login fails, go to login page with error and form params
                 .permitAll()
             )
 
@@ -101,22 +88,8 @@ public class SecurityConfig {
                 .loginProcessingUrl("/auth/employee/login") // POST /auth/employee/login
                 .usernameParameter("email") // Change default username > email field
                 .passwordParameter("password") // Default password field
-                .successHandler((request, response, auth) -> {
-
-                    // If user is admin and trying to login on employee login page
-                    // Redirect to employee login page with role-invalid param
-                    if (SecurityUtil.isAdmin(auth)) {
-                        new SecurityContextLogoutHandler()
-                            .logout(request, response, auth); // Logout invalid user
-                        response.sendRedirect("/auth/employee/login?employeeInvalid");
-                        return;
-                    }
-
-                    // Else successful login > dashboard
-                    response.sendRedirect("/");
-
-                }) // Go to index (dashboard) after logged in
-                .failureUrl("/auth/employee/login?error") // If login fails, go to login page with error param
+                .successHandler(employeeSuccessHandler()) // Role-based redirect / successful login redirect
+                .failureForwardUrl("/auth/employee/login?error") // If login fails, go to login page with error and form params
                 .permitAll()
             )
 
@@ -164,6 +137,52 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // Define role-based redirect on admin
+    @Bean
+    public AuthenticationSuccessHandler adminSuccessHandler() {
+        return (request, response, auth) -> {
+            // If user is not admin and trying to login on admin login page
+            // Redirect to admin login page with role-invalid param
+            if (!SecurityUtil.isAdmin(auth)) {
+                new SecurityContextLogoutHandler()
+                    .logout(request, response, auth); // Logout invalid user
+                response.sendRedirect("/auth/admin/login?adminInvalid"
+                    + "&email=" + request.getParameter("email") // Insert email param for form population
+                );
+                return;
+            }
+
+            // Else, check whether admin internal or external
+            if (SecurityUtil.isInternalAdmin(auth)) { response.sendRedirect("/"); } // Default landing for internal admin > dashboard
+            else { response.sendRedirect("/admin/employees"); } // Default landing for external admin > employees page
+        };
+    }
+
+    // Define role-based redirect for employee
+    @Bean
+    public AuthenticationSuccessHandler employeeSuccessHandler() {
+        return (request, response, auth) -> {
+            // If user is admin and trying to login on employee login page
+            // Redirect to employee login page with role-invalid param
+            if (SecurityUtil.isAdmin(auth)) {
+                new SecurityContextLogoutHandler()
+                    .logout(request, response, auth); // Logout invalid user
+                response.sendRedirect("/auth/employee/login?employeeInvalid"
+                    + "&email=" + request.getParameter("email") // Insert email param for form population
+                );
+                return;
+            }
+
+            // Else successful login > dashboard
+            response.sendRedirect("/");
+        };
+    }
+
+    // Password encoder for Users
+    @Bean
+    public PasswordEncoder encoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     /*
     .authorizeHttpRequests(auth -> auth
@@ -204,11 +223,5 @@ public class SecurityConfig {
         return http.build();
     }
     */
-
-    // Password encoder for Users
-    @Bean
-    public PasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
-    }
 
 }

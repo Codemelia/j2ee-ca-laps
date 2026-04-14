@@ -48,6 +48,7 @@ public class User extends SetCreatedUpdated {
 
 	// Transient field for old raw password
 	// Content not validated - checked in Service + DB
+	@Transient
 	@NotBlank(message = "Old password cannot be null or blank")
 	private String passwordOldRaw;
 
