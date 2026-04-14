@@ -118,14 +118,14 @@ public class EmployeeController {
 		// Add enum values for rank
 		model.addAttribute("rankList", EmployeeRank.values());
 		
-		return "employee/create-employee-form";
+		return "employee/employee-form";
 	}
 	
 	@PostMapping("/create")
 	public String createEmployee(@Valid @ModelAttribute Employee employee, 
 		BindingResult bindingResult, RedirectAttributes redirectAttrs) {
 		if (bindingResult.hasErrors()) {
-			return "employee/create-employee-form";
+			return "employee/employee-form";
 		}
         
 		try { 
@@ -134,7 +134,7 @@ public class EmployeeController {
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
 			bindingResult.reject("error", "Save failed: " + ex.getMessage());
-			return "employee/create-employee-form";
+			return "employee/employee-form";
 		}
 		
 	}
@@ -161,7 +161,7 @@ public class EmployeeController {
 		// 	// return "redirect:/admin/employees";
 		// }
 		
-		return "employee/update-employee-form";
+		return "employee/employee-form";
 	}
 	
 	@PostMapping("/update/{id}")
@@ -169,10 +169,12 @@ public class EmployeeController {
 		@Valid @ModelAttribute Employee employee, 
 		BindingResult bindingResult, RedirectAttributes redirectAttrs) {
 		if (bindingResult.hasErrors()) {
-			return "employee/update-employee-form";
+			return "employee/employee-form";
 		}
 
-		employee.setId(id);
+		// ID passed in as hidden form field
+		// But if null, set via Path Variable
+		if (employee.getId() == null) { employee.setId(id); }
 
 		try {
 			eService.updateEmployee(employee);
@@ -180,7 +182,7 @@ public class EmployeeController {
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
 			bindingResult.reject("error", "Update failed: " + ex.getMessage());
-			return "employee/create-employee-form";
+			return "employee/employee-form";
 		}
 	}
 	

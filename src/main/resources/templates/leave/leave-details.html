@@ -6,7 +6,7 @@
 
 	<!-- For scripts -->
 	<th:block th:fragment="extra">
-        <script>
+        {% comment %} <script>
             // On click, go to previous page
             // Runs after page loads
             // Checks for btn
@@ -17,7 +17,7 @@
                 }
             });
             
-        </script>
+        </script> {% endcomment %}
     </th:block>
 
 	<body>
@@ -102,7 +102,7 @@
 
                     <div class="card-footer">
                         <!-- Goes back to previous page -->
-                        <button class="btn" type="button" id="backBtn">Back</button>
+                        <button class="btn" type="button" onclick="history.back()">Back</button>
 
                         <!-- Employee (self view) buttons -->
                         <div sec:authorize="hasAnyRole('ROLE_EMPLOYEE','ROLE_MANAGER')" 
