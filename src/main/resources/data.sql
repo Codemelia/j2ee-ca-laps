@@ -19,9 +19,9 @@ INSERT INTO holidays ( name, date, location) VALUES
 
 -- ── roles (OnetoMany → users)────────────────────────────────────────────────────────────────────
 INSERT INTO roles (id, name, description) VALUES
-  ('1', 'ADMIN', 'Admin user'),
-  ('2', 'MANAGER', 'Manager user'),
-  ('3', 'EMPLOYEE', 'Employee user');
+  ('1', 'Admin', 'Admin user'),
+  ('2', 'Manager', 'Manager user'),
+  ('3', 'Employee', 'Employee user');
   
 -- ── users (ManytoOne → roles, OnetoOne → employees) ────────────────────────────────────────────────────────────
 -- Test login accounts
