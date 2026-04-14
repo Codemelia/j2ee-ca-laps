@@ -57,6 +57,9 @@ public class LeaveApplication extends SetCreatedUpdated {
     @Column(name = "manager_comment")
     private String managerComment;
 
+    @Column(name = "is_half_day")
+    private boolean isHalfDay;
+    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LeaveStatus status = LeaveStatus.DRAFT;
@@ -111,7 +114,9 @@ public class LeaveApplication extends SetCreatedUpdated {
     public void setStatus(LeaveStatus status) 					{ this.status = status; }
     public String getManagerComment() 							{ return managerComment; }
     public void setManagerComment(String comment) 				{ this.managerComment = comment; }
-    public LeaveType getLeaveType() 							{ return leaveType; }
+    public boolean isHalfDay() 									{ return isHalfDay; }
+	public void setHalfDay(boolean isHalfDay) 					{ this.isHalfDay = isHalfDay; }
+	public LeaveType getLeaveType() 							{ return leaveType; }
     public void setLeaveType(LeaveType leaveType) 				{ this.leaveType = leaveType; }
     public Employee getEmployee() 								{ return employee; }
     public void setEmployee(Employee employee) 					{ this.employee = employee; }
