@@ -9,13 +9,13 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-<<<<<<< Updated upstream
+
 
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
-=======
+
 import org.springframework.data.domain.Pageable;
->>>>>>> Stashed changes
+
 import sg.edu.nus.laps.employee.repository.EmployeeRepository;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveRecord;
