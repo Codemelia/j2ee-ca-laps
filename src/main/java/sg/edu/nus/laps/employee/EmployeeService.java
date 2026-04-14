@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -19,6 +21,7 @@ import sg.edu.nus.laps.employee.exception.InvalidEmployeeException;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.NewEmployeeRecord;
 import sg.edu.nus.laps.employee.repository.EmployeeRepository;
+import sg.edu.nus.laps.leave.model.LeaveApplication;
 
 /*
     EmployeeService handles all employee CRUD operations (Admin-only)
@@ -77,6 +80,13 @@ public class EmployeeService {
 	@Transactional(readOnly=true)
 	public List<Employee> findAll() {
 		return eRepo.findAll();
+	}
+	
+	@Transactional(readOnly = true)
+	public Page <Employee> findAll(Pageable pageable) {
+		Page<Employee> allEmployees = eRepo.findAll(pageable);
+		
+		return allEmployees;
 	}
 	
 	@Transactional(readOnly=true)
