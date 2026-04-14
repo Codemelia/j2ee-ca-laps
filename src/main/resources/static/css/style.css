@@ -96,12 +96,12 @@ a:hover { color: var(--blue-dark); }
 .error { color: red; font-size: 0.9em; }
 
 /* --- Page Wrapper ------------------------------------------ */
-/* .page-wrapper {
+.page-wrapper {
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 0 24px;
     flex: 1 0 auto;
-} */
+}
 
 /* --- Top Navigation Bar ------------------------------------ */
 .topbar {
