@@ -2,7 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org"
     xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 
-	<head th:replace="~{fragments/head ::head('Employee Management', ~{::extra})}"></head>
+	<head th:replace="~{fragments/head ::head('Employee Management', ~{::extra})}">
+	<style>
+	
+	</style>
+	</head>
 
 	<!-- For scripts - DELETE if unused -->
 	<th:block th:fragment="extra"></th:block>
@@ -11,6 +15,7 @@
 		<header th:replace="~{fragments/header :: header}"></header>
 		
         <div class="page-wrapper">
+        	<div class="content-container">
             <!-- Display success or failure messages -->
 			<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 			<div th:if="${failure}" class="alert alert-danger" th:text="${failure}"></div>
@@ -43,7 +48,7 @@
 			<!-- All employees table only displays when user role is ADMIN -->
 			<div>	
 				<p><h2>All Employees</h2></p>
-				<table border="1" cellpadding="6" cellspacing="0" th:unless="${allEmployees.isEmpty()}">
+				<table th:unless="${allEmployees.isEmpty()}">
 					<thead>
 						<tr>
 							<th>ID</th><th>First Name</th><th>Last Name</th>
@@ -84,6 +89,7 @@
 						</tr>
 					</tbody>
 				</table>
+			</div>
 			</div>
 		</div>
 
