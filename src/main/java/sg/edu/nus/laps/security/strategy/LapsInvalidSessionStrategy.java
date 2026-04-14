@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.security.customstrategy;
+package sg.edu.nus.laps.security.strategy;
 
 import java.io.IOException;
 

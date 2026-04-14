@@ -16,15 +16,4 @@ public class GlobalExceptionHandler {
         return "redirect:/auth/login?unauthorised";
     }
 
-    // TO BE IMPLEMENTED
-    // @ExceptionHandler(InvalidUserException.class) 
-    // public String handleInvalidUserException(InvalidUserException ex) {
-    //     return "";
-    // }
-
-    // @ExceptionHandler(UserAlreadyExistsException.class) 
-    // public String handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-    //     return "";
-    // }
-
 }

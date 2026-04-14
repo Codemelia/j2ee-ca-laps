@@ -12,8 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
-import sg.edu.nus.laps.security.customstrategy.LapsExpiredSessionStrategy;
-import sg.edu.nus.laps.security.customstrategy.LapsInvalidSessionStrategy;
+import sg.edu.nus.laps.security.strategy.LapsExpiredSessionStrategy;
+import sg.edu.nus.laps.security.strategy.LapsInvalidSessionStrategy;
 
 @Configuration // Declare to generate bean definitions at runtime
 @EnableWebSecurity // Enable Spring Security configuration
@@ -21,7 +21,7 @@ public class SecurityConfig {
 
     // SET BYPASS ON PUBLIC PAGES
     @Bean
-    public WebSecurityCustomizer publicCustomizer() {
+    public WebSecurityCustomizer publicCustomiser() {
         return web -> web.ignoring()
             .requestMatchers(
                 "/css/**", 
