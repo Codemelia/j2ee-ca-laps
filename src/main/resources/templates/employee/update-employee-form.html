@@ -25,11 +25,12 @@
         <div class="page-wrapper">
             <h1>Update Employee Details</h1>
 			<div th:if="${employee}">
-				<div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger"
-					th:errors="*{error}">
-				</div>
+				
 				<form th:action="@{/admin/employees/update/{id}(id=${employee.id})}" 
 					th:object="${employee}" method="post">
+					<div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger"
+					th:errors="*{error}">
+					</div>
 					
 					<!-- Hidden input field to return employee id in form submission -->
 					<div><input type="hidden" th:field="*{id}"></div>
@@ -73,7 +74,7 @@
 							<option value="" th:selected="${employee.rank == null}">-- Select Employee's Rank --</option>
 							<option th:each="r : ${rankList}"
 									th:value="${r}"
-									th:text="${r}"
+									th:text="${r.displayName}"
 									th:selected="${employee.rank == r}">
 							</option>
 						</select><br>
