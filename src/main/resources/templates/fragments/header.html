@@ -38,15 +38,23 @@
 
         <!-- Logged in user and logout button -->
         <div class="user-info" sec:authorize="isAuthenticated()">
-            <span>
-                <strong th:text="${employeeFullName} ?: 'Admin User'"></strong><br>
-                <strong th:text="${employeeTeam} ?: 'External'"></strong><br>
-                <strong th:text="${employeeTitle} ?: 'Administrator'"></strong>
-            </span>
-            <form th:action="@{/auth/logout}" method="POST" style="display:inline">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                <button type="submit" class="btn">Logout</button>
-            </form>
+            
+            <table class="logout">
+            	<tr >
+	            <td style="padding: 15px;"><span>
+	                <strong th:text="${employeeFullName} ?: 'Admin User'"></strong><br>
+	                <strong th:text="${employeeTeam} ?: 'External'"></strong><br>
+	                <strong th:text="${employeeTitle} ?: 'Administrator'"></strong>
+	            </span>
+	            </td>
+	            <td style="padding: 15px;">
+	            <form th:action="@{/auth/logout}" method="POST" style="display:inline">
+	                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+	                <button type="submit" class="btn">Logout</button>
+	            </form>
+	            </td>
+	            </tr>
+            </table>
         </div>
 
     </div>
