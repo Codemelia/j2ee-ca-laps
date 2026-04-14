@@ -3,6 +3,9 @@
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +23,7 @@ import sg.edu.nus.laps.auth.user.model.Role;
 import sg.edu.nus.laps.auth.user.service.RoleService;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
+import sg.edu.nus.laps.leave.model.LeaveApplication;
 
 /*
     EmployeeController handles employee CRUD operations (Admin only)
@@ -53,7 +57,7 @@ public class EmployeeController {
 	
 	@GetMapping
 	public String showEmployees(@AuthenticationPrincipal AuthUserDetails user,
-		Model model, RedirectAttributes redirectAttrs) {
+		Model model, RedirectAttributes redirectAttrs, @PageableDefault(size = 10) Pageable pageable) {
 		// if (!isLoggedIn(session)) {
         //     redirectAttrs.addFlashAttribute("errorMessage",
         //             "Please log in to view employees.");
@@ -69,8 +73,14 @@ public class EmployeeController {
 		Integer adminCount = eService.countEmployeesByRoleIdAdmin();
 		model.addAttribute("adminCount", adminCount);
 		
-		List<Employee> allEmployees = eService.findAll();
-		model.addAttribute("allEmployees", allEmployees);
+//		List<Employee> allEmployees = eService.findAll();
+//		model.addAttribute("allEmployees", allEmployees);
+		
+		Page<Employee> page = eService.findAll(pageable);
+        model.addAttribute("allEmployees", page.getContent());
+        model.addAttribute("currentPage", page.getNumber());
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("page", page);
 
 		// Retrieve user email from session
 		// String userEmail = (String) session.getAttribute("userEmail");
