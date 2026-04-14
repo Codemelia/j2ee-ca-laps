@@ -2,16 +2,20 @@
 <html xmlns:th="http://www.thymeleaf.org"
     xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 
-	<head th:replace="~{fragments/head ::head('My Leave History', ~{::extra})}"></head>
+	<head th:insert="~{fragments/head ::head('My Leave History', ~{::extra})}">
+		<th:block th:fragment="extra">
+			<meta charset="UTF-8" />
+		    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+			</th:block>
+		</head>
 
-	<!-- For scripts - DELETE if unused -->
-	<th:block th:fragment="extra"></th:block>
+
 
 	<body>
 		<header th:replace="~{fragments/header :: header}"></header>
 		
         <div class="page-wrapper">
-			<h1>My Leave Requests</h1>
+			<h1>My Leave History</h1>
 			<a th:href="@{/}">Back to Home</a>
             <!-- th:if checks whether the list is empty -->
 	
@@ -19,7 +23,7 @@
 				You have not applied for any leave yet.
 			</p>
 
-			<table th:unless="${#lists. isEmpty (leaveList)}">
+			<table th:unless="${#lists. isEmpty (leaveList)}" class="data-table" >
 				<thead>
 					<tr>
 						<th>Leave Type</th>
@@ -37,18 +41,22 @@
 					<!-- th:each loops over the "leaveApplication" list from the Model -->
 					<tr th:each="leave : ${leaveList} ">
 					
-						<td th:text="${leave.leaveType.name}">Annual</td>
-						<td th:text="${#temporals.format(leave.fromDate, 'dd MMM yyyy')}">01 Jan 2026</td>
-						<td th:text="${#temporals.format(leave.toDate, 'dd MMM yyyy')}">02 Jan 2026</td>
-						<td th:text="${leave.duration}">1</td>
-							<span th:text="${leave.status}" 
-								class="badge rounded-pill"
-								th:classappend="${leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).APPROVED ? 'bg-success' : 
-												${leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).REJECTED ? 'bg-danger' : 
-												${leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).CANCELLED ? 'bg-secondary' :
-												${leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).DELETED ? 'bg-secondary' : 
-												'bg-warning'}">
-							</span>
+						<td th:text="${leave.leaveType?.leaveType}">Annual</td>
+						<td th:text="${leave.fromDate != null ? #temporals.format(leave.fromDate, 'dd MMM yyyy') : 'N/A'}">01 Jan 2026</td>
+						<td th:text="${leave.toDate != null ? #temporals.format(leave.toDate, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
+						<td th:text="${leave.duration}">0.0</td>
+						<td>
+						    <span class="badge rounded-pill"
+						          th:text="${leave.status}"
+						          th:classappend="${
+						            leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).APPROVED ? 'bg-success' :
+						            leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).REJECTED ? 'bg-danger' :
+						            (leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).CANCELLED or leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).DELETED) ? 'bg-secondary' :
+						            'bg-info'
+						          }">
+						    </span>
+						</td>
+						<td th:text="${leave.toDate != null ? #temporals.format(leave.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
 						<td>
 						<!--Link to detail page, passing leave id in the URL -->
 							<a th:href="@{/leaves/details/{id}(id=${leave.id})}" 
@@ -57,7 +65,20 @@
 					</tr>
 				</tbody>
 			</table>
-
+			<div class="mt-3">
+			    <nav aria-label="Page navigation">
+			        <ul class="pagination">
+			            <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+			                <a class="page-link" th:href="@{/leaves(page=${page.number - 1})}">Previous</a>
+			            </li>
+			            <li class="page-item disabled">
+			                <span class="page-link">Page [[${page.number + 1}]] of [[${page.totalPages}]]</span>
+			            </li>
+			            <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+			                <a class="page-link" th:href="@{/leaves(page=${page.number + 1})}">Next</a>
+			            </li>
+			        </ul>
+			    </nav></div>
 			<br>
 		</div>
 
@@ -66,17 +87,3 @@
 
 </html>
 
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>My Leave Requests</title>
-</head>
-<body>
-
-
-
-
-
-
-	</body>
-	</html>

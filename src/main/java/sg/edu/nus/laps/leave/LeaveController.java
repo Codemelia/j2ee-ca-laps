@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import org.springframework.data.domain.Page;
 import sg.edu.nus.laps.auth.security.AuthUserDetails;
 import sg.edu.nus.laps.employee.EmployeeService;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
@@ -54,7 +55,7 @@ public class LeaveController {
     }
 
     // TEST leave-details.html - DELETE when updated
-    @GetMapping("/{id}")
+    @GetMapping("/details/{id}")
     public String showLeaveDetails(@AuthenticationPrincipal AuthUserDetails user,
         @PathVariable Long id, Model model) {
 
@@ -92,17 +93,21 @@ public class LeaveController {
         return "leave/leave-details";
     }
 
-    @GetMapping 
-    public String viewLeaveHistory(@AuthenticationPrincipal AuthUserDetails user, Model model) {
-        // Employee currentEmployee = (Employee) session.getAttribute("userSession");
+    
+    
+    @GetMapping ("")
+    public String viewLeaveHistory(@AuthenticationPrincipal AuthUserDetails user, @PageableDefault(size = 5) Pageable pageable, 
+    	    Model model) {
+     
         
         // if (currentEmployee == null) {
         //     return "redirect:/login";
         // }
-        List<LeaveApplication> leaveList = leaveService
-            .getLeaveApplicationsforEmployee(user.getEmployeeId());
-        model.addAttribute("leaveList", leaveList);
-        
+        Page<LeaveApplication> page = leaveService.getEmployeeLeaveHistory(user.getEmployeeId(), pageable);
+        model.addAttribute("leaveList", page.getContent());
+        model.addAttribute("currentPage", page.getNumber());
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("page", page);
         return "leave/leave-list"; // The Thymeleaf template
     }
 
