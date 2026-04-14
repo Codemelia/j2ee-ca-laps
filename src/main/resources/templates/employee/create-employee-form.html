@@ -25,10 +25,12 @@
             <h1>Create New Employee</h1>
 	
 			<div th:if="${employee}">
-				<div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger"
-					th:errors="*{error}">
-				</div>
+				
 				<form th:action="@{/admin/employees/create}" th:object="${employee}" method="post">
+					<div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger"
+					th:errors="*{error}">
+					</div>
+					
 					<div>
 						<label for="firstName">First Name:</label>
 						<input type="text" th:field="*{firstName}" placeholder="First name"><br> 
@@ -69,7 +71,7 @@
 							<option value="" th:selected="${employee.rank == null}">-- Select Employee's Rank --</option>
 							<option th:each="r : ${rankList}"
 									th:value="${r}"
-									th:text="${r}"
+									th:text="${r.displayName}"
 									th:selected="${employee.rank == r}">
 							</option>
 						</select><br>
