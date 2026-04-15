@@ -8,9 +8,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.data.domain.Page;
 
 import sg.edu.nus.laps.employee.EmployeeService;
@@ -111,4 +113,60 @@ public class LeaveController {
         return "leave/leave-list"; // The Thymeleaf template
     }
 
+    @PostMapping("/cancel/{id}")
+    public String cancelLeave(@AuthenticationPrincipal AuthUserDetails user, @PathVariable Long id, RedirectAttributes ra) {
+    	LeaveApplication leaveCancel = lService.findLeaveById(id).orElse(null);
+    	if (leaveCancel == null) {
+            ra.addFlashAttribute("error", "No such leave application exists");
+            return "redirect:/leave";
+    	 }
+    	Long leaveEmpId = leaveCancel.getEmployee().getId();
+        Long currViewerId = user.getEmployeeId();
+     // Security Check
+        boolean isSelf = currViewerId != null && currViewerId.equals(leaveEmpId);
+
+     // Logic: Block if not self 
+        if (!isSelf) {
+            return "error/forbidden";
+        }
+    	try {
+            leaveService.cancelLeave(id);
+            ra.addFlashAttribute("message", "Leave application cancelled.");
+        } catch (RuntimeException e) {
+            //  catches "started leave" or "Not Approved" exceptions
+            ra.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/leave"; // Redirect back to the list
+    }
+    
+    @PostMapping("/delete/{id}")
+    public String deleteLeave(@AuthenticationPrincipal AuthUserDetails user, @PathVariable Long id,RedirectAttributes ra) {
+    	LeaveApplication leaveDel = lService.findLeaveById(id).orElse(null);
+    	if (leaveDel == null) {
+            ra.addFlashAttribute("error", "No such leave application exists");
+            return "redirect:/leave";
+        }
+    	Long leaveEmpId = leaveDel.getEmployee().getId();
+        Long currViewerId = user.getEmployeeId();
+     // Security Check
+        boolean isSelf = currViewerId != null && currViewerId.equals(leaveEmpId);
+
+     // Logic: Block if not self 
+        if (!isSelf) {
+            return "error/forbidden";
+        } 
+                 
+     // 3. Perform delete action  
+        try {
+            lService.deleteLeave(id); 
+            ra.addFlashAttribute("message", "Leave application deleted.");
+        } catch (RuntimeException e) {
+            // catches (APPLIED/UPDATED only)
+            ra.addFlashAttribute("error", e.getMessage());
+        }
+        // 4. Redirect to the list
+        return "redirect:/leave"; 
+    }
+       
+  
 }

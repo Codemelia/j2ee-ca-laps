@@ -23,34 +23,18 @@
 				</a>
 			</div>
 			
-			<h1>Employee Management</h1>
-			
-			<form method="get" th:action="@{/admin/employees}">		    
-			    <!-- Search -->
-			    <input type="text" name="search" placeholder="Search name/email"
-			           th:value="${search}"/>
-
-			    <!-- Filter -->
-			    <select name="role">
-			        <option value="">All Roles</option>
-			        <option value="ADMIN">Admin</option>
-			        <option value="MANAGER">Manager</option>
-			        <option value="EMPLOYEE">Employee</option>
-			    </select>
-
-			    <!-- Sort -->
-			    <select name="sortBy">
-			        <option value="id">ID</option>
-			        <option value="firstName">First Name</option>
-			        <option value="createdAt">Created Date</option>
-			    </select>
-
-			    <button type="submit">Apply</button>
-			</form>
+			<div>
+				<form th:action="@{/admin/employees/updateHolidays}" method="get">
+   					<button type="submit" class="btn btn-danger">Update Holidays</button>
+				</form>
+			</div>	
 			
 			<div >
 				<p>Welcome, <span th:text="${userFirstName}">User</span>!</p>
-			</div>	
+			</div>
+					
+			<h1>Employee Management</h1>
+				
 			
 			<!-- <div>
 				<div id="empCount">
