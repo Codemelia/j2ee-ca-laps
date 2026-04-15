@@ -17,6 +17,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -80,6 +82,12 @@ public class Employee extends SetCreatedUpdated {
 	@NotBlank(message = "Please state employee's job title")
 	@Size(max = 50, message = "Job title must be 50 characters and below")
 	private String jobTitle;
+	
+	@Column(nullable=false)
+	@NotBlank(message = "Annual Leave Entitlement cannot be blank")
+	@Min(14)
+	@Max(21)
+	private Double annualLeave;
 
 	// ADDED for form binding
 	// Will not persist to DB
