@@ -478,7 +478,7 @@ public class LeaveService {
 	}
 
 	/*
-	 * i. Helper Method: reverseDeduction --> Restores balance to LeaveRecord, handling crossover years.
+	 * j. Helper Method: reverseDeduction --> Restores balance to LeaveRecord, handling crossover years.
 	 */
 	private void reverseDeduction(LeaveApplication leave, double leaveDays) {
 		int fromYear = leave.getFromDate().getYear();
