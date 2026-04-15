@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subordinate Leave History - LAPS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+        .container-custom {
+            margin-top: 30px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header-section {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 15px;
+        }
+        .employee-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .filter-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .table-responsive {
+            margin-top: 20px;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status-applied {
+            background-color: #ffc107;
+            color: #000;
+        }
+        .status-approved {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .status-rejected {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .status-cancelled {
+            background-color: #6c757d;
+            color: #fff;
+        }
+        .status-updated {
+            background-color: #17a2b8;
+            color: #fff;
+        }
+        .leave-type-badge {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        .annual {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        .medical {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+        .compensation {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-custom">
+        <div class="header-section">
+            <a href="/manager/team-leaves" class="btn btn-secondary btn-sm">← Back</a>
+            <h1 class="mt-3 mb-0">Subordinate Leave History</h1>
+            <p class="text-muted">Complete leave history for the current calendar year</p>
+        </div>
+
+        <!-- Employee Information -->
+        <div class="employee-info" th:if="${history != null && !history.isEmpty()}">
+            <h5>Employee: <span th:text="${history[0].employee.name}"></span></h5>
+            <p class="mb-0 text-muted">Employee ID: <span th:text="${history[0].employee.id}"></span></p>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <form th:action="@{/manager/subordinate/history/{empId}(empId=${empId})}" method="get" class="row g-3">
+                <div class="col-md-6">
+                    <label for="filterLeaveType" class="form-label">Leave Type</label>
+                    <select class="form-select" id="filterLeaveType" name="leaveType">
+                        <option value="">All Types</option>
+                        <option value="ANNUAL">Annual Leave</option>
+                        <option value="MEDICAL">Medical Leave</option>
+                        <option value="COMPENSATION">Compensation Leave</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="filterStatus" class="form-label">Status</label>
+                    <select class="form-select" id="filterStatus" name="status">
+                        <option value="">All Status</option>
+                        <option value="APPLIED">Applied</option>
+                        <option value="APPROVED">Approved</option>
+                        <option value="REJECTED">Rejected</option>
+                        <option value="CANCELLED">Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a th:href="@{/manager/subordinate/history/{empId}(empId=${empId})}" class="btn btn-secondary">Reset</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- No Records -->
+        <div th:if="${#lists.isEmpty(history)}" class="alert alert-info empty-state">
+            <h5>No Leave Records Found</h5>
+            <p>This employee has no leave records for the current year.</p>
+        </div>
+
+        <!-- Leave History Table -->
+        <div th:if="${!#lists.isEmpty(history)}" class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Leave Type</th>
+                        <th>From Date</th>
+                        <th>To Date</th>
+                        <th>Days</th>
+                        <th>Status</th>
+                        <th>Reason</th>
+                        <th>Applied Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="leave : ${history}">
+                        <td>
+                            <span class="leave-type-badge" 
+                                  th:classappend="${leave.leaveType.name() == 'ANNUAL' ? 'annual' : (leave.leaveType.name() == 'MEDICAL' ? 'medical' : 'compensation')}"
+                                  th:text="${leave.leaveType.name()}">Type</span>
+                        </td>
+                        <td th:text="${#dates.format(leave.fromDate, 'dd-MMM-yyyy')}">From</td>
+                        <td th:text="${#dates.format(leave.toDate, 'dd-MMM-yyyy')}">To</td>
+                        <td th:text="${leave.numberOfDays}">Days</td>
+                        <td>
+                            <span class="status-badge" 
+                                  th:classappend="${leave.status.name() == 'APPLIED' ? 'status-applied' : (leave.status.name() == 'APPROVED' ? 'status-approved' : (leave.status.name() == 'REJECTED' ? 'status-rejected' : (leave.status.name() == 'CANCELLED' ? 'status-cancelled' : 'status-updated')))}"
+                                  th:text="${leave.status.name()}">Status</span>
+                        </td>
+                        <td th:text="${leave.reason}">Reason</td>
+                        <td th:text="${#dates.format(leave.appliedDate, 'dd-MMM-yyyy')}">Applied</td>
+                        <td>
+                            <a th:href="@{/manager/leave/{id}(id=${leave.id})}" class="btn btn-info btn-sm">View</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div th:if="${!#lists.isEmpty(history)}" class="mt-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Total Records</h6>
+                            <p class="card-text display-6" th:text="${#lists.size(history)}">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Approved</h6>
+                            <p class="card-text display-6">
+                                <span th:text="${#lists.size(#list.stream(history).filter(l -> l.status.name() == 'APPROVED').toList())}">0</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Pending</h6>
+                            <p class="card-text display-6">
+                                <span th:text="${#lists.size(#list.stream(history).filter(l -> l.status.name() == 'APPLIED' || l.status.name() == 'UPDATED').toList())}">0</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Rejected</h6>
+                            <p class="card-text display-6">
+                                <span th:text="${#lists.size(#list.stream(history).filter(l -> l.status.name() == 'REJECTED').toList())}">0</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Print Button -->
+        <div class="mt-4">
+            <button onclick="window.print()" class="btn btn-primary">Print History</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
