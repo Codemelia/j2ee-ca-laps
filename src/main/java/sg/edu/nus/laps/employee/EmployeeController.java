@@ -22,6 +22,7 @@ import sg.edu.nus.laps.auth.model.Role;
 import sg.edu.nus.laps.auth.service.RoleService;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
+import sg.edu.nus.laps.leave.service.HolidayService;
 import sg.edu.nus.laps.security.AuthUserDetails;
 
 /*
@@ -42,17 +43,32 @@ public class EmployeeController {
 	
 	private final EmployeeService eService;
 	private final RoleService rService;
+	private final HolidayService hService;
 	
 	public EmployeeController(EmployeeService eService,
-		RoleService rService) {
+		RoleService rService, HolidayService hService) {
 		super();
 		this.eService = eService;
 		this.rService = rService;
+		this.hService = hService;
 	}
 	
 	// private boolean isLoggedIn(HttpSession session) {
     //     return session.getAttribute("user") != null;
     // }
+	
+	@GetMapping("/updateHolidays")
+	public String updateHolidays(Model model, RedirectAttributes redirectAttrs) {
+		
+		try { 
+			hService.fetchAndSyncHolidays();
+			redirectAttrs.addFlashAttribute("success", "Public Holidays have been updated.");
+			return "redirect:/admin/employees";
+		} catch (Exception ex) { // Catches SQL + Custom exceptions
+			redirectAttrs.addFlashAttribute("failure", "Public Holidays cannot be updated.");
+			return "redirect:/admin/employees";
+		}
+	}
 	
 	@GetMapping
 	public String showEmployees(@AuthenticationPrincipal AuthUserDetails user,
