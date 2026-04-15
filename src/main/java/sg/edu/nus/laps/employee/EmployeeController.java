@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.validation.Valid;
 import sg.edu.nus.laps.auth.model.Role;
 import sg.edu.nus.laps.auth.service.RoleService;
@@ -55,8 +55,14 @@ public class EmployeeController {
     // }
 	
 	@GetMapping
-	public String showEmployees(@AuthenticationPrincipal AuthUserDetails user,
-		Model model, RedirectAttributes redirectAttrs, @PageableDefault(size = 10) Pageable pageable) {
+	public String showEmployees(
+	    @AuthenticationPrincipal AuthUserDetails user,
+	    @RequestParam(required = false) String search,
+	    @RequestParam(required = false) String role,
+	    @RequestParam(defaultValue = "id") String sortBy,
+	    Model model,RedirectAttributes redirectAttrs,
+	    @PageableDefault(size = 10) Pageable pageable) {
+	
 		// if (!isLoggedIn(session)) {
         //     redirectAttrs.addFlashAttribute("errorMessage",
         //             "Please log in to view employees.");
@@ -65,7 +71,7 @@ public class EmployeeController {
 		
 		Integer empCount = eService.countEmployeesByRoleIdEmployee();
 		model.addAttribute("empCount", empCount);
-		
+		 
 		Integer mgrCount = eService.countEmployeesByRoleIdManager();
 		model.addAttribute("mgrCount", mgrCount);
 		
@@ -74,8 +80,8 @@ public class EmployeeController {
 		
 //		List<Employee> allEmployees = eService.findAll();
 //		model.addAttribute("allEmployees", allEmployees);
-		
-		Page<Employee> page = eService.findAll(pageable);
+		Page<Employee> page = eService.getEmployees(search, role, sortBy, pageable);
+
         model.addAttribute("allEmployees", page.getContent());
         model.addAttribute("currentPage", page.getNumber());
         model.addAttribute("totalPages", page.getTotalPages());
