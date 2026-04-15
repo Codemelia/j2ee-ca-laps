@@ -7,10 +7,10 @@ rankDropdown.addEventListener('change', function() {
     // Logic to determine leave days
     switch(selectedRank) {
         case 'NON_EXECUTIVE':
-            leaveInput.value = 14;
+            leaveInput.value = 14.0;
             break;
         case 'PROFESSIONAL':
-            leaveInput.value = 18;
+            leaveInput.value = 18.0;
             break;
         default:
             leaveInput.value = ''; 
