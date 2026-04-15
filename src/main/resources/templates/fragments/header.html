@@ -12,7 +12,8 @@
 
         <!-- Spring Security user role auth -->
         <!-- Only if is not login page -->
-        <div th:if="${entryPoint == null}">
+        <div th:if="${entryPoint == null
+            and status == null}">
             <!-- Topbar links -->
             <nav class="top-links">
 
@@ -71,7 +72,7 @@
                     <!-- Instead of form page, use modal-->
                     <a th:if="${#authentication.principal.email}" 
                         href="#" data-bs-toggle="modal"
-                        data-bs-target="#changePasswordModel">Change Password</a>
+                        data-bs-target="#changePasswordModal">Change Password</a>
 
                     <!-- Admin logout -->
                     <form th:action="@{/auth/admin/logout}" method="POST"

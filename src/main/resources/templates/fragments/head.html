@@ -2,6 +2,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Spring Security -->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
     <title th:text="(${appName} ?: 'G3LAPS') + ' - ' + (${title} ?: 'App')"></title>
 
     <link rel="stylesheet" th:href="@{/css/style.css}">
@@ -12,5 +16,10 @@
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" 
         crossorigin="anonymous" defer></script>
 
-    <th:block th:if="${extra != null}" th:replace="${extra}"></th:block>
+    <script src="/js/change-password.js" defer></script>
+    <script src="/js/main.js" defer></script>
+
+    <th:block th:if="${extra != null}">
+        <th:block th:replace="${extra}"></th:block>
+    </th:block>
 </head>

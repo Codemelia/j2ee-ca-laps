@@ -53,15 +53,13 @@ body {
 
 .page-wrapper {
 	display: flex;
-	
 	margin: 0 auto;
     flex-direction: column; /* Stack items vertically */
-    align-items: center;    /* This is the "magic" that centers them horizontally */
     width: 100%;            /* Ensure it spans the whole screen width */
     max-width: var(--max-width);
     padding: 0 24px;     /* Top/Bottom and Left/Right padding */
-    min-height: 100vh;      /* Use min-height so it expands with the table */
     box-sizing: border-box; /* Ensures padding doesn't break the width */
+    flex: 1;
 }
 
 /* .page-wrapper {
