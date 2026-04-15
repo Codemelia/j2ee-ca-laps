@@ -43,17 +43,6 @@
 							    <a th:href="@{/manager/leave/{id}(id=${leave.id})}">
 							        View
 							    </a><br><br>
-
-							    <form th:action="@{/manager/approve}" method="post" style="display:inline;">
-							        <input type="hidden" name="id" th:value="${leave.id}" />
-							        <button type="submit">Approve</button>
-							    </form>
-
-							    <form th:action="@{/manager/reject}" method="post" style="display:inline;">
-							        <input type="hidden" name="id" th:value="${leave.id}" />
-							        <input type="text" name="comment" placeholder="Enter rejection reason" required />
-							        <button type="submit">Reject</button>
-							    </form>
 							</td>
 			            </tr>
 			        </tbody>
