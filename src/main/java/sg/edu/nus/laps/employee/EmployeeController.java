@@ -19,11 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import sg.edu.nus.laps.auth.model.Role;
 import sg.edu.nus.laps.auth.service.RoleService;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
 import sg.edu.nus.laps.leave.dto.NewAlEntitlement;
+import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveRecord;
 import sg.edu.nus.laps.leave.model.LeaveType;
 import sg.edu.nus.laps.leave.service.HolidayService;
@@ -78,69 +81,6 @@ public class EmployeeController {
 		}
 	}
 	
-	@GetMapping("/update-entitlement")
-	public String showAlEntitlementForm(Model model, RedirectAttributes redirectAttrs) {
-		
-//		NewAlEntitlement newAlEntitlement = new NewAlEntitlement();
-//		newAlEntitlement.getNewNonExecAnnual().setCalendarYear(LocalDate.now().getYear());
-//		newAlEntitlement.getNewNonExecAnnual().setLeaveType()
-		LeaveRecord newAlEntitlement = new LeaveRecord();
-		Long leaveTypeId = 1L;
-		
-		// Get Non-Executive AL entitlement for current Year, default is 14.0 days
-		// Get List<Employee> by EmployeeRank, get EmployeeId of first employee in list
-		// Get AL LeaveRecord of employee, get entitled days
-		List<Employee> nonExecEmployees = eService.findByRank(EmployeeRank.NON_EXECUTIVE);
-		Long firstNonExecId = nonExecEmployees.get(0).getId();
-		
-		Optional<LeaveRecord> nonExecAlRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(firstNonExecId, leaveTypeId, date.now().getYear());
-		
-		if(nonExecAlRecord.isPresent()) {
-			Double currentNonExecAl = nonExecAlRecord.get().getEntitledDays();
-			model.addAttribute("currentNonExecAnnual", currentNonExecAl);
-		} else if(nonExecAlRecord.isEmpty()) {
-			model.addAttribute("currentNonExecAnnual", 14.0);
-		}
-		
-		// Get Professional AL entitlement for current Year, default is 18.0 days
-		List<Employee> proEmployees = eService.findByRank(EmployeeRank.PROFESSIONAL);
-		Long firstProId = proEmployees.get(0).getId();
-		
-		Optional<LeaveRecord> proAlRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(firstProId, leaveTypeId, date.now().getYear());
-		
-		if(proAlRecord.isPresent()) {
-			Double currentProAl = proAlRecord.get().getEntitledDays();
-			model.addAttribute("currentProAnnual", currentProAl);
-		} else if(proAlRecord.isEmpty()) {
-			model.addAttribute("currentProAnnual", 18.0);
-		}
-		
-		return "/al-entitlement-form";
-	}
-	
-	@PostMapping("/update-entitlement")
-	public String updateAnnualLeaveEntitlement(@Valid @ModelAttribute LeaveRecord newAlEntitlement, 
-			BindingResult bindingResult, RedirectAttributes redirectAttrs) {
-		if (bindingResult.hasErrors()) {
-			return "/al-entitlement-form";
-		}
-		
-		Long leaveTypeId = 1L;
-		List<Employee> nonExecEmployees = eService.findByRank(EmployeeRank.NON_EXECUTIVE);
-		
-//		for( Employee e : nonExecEmployees) {
-//			Long employeeId = e.getId();
-//			Optional<LeaveRecord> lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employeeId, leaveTypeId, newAlEntitlement.)
-//		}
-		
-		// find list of nonExecEmployees
-		// for each employee, get employeeId
-		// find leaveRecords by employeeId and leaveTypeId
-		// assign newEntitlement to entitledDays field
-		// BUT we have 2 variants of newEntitlement values: Non-Executive & Professional
-		
-		return "";
-	}
 	
 	@GetMapping
 	public String showEmployees(@AuthenticationPrincipal AuthUserDetails user,
@@ -217,8 +157,19 @@ public class EmployeeController {
 		}
         
 		try { 
+			Long annualLeaveTypeId = 1L;
+			Integer currentYear = LocalDate.now().getYear();
+			
 			eService.saveNewEmployee(employee);
 			redirectAttrs.addFlashAttribute("success", "Employee has been created.");
+			
+			// find employee's AL leave record
+			// set entitled days in employee's AL leave record based on created employee's annualLeave input
+			Optional<LeaveRecord> empAnnualLeaveRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employee.getId(), annualLeaveTypeId, currentYear);
+			if(empAnnualLeaveRecord.isPresent()) {
+				empAnnualLeaveRecord.get().setEntitledDays(employee.getAnnualLeave());
+			} 
+			
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
 			bindingResult.reject("error", "Save failed: " + ex.getMessage());
@@ -237,9 +188,21 @@ public class EmployeeController {
 		
 		model.addAttribute("rankList", EmployeeRank.values());
 		
-		Optional<Employee> empToUpdate = eService.findById(id);
-		if (empToUpdate.isPresent()) {
-			model.addAttribute("employee", empToUpdate.get());
+		Optional<Employee> empOpt = eService.findById(id);
+		if (empOpt.isPresent()) {
+			Employee empToUpdate = empOpt.get();
+			model.addAttribute("employee", empToUpdate);
+			
+			// Find employee's AL leave record
+			// Set employee's annualLeave field to value of entitled days from employee's AL leave record
+			// So that the annualLeave input field in html will be populated with number from leave record
+			Long annualLeaveTypeId = 1L;
+			Integer currentYear = LocalDate.now().getYear();
+			
+			Optional<LeaveRecord> empAnnualRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(id, annualLeaveTypeId, currentYear);
+			if(empAnnualRecord.isPresent()) {
+				empToUpdate.setAnnualLeave(empAnnualRecord.get().getEntitledDays());
+			}
 		} 
 
 		// Not needed - can set if/else on Thymeleaf
@@ -256,17 +219,42 @@ public class EmployeeController {
 	public String updateEmployeeDetails(@PathVariable Long id, 
 		@Valid @ModelAttribute Employee employee, 
 		BindingResult bindingResult, RedirectAttributes redirectAttrs) {
+		
+		if(employee.getRank().equals(EmployeeRank.PROFESSIONAL)) {
+			if(employee.getAnnualLeave() < 18 || employee.getAnnualLeave() > 21) {
+				bindingResult.rejectValue("annualLeave", "error.leave", "For Professionals, Annual Leave must be between 18 and 21.");
+			}
+		}
+		
+		if(employee.getRank().equals(EmployeeRank.NON_EXECUTIVE)) {
+			if(employee.getAnnualLeave() < 14 || employee.getAnnualLeave() > 17) {
+				bindingResult.rejectValue("annualLeave", "error.leave", "For Non-Executives, Annual Leave must be between 14 and 17.");
+			}
+		}
+		
 		if (bindingResult.hasErrors()) {
 			return "employee/employee-form";
 		}
+		
+		
 
 		// ID passed in as hidden form field
 		// But if null, set via Path Variable
 		if (employee.getId() == null) { employee.setId(id); }
 
 		try {
+			// Update employee details
 			eService.updateEmployee(employee);
 			redirectAttrs.addFlashAttribute("success", "Employee #" + id + " has been updated.");
+			
+			Long annualLeaveTypeId = 1L;
+			Integer currentYear = LocalDate.now().getYear();
+			
+			// Update employee's AL leave record entitled days
+			Optional<LeaveRecord> empAnnualRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(id, annualLeaveTypeId, currentYear);
+			if(empAnnualRecord.isPresent()) {
+				empAnnualRecord.get().setEntitledDays(employee.getAnnualLeave());
+			}
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
 			bindingResult.reject("error", "Update failed: " + ex.getMessage());
