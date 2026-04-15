@@ -17,11 +17,17 @@ public class HolidayService {
 	@Autowired
 	private HolidayRepository holidayRepo;
 	
+	/* 
+	 * 1. API URL Link --> Open-source API via data.gov.sg.
+	 * 		Source : Ministry of Manpower. (2025). Public Holidays for 2026 (2025) 
+	 * 		[DataSet]. data.gov.sg from https://data.gov.sg/datasets/d_149b61ad0a22f61c09dc80f2df5bbec8
+	 */
 	private final String DATASET_ID = "d_149b61ad0a22f61c09dc80f2df5bbec8";
 	private final String BASE_URL = "https://data.gov.sg/api/action/datastore_search?resource_id=" + DATASET_ID + "&limit=100";
 	
 	private final RestTemplate restTemplate = new RestTemplate();
 	
+	// 2. Validate if Holiday DB is Empty, otherwise Fetch Data via API
 	@PostConstruct
 	public void init() {
 		if (holidayRepo.count() == 0) {
@@ -29,14 +35,18 @@ public class HolidayService {
 		}
 	}
 	
+	/*
+	 * 3. @Scheduled Annotation --> Attempt to mimic system-like behaviour of annually refresh Holiday DB at the beginning 
+	 * 		of the new year. Does not include unscheduled public holidays such as Polling Day. 
+	 */
 	@Transactional
 	@Scheduled(cron = "0 0 0 1 1 ?")
 	public void fetchAndSyncHolidays() {
 		try {
-			// 1. FETCH JSON from data.gov.sg
+			// a. FETCH JSON Data from data.gov.sg
 			DataGovResponse response = restTemplate.getForObject(BASE_URL, DataGovResponse.class);
 			
-			// 2. Attempt to MAP Holiday RECORDS
+			// b. MAP Holiday to LEAVE RECORDS DB
 			if (response != null && response.result() != null) {
 				response.result().records().forEach(record -> {
 					if (!holidayRepo.existsByDate(record.date())) {
@@ -48,7 +58,7 @@ public class HolidayService {
 				});
 			}
 		} catch (Exception a) {
-			System.err.println("Failed to Sync Holidays: " + a.getMessage());
+			System.err.println("Unable to Update Public Holidays in DB: " + a.getMessage());
 		}
 	}
 }
