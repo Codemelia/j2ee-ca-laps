@@ -25,9 +25,9 @@ public class GlobalExceptionHandler {
 
         // SET REDIRECT TO ADMIN / EMPLOYEE LOGIN BASED ON URI BASE
         if (uri.startsWith("/admin")) {
-            response.sendRedirect("/auth/admin/login?unauthorised");
+            response.sendRedirect("/auth/admin/login?unauthorised=true");
         } else {
-            response.sendRedirect("/auth/employee/login?unauthorised");
+            response.sendRedirect("/auth/employee/login?unauthorised=true");
         }
     }
 
