@@ -19,6 +19,7 @@ import sg.edu.nus.laps.auth.repository.RoleRepository;
 import sg.edu.nus.laps.auth.repository.UserRepository;
 import sg.edu.nus.laps.employee.exception.InvalidEmployeeException;
 import sg.edu.nus.laps.employee.model.Employee;
+import sg.edu.nus.laps.employee.model.EmployeeRank;
 import sg.edu.nus.laps.employee.model.NewEmployeeRecord;
 import sg.edu.nus.laps.employee.repository.EmployeeRepository;
 
@@ -86,6 +87,13 @@ public class EmployeeService {
 		Page<Employee> allEmployees = eRepo.findAll(pageable);
 		
 		return allEmployees;
+	}
+	
+	@Transactional(readOnly = true)
+	public List<Employee> findByRank(EmployeeRank rank) {
+		List<Employee> allEmployeesByRank = eRepo.findByRank(rank);
+		
+		return allEmployeesByRank;
 	}
 	
 	@Transactional(readOnly=true)
