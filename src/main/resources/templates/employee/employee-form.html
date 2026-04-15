@@ -18,6 +18,7 @@
         <!-- For scripts -->
 		<script th:src="@{/js/main.js}" defer></script>
 	</th:block>
+	<script src="/src/main/resources/static/js/employee-form.js" defer></script>
     </head>
 
 	<body>
@@ -80,7 +81,7 @@
                     
                     <div>    
                         <label>Employee's Rank:</label>
-                        <select th:field="*{rank}">
+                        <select id="rank" th:field="*{rank}">
                             <option value="" th:selected="${employee.rank == null}">
                                 -- Select Employee's Rank --
                             </option>
@@ -113,6 +114,13 @@
                         <span class="error" th:if="${#fields.hasErrors('jobTitle')}"
                             th:errors="*{jobTitle}"></span>
                     </div>
+                    
+                    <div>    
+                        <label>Annual Leave Entitlement:</label>
+                        <input id="leave" type="number" th:field="*{annualLeave}"><br>
+                        <span class="error" th:if="${#fields.hasErrors('annualLeave')}"
+                            th:errors="*{annualLeave}"></span>
+                    </div>
 
                     <input type="hidden" th:name="${_csrf.parameterName}"
                         th:value="${_csrf.token}">
@@ -134,7 +142,8 @@
         <footer th:replace="~{fragments/footer :: footer}"></footer>
 
 		<div th:replace="~{fragments/modal :: changePasswordModal}"></div>
-
+		
+		
     </body>
 
 </html>
