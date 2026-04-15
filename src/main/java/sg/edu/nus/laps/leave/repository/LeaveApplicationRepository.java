@@ -83,7 +83,7 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 		    Pageable pageable
 		);
 
-   @Query("SELECT l FROM LeaveApplication l WHERE l.employee.manager.id = :managerId " +
+  @Query("SELECT l FROM LeaveApplication l WHERE l.employee.managerId = :managerId " +
        "AND l.status = 'APPROVED' " +
        "AND l.id != :excludeId " +
        "AND l.fromDate <= :toDate AND l.toDate >= :fromDate")
