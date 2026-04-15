@@ -82,4 +82,6 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 		    @Param("year") int year, 
 		    Pageable pageable
 		);
+
+    List<LeaveApplication> findConflictingLeaves(Long employeeId, LocalDate fromDate, LocalDate toDate, Long id);
 }
