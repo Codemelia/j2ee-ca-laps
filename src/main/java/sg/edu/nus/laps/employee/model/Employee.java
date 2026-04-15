@@ -131,10 +131,19 @@ public class Employee extends SetCreatedUpdated {
 		super();
 	}
 
-	public Employee(String firstName, String lastName, 
-		String contactNumber, EmployeeRank rank, Long managerId, 
-		String teamName, String jobTitle, String roleName, 
-		User user) {
+	public Employee(Long id,
+			@NotBlank(message = "First name is required") @Size(min = 2, max = 50, message = "First name must be between 2 to 50 characters") @Pattern(regexp = "^[A-Za-z '-]+$", message = "First name contains invalid characters") String firstName,
+			@NotBlank(message = "Last name is required") @Size(min = 2, max = 50, message = "Last name must be between 2 to 50 characters") @Pattern(regexp = "^[A-Za-z '-]+$", message = "Last name contains invalid characters") String lastName,
+			@NotBlank(message = "Contact number is required") @Size(min = 8, max = 15, message = "Contact number must be between 8 to 15 characters") @Pattern(regexp = "^\\+?\\d{8,15}$", message = "Enter a valid phone number") String contactNumber,
+			@NotNull(message = "Please select employee's rank") EmployeeRank rank,
+			@Positive(message = "Manager's id must be a positive number") Long managerId,
+			@NotBlank(message = "Please state employee's team name") @Size(max = 50, message = "Team name must be 50 characters and below") String teamName,
+			@NotBlank(message = "Please state employee's job title") @Size(max = 50, message = "Job title must be 50 characters and below") String jobTitle,
+			@NotBlank(message = "Annual Leave Entitlement cannot be blank") @Min(14) @Max(21) Double annualLeave,
+			@NotBlank(message = "Role must not be blank") String roleName, User user,
+			List<LeaveApplication> leaveApplications, List<LeaveRecord> leaveRecords) {
+		super();
+		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.contactNumber = contactNumber;
@@ -142,8 +151,11 @@ public class Employee extends SetCreatedUpdated {
 		this.managerId = managerId;
 		this.teamName = teamName;
 		this.jobTitle = jobTitle;
+		this.annualLeave = annualLeave;
 		this.roleName = roleName;
 		this.user = user;
+		this.leaveApplications = leaveApplications;
+		this.leaveRecords = leaveRecords;
 	}
 
 	public Long getId() {
@@ -226,6 +238,7 @@ public class Employee extends SetCreatedUpdated {
 	public void setJobTitle(String jobTitle) {
 		this.jobTitle = jobTitle;
 	}
+	
 
 	public List<LeaveApplication> getLeaveApplications() {
 		return this.leaveApplications;
@@ -251,11 +264,19 @@ public class Employee extends SetCreatedUpdated {
 		this.roleName = roleName;
 	}
 
+	public Double getAnnualLeave() {
+		return annualLeave;
+	}
+
+	public void setAnnualLeave(Double annualLeave) {
+		this.annualLeave = annualLeave;
+	}
+
 	@Override
 	public String toString() {
 		return "Employee [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", contactNumber="
 				+ contactNumber + ", rank=" + rank + ", managerId=" + managerId + ", createdAt=" + createdAt
-				+ ", updatedAt=" + updatedAt + ", user=" + user + ", leaveApplications=" + leaveApplications
+				+ ", updatedAt=" + updatedAt + ", annualLeave=" + annualLeave + ", user=" + user + ", leaveApplications=" + leaveApplications
 				+ ", leaveRecords=" + leaveRecords + "]";
 	}
 	
