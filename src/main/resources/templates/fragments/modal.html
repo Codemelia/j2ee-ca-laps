@@ -1,0 +1,68 @@
+<div th:fragment="changePasswordModal">
+
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Header -->
+                <div class="model-header">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+
+                        <div class="mb-3">
+                            <input type="password"
+                                name="oldRawPassword"
+                                class="form-control"
+                                placeholder="Current Password"
+                                required />
+                            <div id="oldRawPasswordError"
+                                class="text-danger small">
+                        </div>
+
+                        <div class="mb-3">
+                            <input type="password"
+                                name="newRawPassword"
+                                class="form-control"
+                                placeholder="New Password"
+                                required />
+                            <div id="newRawPasswordError"
+                                class="text-danger small">
+                        </div>
+
+                        <div class="mb-3">
+                            <input type="password"
+                                name="confirmPassword"
+                                class="form-control"
+                                placeholder="Confirm Password"
+                                required />
+                            <div id="confirmPasswordError"
+                                class="text-danger small">
+                        </div>
+
+                        <div id="globalError"
+                            class="text-danger mb-2"></div>
+                        <div id="successMsg"
+                            class="text-success mb-2"></div>
+
+                        <input type="hidden" th:name="${_csrf.parameterName}"
+                            th:value="${_csrf.token}">
+                        
+                        <button type="submit"
+                            class="btn btn-primary w-100">
+                            Change Password
+                        </button>
+
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>

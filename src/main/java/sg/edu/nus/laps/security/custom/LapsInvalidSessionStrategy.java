@@ -19,9 +19,9 @@ public class LapsInvalidSessionStrategy implements InvalidSessionStrategy {
 
         // SET REDIRECT TO ADMIN / EMPLOYEE LOGIN BASED ON URI BASE
         if (uri.startsWith("/admin")) {
-            response.sendRedirect("/auth/admin/login?invalid");
+            response.sendRedirect("/auth/admin/login?invalid=true");
         } else {
-            response.sendRedirect("/auth/employee/login?invalid");
+            response.sendRedirect("/auth/employee/login?invalid=true");
         }
 
     }

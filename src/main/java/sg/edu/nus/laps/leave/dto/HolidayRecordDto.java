@@ -16,7 +16,7 @@ public record HolidayRecordDto(
 	
 	// 1. Convert DTO to JPA Entity
 	public Holiday toEntity() {
-		return new Holiday(this.holiday, this.date);
+		return new Holiday(this.holiday, this.date, "Singapore");
 	}
 
 }

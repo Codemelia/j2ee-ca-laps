@@ -1,5 +1,6 @@
  package sg.edu.nus.laps.employee;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,10 +19,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import sg.edu.nus.laps.auth.model.Role;
 import sg.edu.nus.laps.auth.service.RoleService;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
+import sg.edu.nus.laps.leave.model.LeaveApplication;
+import sg.edu.nus.laps.leave.model.LeaveRecord;
+import sg.edu.nus.laps.leave.model.LeaveType;
+import sg.edu.nus.laps.leave.service.HolidayService;
+import sg.edu.nus.laps.leave.service.LeaveRecordService;
 import sg.edu.nus.laps.security.AuthUserDetails;
 
 /*
@@ -42,17 +50,36 @@ public class EmployeeController {
 	
 	private final EmployeeService eService;
 	private final RoleService rService;
+	private final HolidayService hService;
+	private final LeaveRecordService lrService;
+	private LocalDate date;
 	
 	public EmployeeController(EmployeeService eService,
-		RoleService rService) {
+		RoleService rService, HolidayService hService, LeaveRecordService lrService) {
 		super();
 		this.eService = eService;
 		this.rService = rService;
+		this.hService = hService;
+		this.lrService = lrService;
 	}
 	
 	// private boolean isLoggedIn(HttpSession session) {
     //     return session.getAttribute("user") != null;
     // }
+	
+	@GetMapping("/updateHolidays")
+	public String updateHolidays(Model model, RedirectAttributes redirectAttrs) {
+		
+		try { 
+			hService.fetchAndSyncHolidays();
+			redirectAttrs.addFlashAttribute("success", "Public Holidays have been updated.");
+			return "redirect:/admin/employees";
+		} catch (Exception ex) { // Catches SQL + Custom exceptions
+			redirectAttrs.addFlashAttribute("failure", "Public Holidays cannot be updated.");
+			return "redirect:/admin/employees";
+		}
+	}
+	
 	
 	@GetMapping
 	public String showEmployees(@AuthenticationPrincipal AuthUserDetails user,
@@ -129,8 +156,19 @@ public class EmployeeController {
 		}
         
 		try { 
+			Long annualLeaveTypeId = 1L;
+			Integer currentYear = LocalDate.now().getYear();
+			
 			eService.saveNewEmployee(employee);
 			redirectAttrs.addFlashAttribute("success", "Employee has been created.");
+			
+			// find employee's AL leave record
+			// set entitled days in employee's AL leave record based on created employee's annualLeave input
+			Optional<LeaveRecord> empAnnualLeaveRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employee.getId(), annualLeaveTypeId, currentYear);
+			if(empAnnualLeaveRecord.isPresent()) {
+				empAnnualLeaveRecord.get().setEntitledDays(employee.getAnnualLeave());
+			} 
+			
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
 			bindingResult.reject("error", "Save failed: " + ex.getMessage());
@@ -149,9 +187,21 @@ public class EmployeeController {
 		
 		model.addAttribute("rankList", EmployeeRank.values());
 		
-		Optional<Employee> empToUpdate = eService.findById(id);
-		if (empToUpdate.isPresent()) {
-			model.addAttribute("employee", empToUpdate.get());
+		Optional<Employee> empOpt = eService.findById(id);
+		if (empOpt.isPresent()) {
+			Employee empToUpdate = empOpt.get();
+			model.addAttribute("employee", empToUpdate);
+			
+			// Find employee's AL leave record
+			// Set employee's annualLeave field to value of entitled days from employee's AL leave record
+			// So that the annualLeave input field in html will be populated with number from leave record
+			Long annualLeaveTypeId = 1L;
+			Integer currentYear = LocalDate.now().getYear();
+			
+			Optional<LeaveRecord> empAnnualRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(id, annualLeaveTypeId, currentYear);
+			if(empAnnualRecord.isPresent()) {
+				empToUpdate.setAnnualLeave(empAnnualRecord.get().getEntitledDays());
+			}
 		} 
 
 		// Not needed - can set if/else on Thymeleaf
@@ -168,17 +218,42 @@ public class EmployeeController {
 	public String updateEmployeeDetails(@PathVariable Long id, 
 		@Valid @ModelAttribute Employee employee, 
 		BindingResult bindingResult, RedirectAttributes redirectAttrs) {
+		
+		if(employee.getRank().equals(EmployeeRank.PROFESSIONAL)) {
+			if(employee.getAnnualLeave() < 18 || employee.getAnnualLeave() > 21) {
+				bindingResult.rejectValue("annualLeave", "error.leave", "For Professionals, Annual Leave must be between 18 and 21.");
+			}
+		}
+		
+		if(employee.getRank().equals(EmployeeRank.NON_EXECUTIVE)) {
+			if(employee.getAnnualLeave() < 14 || employee.getAnnualLeave() > 17) {
+				bindingResult.rejectValue("annualLeave", "error.leave", "For Non-Executives, Annual Leave must be between 14 and 17.");
+			}
+		}
+		
 		if (bindingResult.hasErrors()) {
 			return "employee/employee-form";
 		}
+		
+		
 
 		// ID passed in as hidden form field
 		// But if null, set via Path Variable
 		if (employee.getId() == null) { employee.setId(id); }
 
 		try {
+			// Update employee details
 			eService.updateEmployee(employee);
 			redirectAttrs.addFlashAttribute("success", "Employee #" + id + " has been updated.");
+			
+			Long annualLeaveTypeId = 1L;
+			Integer currentYear = LocalDate.now().getYear();
+			
+			// Update employee's AL leave record entitled days
+			Optional<LeaveRecord> empAnnualRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(id, annualLeaveTypeId, currentYear);
+			if(empAnnualRecord.isPresent()) {
+				empAnnualRecord.get().setEntitledDays(employee.getAnnualLeave());
+			}
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
 			bindingResult.reject("error", "Update failed: " + ex.getMessage());

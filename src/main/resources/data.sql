@@ -103,7 +103,7 @@ INSERT INTO leave_applications (
   (14, 3, 1, '2026-02-16 00:00:00', '2026-02-16 23:59:59', NULL, 'Personal appointment', 'Support mailbox shared with Amy Lim', 'ben.white@iss.nus.edu.sg', 'Rejected due to overlapping team leave', FALSE, 'REJECTED', '2026-01-31 09:00:00', '2026-02-01 09:00:00'),
   (15, 3, 3, '2026-05-05 13:00:00', '2026-05-05 17:00:00', NULL, 'Compensation leave PM', 'Production checks delegated to Mark Chan', 'ben.white@iss.nus.edu.sg', NULL, TRUE, 'APPLIED', '2026-04-01 08:45:00', '2026-04-01 08:45:00'),
   (16, 3, 1, '2026-08-24 00:00:00', '2026-08-24 23:59:59', NULL, 'Family matters', 'Ticket triage reassigned to Team 1 backup', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'CANCELLED', '2026-04-03 13:30:00', '2026-04-05 10:00:00'),
-  (17, 3, 1, '2026-11-30 00:00:00', '2026-11-30 23:59:59', NULL, 'Parent-teacher meeting', 'Daily deployment checks covered by Amy Lim', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'UPDATED', '2026-04-03 09:30:00', '2026-04-03 18:20:00'),
+  (17, 3, 1, '2026-11-30 00:00:00', '2026-11-30 23:59:59', NULL, 'Parent-teacher meeting', 'Daily deployment checks covered by Amy Lim', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'APPROVED', '2026-04-03 09:30:00', '2026-04-03 18:20:00'),
   (18, 3, 1, '2026-12-01 00:00:00', '2026-12-01 23:59:59', NULL, 'Parent-teacher meeting', 'Daily deployment checks covered by Amy Lim', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-03 09:30:00', '2026-04-03 09:30:00'),
   (19, 3, 1, '2026-12-24 00:00:00', '2026-12-28 23:59:59', NULL, 'Year-end break', 'Daily deployment checks covered by Amy Lim', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-03 09:30:00', '2026-04-03 09:30:00'),
   (20, 3, 1, '2026-12-30 00:00:00', '2027-01-04 23:59:59', NULL, 'Year-end break', 'Daily deployment checks covered by Amy Lim', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-03 09:30:00', '2026-04-03 09:30:00'),
@@ -111,12 +111,14 @@ INSERT INTO leave_applications (
 
 -- ── leave_records ( ManytoOne → leave_types, ManytoOne → employees) ───────────────────────────────────────────────────────────────
 INSERT INTO leave_records (id, employee_id, leave_type_id, calendar_year, entitled_days, consumed_days, created_at, updated_at) VALUES
-  ( 1, 1, 1, 2026, 18.0, 0.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
-  ( 2, 2, 1, 2026, 14.0, 0.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
-  ( 3, 1, 2, 2026, 14.0, 0.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
-  ( 4, 2, 2, 2026, 14.0, 0.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
-  ( 5, 1, 3, 2026, 14.0, 0.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
-  ( 6, 2, 3, 2026, 14.0, 0.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00');
+  (1, 1, 1, 2026, 18.0, 2.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
+  (2, 2, 1, 2026, 14.0, 2.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
+  (3, 1, 2, 2026, 14.0, 1.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
+  (4, 2, 2, 2026, 14.0, 2.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
+  (5, 1, 3, 2026, 14.0, 0.5, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
+  (6, 2, 3, 2026, 14.0, 0.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
+  (7, 3, 1, 2026, 18.0, 2.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
+  (8, 3, 2, 2026, 14.0, 1.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00');
 
 
 

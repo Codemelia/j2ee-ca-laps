@@ -161,5 +161,61 @@ public class LeaveController {
         
         return "redirect:/leaves";
 
+    @PostMapping("/cancel/{id}")
+    public String cancelLeave(@AuthenticationPrincipal AuthUserDetails user, @PathVariable Long id, RedirectAttributes ra) {
+    	LeaveApplication leaveCancel = lService.findLeaveById(id).orElse(null);
+    	if (leaveCancel == null) {
+            ra.addFlashAttribute("error", "No such leave application exists");
+            return "redirect:/leaves";
+    	 }
+    	Long leaveEmpId = leaveCancel.getEmployee().getId();
+        Long currViewerId = user.getEmployeeId();
+     // Security Check
+        boolean isSelf = currViewerId != null && currViewerId.equals(leaveEmpId);
+
+     // Logic: Block if not self 
+        if (!isSelf) {
+            return "error/forbidden";
+        }
+    	try {
+            leaveService.cancelLeave(id);
+            ra.addFlashAttribute("message", "Leave application cancelled.");
+        } catch (RuntimeException e) {
+            //  catches "started leave" or "Not Approved" exceptions
+            ra.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/leaves"; // Redirect back to the list
+    }
+    
+    @PostMapping("/delete/{id}")
+    public String deleteLeave(@AuthenticationPrincipal AuthUserDetails user, @PathVariable Long id,RedirectAttributes ra) {
+    	LeaveApplication leaveDel = lService.findLeaveById(id).orElse(null);
+    	if (leaveDel == null) {
+            ra.addFlashAttribute("error", "No such leave application exists");
+            return "redirect:/leaves";
+        }
+    	Long leaveEmpId = leaveDel.getEmployee().getId();
+        Long currViewerId = user.getEmployeeId();
+     // Security Check
+        boolean isSelf = currViewerId != null && currViewerId.equals(leaveEmpId);
+
+     // Logic: Block if not self 
+        if (!isSelf) {
+            return "error/forbidden";
+        } 
+                 
+     // 3. Perform delete action  
+        try {
+            lService.deleteLeave(id); 
+            ra.addFlashAttribute("message", "Leave application deleted.");
+        } catch (RuntimeException e) {
+            // catches (APPLIED/UPDATED only)
+            ra.addFlashAttribute("error", e.getMessage());
+        }
+        // 4. Redirect to the list
+        return "redirect:/leaves"; 
+    }
+       
+  
 }
     }

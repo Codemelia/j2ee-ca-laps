@@ -1,6 +1,7 @@
 package sg.edu.nus.laps.leave.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -20,5 +21,18 @@ public class LeaveRecordService {
     public List<LeaveRecord> getLeaveRecords(Long employeeId) {
         return lrRepo.findByEmployeeId(employeeId);
     }
+    
+    public Optional<LeaveRecord> findByEmployeeIdAndLeaveTypeIdAndCalendarYear(Long employeeId, Long leaveTypeId, Integer calendarYear) {
+    	Optional<LeaveRecord> leaveRecordOpt = lrRepo.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employeeId, leaveTypeId, calendarYear);
+    	
+    	if(leaveRecordOpt.isPresent()) {
+    		return leaveRecordOpt;
+    	}
+    	return Optional.empty();
+    
+    }
+    
+    
+    
 
 }

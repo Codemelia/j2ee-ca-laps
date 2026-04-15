@@ -58,14 +58,18 @@ public class SecurityConfig {
                 .usernameParameter("email") // Change default username > email field
                 .passwordParameter("password") // Default password field
                 .successHandler(adminSuccessHandler()) // Role-based redirect / successful login redirect
-                .failureForwardUrl("/auth/admin/login?error") // If login fails, go to login page with error and form params
+                .failureHandler((request, response, exception) -> {
+                    String email = request.getParameter("email");
+                    response
+                        .sendRedirect("/auth/admin/login?error=true&email=" + email);
+                }) // If login fails, go to login page with error and form params
                 .permitAll()
             )
 
             // FORM LOGOUT FLOW
             .logout(logout -> logout
                 .logoutUrl("/auth/admin/logout") // POST /auth/admin/logout
-                .logoutSuccessUrl("/auth/admin/login?logout") // On successful logout, go to login page with logout param
+                .logoutSuccessUrl("/auth/admin/login?logout=true") // On successful logout, go to login page with logout param
                 .invalidateHttpSession(true) // Invalidate session
                 .clearAuthentication(true) // Clear auth data
                 .deleteCookies("JSESSIONID") // Delete current session cookies
@@ -95,14 +99,18 @@ public class SecurityConfig {
                 .usernameParameter("email") // Change default username > email field
                 .passwordParameter("password") // Default password field
                 .successHandler(employeeSuccessHandler()) // Role-based redirect / successful login redirect
-                .failureForwardUrl("/auth/employee/login?error") // If login fails, go to login page with error and form params
+                .failureHandler((request, response, exception) -> {
+                    String email = request.getParameter("email");
+                    response
+                        .sendRedirect("/auth/employee/login?error=true&email=" + email);
+                }) // If login fails, go to login page with error and form params
                 .permitAll()
             )
 
             // FORM LOGOUT FLOW
             .logout(logout -> logout
                 .logoutUrl("/auth/employee/logout") // POST /auth/admin/logout
-                .logoutSuccessUrl("/auth/employee/login?logout") // On successful logout, go to login page with logout param
+                .logoutSuccessUrl("/auth/employee/login?logout=true") // On successful logout, go to login page with logout param
                 .invalidateHttpSession(true) // Invalidate session
                 .clearAuthentication(true) // Clear auth data
                 .deleteCookies("JSESSIONID") // Delete current session cookies
@@ -152,9 +160,8 @@ public class SecurityConfig {
             if (!SecurityUtil.isAdmin(auth)) {
                 new SecurityContextLogoutHandler()
                     .logout(request, response, auth); // Logout invalid user
-                response.sendRedirect("/auth/admin/login?adminInvalid"
-                    + "&email=" + request.getParameter("email") // Insert email param for form population
-                );
+                response
+                    .sendRedirect("/auth/admin/login?admin=false");
                 return;
             }
 
@@ -173,9 +180,8 @@ public class SecurityConfig {
             if (SecurityUtil.isAdmin(auth)) {
                 new SecurityContextLogoutHandler()
                     .logout(request, response, auth); // Logout invalid user
-                response.sendRedirect("/auth/employee/login?employeeInvalid"
-                    + "&email=" + request.getParameter("email") // Insert email param for form population
-                );
+                response
+                    .sendRedirect("/auth/employee/login?employee=false");
                 return;
             }
 

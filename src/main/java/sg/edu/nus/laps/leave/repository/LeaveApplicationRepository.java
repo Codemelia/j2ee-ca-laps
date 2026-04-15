@@ -82,4 +82,14 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 		    @Param("year") int year, 
 		    Pageable pageable
 		);
+
+  @Query("SELECT l FROM LeaveApplication l WHERE l.employee.managerId = :managerId " +
+       "AND l.status = 'APPROVED' " +
+       "AND l.id != :excludeId " +
+       "AND l.fromDate <= :toDate AND l.toDate >= :fromDate")
+List<LeaveApplication> findConflictingLeaves(
+    @Param("managerId") Long managerId,
+    @Param("fromDate") LocalDate fromDate,
+    @Param("toDate") LocalDate toDate,
+    @Param("excludeId") Long excludeId);
 }

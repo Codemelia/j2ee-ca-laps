@@ -11,6 +11,8 @@ import jakarta.validation.constraints.NotBlank;
 @Entity
 @Table(name = "roles")
 public class Role {
+
+	// ATTRIBUTES
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
