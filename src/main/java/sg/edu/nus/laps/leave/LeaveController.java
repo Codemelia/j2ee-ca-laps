@@ -1,22 +1,25 @@
 package sg.edu.nus.laps.leave;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.data.domain.Page;
 
+import jakarta.validation.Valid;
 import sg.edu.nus.laps.employee.EmployeeService;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
+import sg.edu.nus.laps.leave.repository.LeaveTypeRepository;
 import sg.edu.nus.laps.leave.service.LeaveService;
 import sg.edu.nus.laps.security.AuthUserDetails;
 
@@ -43,17 +46,31 @@ import sg.edu.nus.laps.security.AuthUserDetails;
 @RequestMapping("/leaves")
 @Controller
 public class LeaveController {
-	@Autowired
-    private LeaveService leaveService;
+	/* 20260416 by ymw
+	 * @Autowired
+    private LeaveService leaveService;*/
+	private final LeaveService leaveService;
 	// View personal leave history
 
     private final EmployeeService empService;
-    private final LeaveService lService;
+    private final LeaveService c;
+    private final LeaveTypeRepository ltRepo;
 
-    public LeaveController(LeaveService lService,
-        EmployeeService empService) {
+    /* by ymw
+     * public LeaveController(LeaveService lService,
+        EmployeeService empService,
+        LeaveTypeRepository ltRepo) {
         this.lService = lService;
         this.empService = empService;
+		this.ltRepo = ltRepo;
+    } */
+    public LeaveController(LeaveService leaveService,
+            EmployeeService empService,
+            LeaveTypeRepository ltRepo, LeaveService c) {
+            this.leaveService = leaveService;
+			this.empService = empService;
+			this.c = c;
+			this.ltRepo = ltRepo;
     }
 
     // TEST leave-details.html - DELETE when updated
@@ -62,7 +79,7 @@ public class LeaveController {
         @PathVariable Long id, Model model) {
 
         // Get curr leave app and viewer id
-        Optional<LeaveApplication> leaveAppOpt = lService.findLeaveById(id);
+        Optional<LeaveApplication> leaveAppOpt = leaveService.findLeaveById(id);
 
         // Handle null leave app
         if (leaveAppOpt.isEmpty()) {
@@ -106,6 +123,37 @@ public class LeaveController {
         model.addAttribute("page", page);
         return "leave/leave-list"; // The Thymeleaf template
     }
+ /* by ymw
+  *   @GetMapping("/apply")
+    public String showApplyForm(Model model) {
+        
+        model.addAttribute("leaveApplication", new LeaveApplication()); 
+        model.addAttribute("leaveTypes", ltRepo.findAll());
+        return "leave/leave-form"; 
+    } */
+    @GetMapping("/apply")
+    public String showApplyForm(Model model) {
+
+        model.addAttribute("leaveApplication", new LeaveApplication());
+
+        var leaveTypes = ltRepo.findAll();
+
+        System.out.println("leaveTypes = " + leaveTypes); // 👈 加这个
+
+        model.addAttribute("leaveTypes", leaveTypes);
+
+        return "leave/leave-form";
+    }
+
+    @PostMapping("/apply")
+    public String saveLeaveApplication(@Valid @ModelAttribute LeaveApplication leaveApp, BindingResult result, Model model) {
+    	if (result.hasErrors()) {
+    		model.addAttribute("leaveTypes", ltRepo.findAll());
+    		return "leave/leave-form";
+    		}
+    	leaveService.submitLeave(leaveApp); 
+        
+        return "redirect:/leaves";
 
     @PostMapping("/cancel/{id}")
     public String cancelLeave(@AuthenticationPrincipal AuthUserDetails user, @PathVariable Long id, RedirectAttributes ra) {
@@ -164,3 +212,4 @@ public class LeaveController {
        
   
 }
+    }

@@ -5,8 +5,19 @@
 	<head th:replace="~{fragments/head ::head('My Leave History', ~{::extra})}">
     <!-- For scripts -->
 		<th:block th:fragment="extra">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-			<script th:src="@{/js/main.js}" defer></script>
+			<style>
+						label {
+							display: inline-block;
+							width: 150px; /* Specify your desired width here */
+							margin-right: 10px;
+							margin-bottom: 10px;
+						}
+						input {
+							width: 200px;
+						}
+					</style>
+			        <!-- For scripts -->
+					<script th:src="@{/js/main.js}" defer></script>
 		</th:block>
   </head>
 
@@ -21,39 +32,39 @@
           th:if="${globalError}"
           th:text="${globalError}"></div>
         <form
-          th:action="@{/leaves/apply}"
-          method="post"
-          enctype="multipart/form-data">
+          th:action="@{/leaves/apply}"th:object="${leaveApplication}"
+          method="post">
           <div class="form-group">
             <label for="leaveType">Leave Type</label>
-            <select id="leaveType" name="leaveType" required>
+            <select id="leaveType"th:field="*{leaveType.id}" class="form-control"required>
               <option value="" disabled selected>Select Type</option>
-              <option value="ANNUAL">Annual Leave</option>
-              <option value="MEDICAL">Medical Leave</option>
-              <option value="COMPENSATION">Compensation Leave</option>
+              <option  th:each="lt : ${leaveTypes}" 
+			           th:value="${lt.id}" 
+			           th:text="${lt.leaveType}">Annual</option>
+              
             </select>
           </div>
           <div class="form-group">
             <label>From</label>
-            <input type="date" name="fromDate" required />
+            <input type="date"  th:field="*{fromDate}" required />
+			<span class="error" th:if="${#fields.hasErrors('fromDate')}"
+										th:errors="*{fromDate}"></span>
           </div>
           <div class="form-group">
             <label>To</label>
-            <input type="date" name="toDate" required />
+            <input type="date"  th:field="*{toDate}" required />
             <span class="field-error" th:if="${dateError}"
               >You have an existing Leave within this date range</span>
           </div>
           <div class="form-group">
             <label>Proof</label>
-            <input type="file" name="proof" />
+            <input type="file"  th:field="*{proof}" />
             <p class="sub-text">Upload image to S3</p>
           </div>
           <div class="form-group">
             <label>Reason</label>
             <textarea
-              id="reason"
-              name="reason"
-              placeholder="State your reason"
+              th:field="*{reason}" placeholder="State your reason"
             ></textarea>
           </div>
 
