@@ -17,9 +17,11 @@ public class ApprovalService {
 
     private final LeaveApplicationRepository leaveRepo;
     private final LeaveRecordRepository lrRepo;
-    public ApprovalService(LeaveApplicationRepository leaveRepo, LeaveRecordRepository lrRepo) {
+     private final ApprovalRepository approvalRepo;
+    public ApprovalService(LeaveApplicationRepository leaveRepo, LeaveRecordRepository lrRepo,ApprovalRepository approvalRepo) {
         this.leaveRepo = leaveRepo;
         this.lrRepo = lrRepo;
+        this.approvalRepo = approvalRepo;
     }
 
     /**
@@ -88,8 +90,27 @@ private double calculateActualLeaveDays(LeaveApplication l) {
 }
 
     private double countWorkingDays(LocalDate fromDate, LocalDate toDate) {
+    double workingDays = 0;
+    LocalDate current = fromDate;
     
-    throw new UnsupportedOperationException("Unimplemented method 'countWorkingDays'");
+    while (!current.isAfter(toDate)) {
+        int dayOfWeek = current.getDayOfWeek().getValue();
+        // 1-5 are Monday-Friday, 6-7 are Saturday-Sunday
+        if (dayOfWeek < 6) {
+            // Check if it's not a holiday
+            if (!isHoliday(current)) {
+                workingDays++;
+            }
+        }
+        current = current.plusDays(1);
+    }
+    return workingDays;
+}
+
+private boolean isHoliday(LocalDate date) {
+    // TODO: Implement holiday check from database
+    // For now, return false (no holidays)
+    return false;
 }
 
     /**
