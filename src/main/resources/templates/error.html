@@ -8,7 +8,20 @@
 		<header th:replace="~{fragments/header :: header}"></header>
 		
         <div class="page-wrapper">
-            <!-- Page Content -->
+			<div class="alert alert-error">
+				<h1>Oops! Something went wrong.</h1>
+
+				<p th:text="'Status Code: ' + ${status}"></p>
+				<p th:text="${error}"></p>
+				<p th:text="${message}"></p>
+
+				<div class="details">
+					<p th:text="'Time: ' + ${timestamp}"></p>
+				</div>
+
+				<button class="btn" type="button" 
+					onclick="history.back()">Back</button>
+			</div>
 		</div>
 
         <footer th:replace="~{fragments/footer :: footer}"></footer>

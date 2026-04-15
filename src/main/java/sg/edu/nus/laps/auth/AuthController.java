@@ -1,17 +1,27 @@
 package sg.edu.nus.laps.auth;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import sg.edu.nus.laps.auth.model.LoginUserDTO;
+import sg.edu.nus.laps.auth.model.PasswordDTO;
+import sg.edu.nus.laps.auth.service.UserService;
+import sg.edu.nus.laps.security.AuthUserDetails;
 
 /*
     AuthController handles all user auth operations
@@ -24,6 +34,11 @@ import sg.edu.nus.laps.auth.model.LoginUserDTO;
 @RequestMapping("/auth")
 @Controller
 public class AuthController {
+
+    private final UserService userSvc;
+    public AuthController(UserService userSvc) {
+        this.userSvc = userSvc;
+    }
 
     // SPRING SECURITY HANDLES:
     // Login/logout, authentication, authorisation, session management
@@ -82,6 +97,35 @@ public class AuthController {
 
         return "forward:/auth/admin/login"; // Let Spring Security authenticate
 
+    }
+
+    // Handle password change request
+    @PostMapping("/change-password")
+    @ResponseBody
+    public ResponseEntity<?> changePassword(
+        @RequestBody @Valid PasswordDTO passwordDto,
+        BindingResult result,
+        @AuthenticationPrincipal AuthUserDetails user) {
+        
+        // Check if confirm password same as new
+        // If no match, add as field error under confirm password
+        if (!userSvc.passwordsMatch(passwordDto)) {
+            result.rejectValue("confirmPassword", "Passwords do not match");
+        }
+
+        // If there are errors, store in HashMap
+        // Return ResponseEntity with errors
+        if (result.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            result.getFieldErrors()
+                .forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
+            return ResponseEntity.badRequest().body(Map.of("errors", errors));
+        }
+
+        // Else, attempt an update
+        userSvc.changePassword(user.getEmail(), passwordDto);
+        return ResponseEntity.ok(
+            Map.of("message", "Password updated successfully"));
     }
 
 }

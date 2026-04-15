@@ -8,10 +8,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import sg.edu.nus.laps.common.util.SetCreatedUpdated;
 import sg.edu.nus.laps.employee.model.Employee;
@@ -20,7 +18,7 @@ import sg.edu.nus.laps.employee.model.Employee;
 @Table(name = "users")
 public class User extends SetCreatedUpdated {
 	
-	// VARIABLES
+	// ATTRIBUTES
 
 	@Id
 	@Column(nullable = false, unique = true, length = 256) // JPA - MySQL constraints
@@ -35,22 +33,6 @@ public class User extends SetCreatedUpdated {
 	@NotBlank(message = "Password hash is required")
 	@Size(max = 255, message = "Password hash must not be longer than 255 characters")
 	private String passwordHash;
-
-	// Transient field for new raw password
-	@Transient
-	@NotBlank(message = "New password cannot be null or blank")
-	@Size(min = 12, max = 16, message ="New password must be between 12 and 16 characters")
-	@Pattern(
-		regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).{12,16}$",
-		message = "Password must contain 12 to 16 characters, including uppercase, lowercase, number, and special characters"
-	)
-	private String passwordNewRaw;
-
-	// Transient field for old raw password
-	// Content not validated - checked in Service + DB
-	@Transient
-	@NotBlank(message = "Old password cannot be null or blank")
-	private String passwordOldRaw;
 
 	// default to true - Avoid accidental pending state
 	@Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
@@ -68,8 +50,6 @@ public class User extends SetCreatedUpdated {
 	// User to Employee: One to One
 	@OneToOne(optional = true, mappedBy = "user", fetch = FetchType.LAZY)
 	private Employee employee;
-
-	// LIFECYCLE
 
 	// CONSTRUCTORS
 

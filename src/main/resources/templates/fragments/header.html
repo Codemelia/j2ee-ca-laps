@@ -68,8 +68,10 @@
                     <hr>
 
                     <!-- User actions -->
+                    <!-- Instead of form page, use modal-->
                     <a th:if="${#authentication.principal.email}" 
-                        th:href="@{/auth/change-password}">Change Password</a>
+                        href="#" data-bs-toggle="modal"
+                        data-bs-target="#changePasswordModel">Change Password</a>
 
                     <!-- Admin logout -->
                     <form th:action="@{/auth/admin/logout}" method="POST"
