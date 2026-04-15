@@ -1,5 +1,6 @@
  package sg.edu.nus.laps.employee;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +23,11 @@ import sg.edu.nus.laps.auth.model.Role;
 import sg.edu.nus.laps.auth.service.RoleService;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
+import sg.edu.nus.laps.leave.dto.NewAlEntitlement;
+import sg.edu.nus.laps.leave.model.LeaveRecord;
+import sg.edu.nus.laps.leave.model.LeaveType;
 import sg.edu.nus.laps.leave.service.HolidayService;
+import sg.edu.nus.laps.leave.service.LeaveRecordService;
 import sg.edu.nus.laps.security.AuthUserDetails;
 
 /*
@@ -44,13 +49,16 @@ public class EmployeeController {
 	private final EmployeeService eService;
 	private final RoleService rService;
 	private final HolidayService hService;
+	private final LeaveRecordService lrService;
+	private LocalDate date;
 	
 	public EmployeeController(EmployeeService eService,
-		RoleService rService, HolidayService hService) {
+		RoleService rService, HolidayService hService, LeaveRecordService lrService) {
 		super();
 		this.eService = eService;
 		this.rService = rService;
 		this.hService = hService;
+		this.lrService = lrService;
 	}
 	
 	// private boolean isLoggedIn(HttpSession session) {
@@ -68,6 +76,70 @@ public class EmployeeController {
 			redirectAttrs.addFlashAttribute("failure", "Public Holidays cannot be updated.");
 			return "redirect:/admin/employees";
 		}
+	}
+	
+	@GetMapping("/update-entitlement")
+	public String showAlEntitlementForm(Model model, RedirectAttributes redirectAttrs) {
+		
+//		NewAlEntitlement newAlEntitlement = new NewAlEntitlement();
+//		newAlEntitlement.getNewNonExecAnnual().setCalendarYear(LocalDate.now().getYear());
+//		newAlEntitlement.getNewNonExecAnnual().setLeaveType()
+		LeaveRecord newAlEntitlement = new LeaveRecord();
+		Long leaveTypeId = 1L;
+		
+		// Get Non-Executive AL entitlement for current Year, default is 14.0 days
+		// Get List<Employee> by EmployeeRank, get EmployeeId of first employee in list
+		// Get AL LeaveRecord of employee, get entitled days
+		List<Employee> nonExecEmployees = eService.findByRank(EmployeeRank.NON_EXECUTIVE);
+		Long firstNonExecId = nonExecEmployees.get(0).getId();
+		
+		Optional<LeaveRecord> nonExecAlRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(firstNonExecId, leaveTypeId, date.now().getYear());
+		
+		if(nonExecAlRecord.isPresent()) {
+			Double currentNonExecAl = nonExecAlRecord.get().getEntitledDays();
+			model.addAttribute("currentNonExecAnnual", currentNonExecAl);
+		} else if(nonExecAlRecord.isEmpty()) {
+			model.addAttribute("currentNonExecAnnual", 14.0);
+		}
+		
+		// Get Professional AL entitlement for current Year, default is 18.0 days
+		List<Employee> proEmployees = eService.findByRank(EmployeeRank.PROFESSIONAL);
+		Long firstProId = proEmployees.get(0).getId();
+		
+		Optional<LeaveRecord> proAlRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(firstProId, leaveTypeId, date.now().getYear());
+		
+		if(proAlRecord.isPresent()) {
+			Double currentProAl = proAlRecord.get().getEntitledDays();
+			model.addAttribute("currentProAnnual", currentProAl);
+		} else if(proAlRecord.isEmpty()) {
+			model.addAttribute("currentProAnnual", 18.0);
+		}
+		
+		return "/al-entitlement-form";
+	}
+	
+	@PostMapping("/update-entitlement")
+	public String updateAnnualLeaveEntitlement(@Valid @ModelAttribute LeaveRecord newAlEntitlement, 
+			BindingResult bindingResult, RedirectAttributes redirectAttrs) {
+		if (bindingResult.hasErrors()) {
+			return "/al-entitlement-form";
+		}
+		
+		Long leaveTypeId = 1L;
+		List<Employee> nonExecEmployees = eService.findByRank(EmployeeRank.NON_EXECUTIVE);
+		
+//		for( Employee e : nonExecEmployees) {
+//			Long employeeId = e.getId();
+//			Optional<LeaveRecord> lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employeeId, leaveTypeId, newAlEntitlement.)
+//		}
+		
+		// find list of nonExecEmployees
+		// for each employee, get employeeId
+		// find leaveRecords by employeeId and leaveTypeId
+		// assign newEntitlement to entitledDays field
+		// BUT we have 2 variants of newEntitlement values: Non-Executive & Professional
+		
+		return "";
 	}
 	
 	@GetMapping
