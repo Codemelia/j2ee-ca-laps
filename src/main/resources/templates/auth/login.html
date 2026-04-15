@@ -18,20 +18,23 @@
 
                 <!-- Error from Spring Security -->
                 <div class="alert alert-error" 
-                    th:if="${param.error 
-                        or param.expired 
-                        or param.unauthorised 
-                        or param.adminInvalid 
-                        or param.employeeInvalid}">
-                    <div th:if="${param.error}">Invalid email or password. Please try again.</div>
-                    <div th:if="${param.expired}">Your session has expired. Please log in.</div>
-                    <div th:if="${param.adminInvalid}">Please login via the Employee Portal.</div>
-                    <div th:if="${param.employeeInvalid}">Please login via the Admin Portal.</div>
-                    <div th:if="${param.unauthorised}">Please login to access G3LAPS.</div>
+                    th:if="${param.error != null
+                        or param.expired != null
+                        or param.unauthorised != null
+                        or param.admin != null
+                        or param.employee != null}">
+                    <div th:if="${param.error != null}">Invalid email or password. Please try again.</div>
+                    <div th:if="${param.expired != null}">Your session has expired. Please log in.</div>
+                    <div th:if="${param.unauthorised != null}">Please login via the Employee Portal.</div>
+                    <div th:if="${entryPoint == 'employee' and param.employee != null}">
+                        Please login via the Admin Portal.</div>
+                    <div th:if="${entryPoint == 'admin' and param.admin != null}">
+                        Please login to access G3LAPS.</div>
                 </div>
 
                 <!-- Success from Spring Security -->
-                <div class="alert alert-info" th:if="${param.logout != null}">
+                <div class="alert alert-info" 
+                    th:if="${param.logout == true}">
                     You have been logged out successfully.
                 </div>
 
