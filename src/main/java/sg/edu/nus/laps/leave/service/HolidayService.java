@@ -53,6 +53,7 @@ public class HolidayService {
 						Holiday h = new Holiday();
 						h.setName(record.holiday());
 						h.setDate(record.date());
+						h.setLocation("Singapore");
 						holidayRepo.save(h);
 					}
 				});
