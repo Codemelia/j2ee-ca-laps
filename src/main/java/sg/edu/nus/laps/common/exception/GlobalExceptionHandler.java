@@ -1,7 +1,12 @@
 package sg.edu.nus.laps.common.exception;
 
+import java.io.IOException;
+
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -12,8 +17,18 @@ public class GlobalExceptionHandler {
     // Handle null user exception
     // Redirect to login page with param unauthorised
     @ExceptionHandler(UnauthorisedUserException.class)
-    public String handleUnauthorisedUserException() {
-        return "redirect:/auth/login?unauthorised";
+    public void handleUnauthorisedUserException(
+        UnauthorisedUserException ex,
+        HttpServletRequest request,
+        HttpServletResponse response) throws IOException {
+        String uri = request.getRequestURI();
+
+        // SET REDIRECT TO ADMIN / EMPLOYEE LOGIN BASED ON URI BASE
+        if (uri.startsWith("/admin")) {
+            response.sendRedirect("/auth/admin/login?unauthorised");
+        } else {
+            response.sendRedirect("/auth/employee/login?unauthorised");
+        }
     }
 
 }

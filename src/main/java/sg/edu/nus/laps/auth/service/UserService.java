@@ -92,7 +92,6 @@ public class UserService {
 
     }
 
-
     // REPLACE WITH SPRING SECURITY
     // Authenticate email and password
     // public boolean authenticate(String email, String password) {
@@ -101,5 +100,5 @@ public class UserService {
     //     User savedUser = optUser.get(); // Else, get User object
     //     return encoder.matches(password, savedUser.getPasswordHash()); // Check password against saved password (encoded)
     // }
-
+        
 }

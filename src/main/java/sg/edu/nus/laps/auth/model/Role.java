@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "roles")
@@ -17,7 +17,7 @@ public class Role {
 	private Long id;
 
 	@Column(nullable = false, unique = true, length = 10) // JPA - MySQL constraints
-	@NotNull(message = "User role cannot be null")
+	@NotBlank(message = "User role cannot be null or blank")
 	private String name;
 
 	@Column(length = 100)

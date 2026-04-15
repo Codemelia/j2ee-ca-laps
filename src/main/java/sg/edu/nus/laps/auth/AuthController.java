@@ -2,8 +2,15 @@ package sg.edu.nus.laps.auth;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import sg.edu.nus.laps.auth.model.LoginUserDTO;
 
 /*
     AuthController handles all user auth operations
@@ -17,51 +24,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class AuthController {
 
-    // @Autowired
-    // private UserService userSvc;
+    // SPRING SECURITY HANDLES:
+    // Login/logout, authentication, authorisation, session management
 
-    // // USING SPRING SECURITY
-    // // Fallback - GET /auth/login
-    // @GetMapping("/login")
-    // public String getLogin(
-    //     @RequestParam(required = false) String unauth,
-    //     @RequestParam(required = false) String error,
-    //     @RequestParam(required = false) String logout,
-    //     @RequestParam(required = false) String expired,
-    //     HttpServletRequest request) {
-
-    //     // Build base redirect string - default to employee login for employee/manager
-    //     StringBuilder redirect = new StringBuilder("redirect:/auth/employee/login");
-
-    //     // Retrieve referer from request
-    //     String ref = request.getHeader("Referer");
-        
-    //     // If user was trying to access admin pages, redirect to admin instead
-    //     if (ref != null && ref.contains("/admin")) {
-    //         redirect = new StringBuilder("redirect:/auth/admin/login");
-    //     }
-
-    //     // set to hold param
-    //     Set<String> params = new HashSet<>();
-
-    //     // Add params based on param value
-    //     if (unauth != null) { params.add("unauthorised"); }
-    //     if (error != null) { params.add("error"); }
-    //     if (logout != null) { params.add("logout"); }
-    //     if (expired != null) { params.add("expired"); }
-
-    //     // Build and return final redir string
-    //     if (!params.isEmpty()) { redirect.append("?").append(String.join("&", params)); }
-    //     return redirect.toString();
-    // }
-
-    // ASSIGNMENT: 2 ENTRY POINTS
-    // Param-handling is on Thymeleaf through SpringSecurity6 dependency
+    // CONTROLLER HANDLES:
+    // Validation
 
     // Employee - GET /auth/employee/login
     @GetMapping("/employee/login")
     public String employeeLogin(Model model) {
         model.addAttribute("entryPoint", "employee");
+        model.addAttribute("user", new LoginUserDTO());
         return "auth/login";
     }
 
@@ -69,7 +42,48 @@ public class AuthController {
     @GetMapping("/admin/login")
     public String adminLogin(Model model) {
         model.addAttribute("entryPoint", "admin");
+        model.addAttribute("user", new LoginUserDTO());
         return "auth/login";
+    }
+
+    // Employee - POST /auth/employee/login-validate
+    @PostMapping("/employee/login-validate")
+    public String processEmployeeLogin(
+        @Valid @ModelAttribute(name="user") LoginUserDTO user,
+        BindingResult result, Model model,
+        HttpServletRequest request) {
+
+        System.out.println("EMAIL: " + user.getEmail());
+        System.out.println("PASSWORD: " + user.getPassword());
+
+        // Validation error = stay on login page
+        if (result.hasErrors()) {
+            model.addAttribute("entryPoint", "employee");
+            return "auth/login";
+        }
+
+        return "forward:/auth/employee/login"; // Let Spring Security authenticate
+
+    }
+
+    // Admin - POST /auth/admin/login-validate
+    @PostMapping("/admin/login-validate")
+    public String processAdminLogin(
+        @Valid @ModelAttribute(name="user") LoginUserDTO user,
+        BindingResult result, Model model,
+        HttpServletRequest request) {
+
+        System.out.println("EMAIL: " + user.getEmail());
+        System.out.println("PASSWORD: " + user.getPassword());
+
+        // Validation error = stay on login page
+        if (result.hasErrors()) {
+            model.addAttribute("entryPoint", "admin");
+            return "auth/login";
+        }
+
+        return "forward:/auth/admin/login"; // Let Spring Security authenticate
+
     }
 
 }

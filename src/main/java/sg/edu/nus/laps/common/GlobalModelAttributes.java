@@ -45,8 +45,8 @@ public class GlobalModelAttributes {
 
         // All non-authenticated paths
         boolean isPublicPath =
-            uri.equals(path + "/auth/employee/login") ||
-            uri.equals(path + "/auth/admin/login") ||
+            uri.startsWith(path + "/auth/employee/login") ||
+            uri.startsWith(path + "/auth/admin/login") ||
             uri.startsWith(path + "/css/") ||
             uri.startsWith(path + "/js/") ||
             uri.startsWith(path + "/images/") ||

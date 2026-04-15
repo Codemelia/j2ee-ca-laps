@@ -20,23 +20,12 @@ public class SecurityUtil {
 
     // Check if user is admin
     public static boolean isAdmin(Authentication auth) {
-        return hasAuthority(auth, "ROLE_ADMIN");
+        return SecurityUtil.hasAuthority(auth, "ROLE_ADMIN");
     }
 
     // Check if user is internal admin
     public static boolean isInternalAdmin(Authentication auth) {
-        return hasAuthority(auth, "AUTH_INTERNAL_ADMIN");
-    }
-
-    // Check if user should have access to employee-facing pages
-    public static boolean isInternalEmployee(Authentication auth) {
-        return hasAnyAuthority(auth, 
-            List.of(
-                "ROLE_EMPLOYEE", 
-                "ROLE_MANAGER", 
-                "AUTH_INTERNAL_ADMIN"
-            )
-        );
+        return SecurityUtil.hasAuthority(auth, "AUTH_INTERNAL_ADMIN");
     }
 
 }
