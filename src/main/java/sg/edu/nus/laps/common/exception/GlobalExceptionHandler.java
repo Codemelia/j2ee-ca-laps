@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
         IllegalArgumentException ex,
         @RequestParam(required = false) String viewName,
         Model model) {
-        model.addAttribute("error", ex.getMessage());
+        model.addAttribute("globalError", ex.getMessage());
         return (viewName != null ? viewName : "error");
     }
 
@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
         DataAccessException ex,
         @RequestParam(required = false) String viewName,
         Model model) {
-        model.addAttribute("error", ex.getMessage());
+        model.addAttribute("globalError", ex.getMessage());
         return (viewName != null ? viewName : "error");
     }
 

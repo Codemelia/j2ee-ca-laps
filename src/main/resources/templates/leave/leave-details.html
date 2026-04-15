@@ -117,9 +117,7 @@
                                     Delete
                                 </button>
                             </form>												          				
-																				          				
 
-							
 							<form th:if="${leaveApplication.status.name() == 'APPROVED' and !T(java.time.LocalDate).now().isAfter(leaveApplication.fromDate)}"
 							      th:action="@{/leaves/cancel/{id}(id=${leaveApplication.id})}" 
 							      method="post" style="display: inline;">
@@ -140,6 +138,10 @@
                             <button class="btn" type="button" id="rejectBtn">Reject</button>
                         </div>
                     </div>
+                    <!-- Global error -->
+                    <div class="alert alert-error"
+                        th:if="${globalError}"
+                        th:text="${globalError}"></div>
                 </div>
             </div>
 		</div>

@@ -32,6 +32,11 @@
                         Please login to access G3LAPS.</div>
                 </div>
 
+                <!-- Global error -->
+                <div class="alert alert-error"
+                    th:if="${globalError}"
+                    th:text="${globalError}"></div>
+
                 <!-- Success from Spring Security -->
                 <div class="alert alert-info" 
                     th:if="${param.logout == true}">
@@ -70,6 +75,8 @@
 
                     <input type="hidden" th:name="${_csrf.parameterName}"
                         th:value="${_csrf.token}">
+
+                    <input type="hidden" name="viewName" value="auth/login">
                     
                     <button class="btn btn-primary btn-full" type="submit">Log In</button>
                 </form>

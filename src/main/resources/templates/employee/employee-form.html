@@ -28,6 +28,11 @@
             
             <h1 th:text="${employee.id} != null ? 'Update Employee Details' : 'Create New Employee'"></h1>
 
+            <!-- Global error -->
+            <div class="alert alert-error"
+                th:if="${globalError}"
+                th:text="${globalError}"></div>
+
             <div th:if="${employee}">
                 
                 <form th:action="${employee.id} != null 
@@ -124,6 +129,8 @@
 
                     <input type="hidden" th:name="${_csrf.parameterName}"
                         th:value="${_csrf.token}">
+
+                    <input type="hidden" name="viewName" value="employee/employee-form">
                     
                     <button type="button" onclick="history.back()">Back</button>
 

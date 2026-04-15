@@ -14,8 +14,12 @@
 		<header th:replace="~{fragments/header :: header}"></header>
     
     <div class="page-wrapper">
-      <h2 class="page-heading">Leave Application Form</h2>
       <div class="card">
+      <h2 class="page-heading">Leave Application Form</h2>
+      <!-- Global error -->
+      <div class="alert alert-error"
+          th:if="${globalError}"
+          th:text="${globalError}"></div>
         <form
           th:action="@{/leaves/apply}"
           method="post"

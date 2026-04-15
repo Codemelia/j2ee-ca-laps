@@ -15,6 +15,7 @@
         <div class="page-wrapper">
             <div th:if="${employee}">
                 <h1 th:text="${employee.firstName} + ' ' + ${employee.lastName} + '\'s Details'">Employee's Details</h1>
+                
                 <dl>
                     <dt><b>Employee ID</b></dt>
                     <dd th:text="${employee.id}">Employee ID</dd><br>

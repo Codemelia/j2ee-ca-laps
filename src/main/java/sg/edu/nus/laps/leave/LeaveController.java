@@ -94,17 +94,11 @@ public class LeaveController {
 
         return "leave/leave-details";
     }
-
     
-    
-    @GetMapping ("")
+    @GetMapping
     public String viewLeaveHistory(@AuthenticationPrincipal AuthUserDetails user, @PageableDefault(size = 5) Pageable pageable, 
     	    Model model) {
-     
-        
-        // if (currentEmployee == null) {
-        //     return "redirect:/login";
-        // }
+
         Page<LeaveApplication> page = leaveService.getEmployeeLeaveHistory(user.getEmployeeId(), pageable);
         model.addAttribute("leaveList", page.getContent());
         model.addAttribute("currentPage", page.getNumber());
@@ -155,7 +149,7 @@ public class LeaveController {
         if (!isSelf) {
             return "error/forbidden";
         } 
-                 
+
      // 3. Perform delete action  
         try {
             lService.deleteLeave(id); 
