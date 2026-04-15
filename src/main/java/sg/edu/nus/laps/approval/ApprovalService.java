@@ -18,10 +18,11 @@ public class ApprovalService {
     }
 
     /**
-     * 获取经理下属所有待处理的申请（APPLIED 或 UPDATED）
+     * Retrieves all pending leave applications for a manager's subordinates 
+     * (Status: APPLIED or UPDATED).
      */
     public List<LeaveApplication> getPendingRequests(Long managerId) {
-        // 分别获取状态为 APPLIED 和 UPDATED 的申请并合并
+        // Fetch applications with status APPLIED and UPDATED separately and merge them
         List<LeaveApplication> applied = leaveRepo.findByEmployeeManagerIdAndStatus(managerId, LeaveStatus.APPLIED);
         List<LeaveApplication> updated = leaveRepo.findByEmployeeManagerIdAndStatus(managerId, LeaveStatus.UPDATED);
         applied.addAll(updated);
@@ -29,16 +30,22 @@ public class ApprovalService {
     }
 
     /**
-     * 获取下属的完整历史
+     * Retrieves the complete leave history for a specific subordinate.
      */
     public List<LeaveApplication> getSubordinateHistory(Long employeeId) {
         return leaveRepo.findByEmployeeIdOrderByFromDateDesc(employeeId);
     }
 
+    /**
+     * Finds a specific leave application by its ID.
+     */
     public Optional<LeaveApplication> findLeaveById(Long id) {
         return leaveRepo.findById(id);
     }
 
+    /**
+     * Updates the leave application status to APPROVED.
+     */
     @Transactional
     public void approveRequest(Long leaveId) {
         leaveRepo.findById(leaveId).ifPresent(l -> {
@@ -47,6 +54,9 @@ public class ApprovalService {
         });
     }
 
+    /**
+     * Updates the leave application status to REJECTED and adds a manager's comment.
+     */
     @Transactional
     public void rejectRequest(Long leaveId, String comment) {
         leaveRepo.findById(leaveId).ifPresent(l -> {
