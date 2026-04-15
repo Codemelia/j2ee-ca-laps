@@ -75,8 +75,7 @@ private double calculateActualLeaveDays(LeaveApplication l) {
     
     // Requirement: If <= 14 days, exclude weekends/public holidays
     if (totalDays <= 14) {
-        // You would call a utility here that checks against your 'holidays' table
-        // and skips Saturdays/Sundays
+        // call a utility here that checks against your 'holidays' table and skips Saturdays/Sundays
         return countWorkingDays(l.getFromDate(), l.getToDate());
     }
     return (double) totalDays;
