@@ -19,18 +19,20 @@ public class ApprovalController {
     }
 
     /**
-     * 对应 HTML 的 "Team Leave Applications" 页面
+     * Corresponds to the "Team Leave Applications" HTML page.
+     * Displays all pending leave requests for the manager's team.
      */
     @GetMapping("/team-leaves")
     public String viewTeamLeaves(@AuthenticationPrincipal AuthUserDetails user, Model model) {
-        // 从 Security Context 获取当前经理 ID
+        // Retrieve the current manager's ID from the Security Context
         List<LeaveApplication> pendingList = approvalService.getPendingRequests(user.getEmployeeId());
         model.addAttribute("leaveList", pendingList);
-        return "manager/team-leave-list"; // 确保文件名对应
+        return "manager/team-leave-list"; 
     }
 
     /**
-     * 处理批准请求 (对应 HTML 里的 form action="/manager/approve")
+     * Handles the approval request.
+     * Triggered by the form action="/manager/approve" in HTML.
      */
     @PostMapping("/approve")
     public String approveLeave(@RequestParam("id") Long id) {
@@ -39,7 +41,8 @@ public class ApprovalController {
     }
 
     /**
-     * 处理拒绝请求 (对应 HTML 里的 form action="/manager/reject")
+     * Handles the rejection request.
+     * Triggered by the form action="/manager/reject" in HTML.
      */
     @PostMapping("/reject")
     public String rejectLeave(@RequestParam("id") Long id, @RequestParam("comment") String comment) {
@@ -48,7 +51,7 @@ public class ApprovalController {
     }
 
     /**
-     * 查看特定下属的请假历史
+     * View the complete leave history for a specific subordinate.
      */
     @GetMapping("/subordinate/history/{empId}")
     public String viewSubordinateHistory(@PathVariable Long empId, Model model) {
@@ -57,12 +60,14 @@ public class ApprovalController {
     }
     
     /**
-     * 查看单条详情 (对应 HTML 里的 /manager/leave/{id})
+     * View details of a single leave application.
+     * Accessible via /manager/leave/{id}.
      */
     @GetMapping("/leave/{id}")
     public String viewLeaveDetails(@PathVariable Long id, Model model) {
         approvalService.findLeaveById(id).ifPresent(l -> model.addAttribute("leaveApplication", l));
-        // 复用详情页，但通过 isSelf=false 控制显示经理审批按钮
+        
+        // Reuses the detail page; isSelf=false ensures approval buttons are visible to managers
         model.addAttribute("isSelf", false); 
         return "leave/leave-details";
     }
