@@ -204,7 +204,32 @@ public class LeaveService {
 		leave.setManagerComment(managerComment);
 		laRepo.save(leave);
 	}
-	
+
+	/*
+	 * 6. Update Method: cancelLeave --> Allows User to Cancel an already APPROVED Leave Application.
+	 * 		Cancellation is only permitted if the start date hasn't passed.
+	 */
+	@Transactional
+	public void cancelLeave(Long id) {
+		LeaveApplication leave = laRepo.findById(id)
+				.orElseThrow(() -> new RuntimeException("Leave Application does not Exist."));
+
+		if (leave.getStatus() != LeaveStatus.APPROVED) {
+			throw new RuntimeException("Only APPROVED applications can be cancelled.");
+		}
+
+		if (LocalDate.now().isAfter(leave.getFromDate())) {
+			throw new RuntimeException("Cannot cancel leave that has already started.");
+		}
+
+		double amountToRestore = calculateEffectiveDurationForRestore(leave);
+
+		reverseDeduction(leave, amountToRestore);
+
+		leave.setStatus(LeaveStatus.CANCELLED);
+		laRepo.save(leave);
+	}
+
 	// --- COMPUTATION & LOGIC ---
 	/*
 	 * a. Helper Method: ValidateDate --> Validate if the fromDate and toDate is in Chronological Order.
@@ -214,6 +239,7 @@ public class LeaveService {
 	private void validateDate(LeaveApplication leave) {
 		LocalDate fromDate = leave.getFromDate();
 		LocalDate toDate = leave.getToDate();
+		String typeName = leave.getLeaveType().getLeaveType();
 		
 		if (fromDate.isBefore(LocalDate.now())) {
 			throw new RuntimeException("Leave Start Date cannot be Earlier than Today's Date.");
@@ -227,8 +253,7 @@ public class LeaveService {
 		if (isWeekend(toDate)) {
 			throw new RuntimeException("Leave End Date must be a working day (Monday to Friday).");
 		}
-		if (("Annual".equalsIgnoreCase(leave.getLeaveType().getLeaveType())) 
-				||  ("Medical".equalsIgnoreCase(leave.getLeaveType().getLeaveType()))
+		if (("Annual".equalsIgnoreCase(typeName) || "Medical".equalsIgnoreCase(typeName)) 
 				&& leave.isHalfDay()) {
 			throw new RuntimeException("Half-Day are only Permitted for Compensation Leave.");
 		}
@@ -257,45 +282,12 @@ public class LeaveService {
 			effectiveLeaveDuration = (double) currentLeaveDuration;
 		} else if ("Annual".equalsIgnoreCase(leaveType)) {
 			
-			// --> Check if there is an existing leave application just before the new leave application starts
-			int dialback = (leave.getFromDate().getDayOfWeek() == DayOfWeek.MONDAY) ? 3 : 1;
-			LocalDate backBridge = leave.getFromDate().minusDays(dialback);
-			List<LeaveApplication> preLeaves = laRepo.findOverlappingApplication(
-					List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED),
-					leave.getEmployee(), 
-					backBridge,
-					leave.getFromDate().minusDays(1));
-			
-			// --> Check if there is an existing leave application just after the new leave application ends
-			int dialForward = (leave.getToDate().getDayOfWeek() == DayOfWeek.FRIDAY) ? 3 : 1;
-			LocalDate forwardBridge = leave.getToDate().plusDays(dialForward);
-			List<LeaveApplication> postLeaves = laRepo.findOverlappingApplication(
-					List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED),
-					leave.getEmployee(),
-					leave.getToDate().plusDays(1),
-					forwardBridge);
-			
-			// --> Validate if the 'ANNUAL' leaves are chained 
-			boolean hasPreAnnual = !preLeaves.isEmpty() 
-					&& "Annual".equalsIgnoreCase(preLeaves.get(0).getLeaveType().getLeaveType());
-			boolean hasPostAnnual = !postLeaves.isEmpty()
-					&& "Annual".equalsIgnoreCase(postLeaves.get(0).getLeaveType().getLeaveType());
-			
-			long totalLeaveDuration = currentLeaveDuration;
-			double existConsumedDays = 0;
-			
-			if (hasPreAnnual) {
-				totalLeaveDuration = ChronoUnit.DAYS.between(preLeaves.get(0).getFromDate(), leave.getToDate()) + 1;
-				existConsumedDays = calcLeaveDeductibles(preLeaves.get(0).getFromDate(), preLeaves.get(0).getToDate());
-			} else if (hasPostAnnual) {
-				totalLeaveDuration = ChronoUnit.DAYS.between(leave.getFromDate(), postLeaves.get(0).getToDate()) + 1;
-				existConsumedDays = calcLeaveDeductibles(postLeaves.get(0).getFromDate(), postLeaves.get(0).getToDate());
-			}
+			long totalLeaveChainSpan = getCombinedLeaveChainSpan(leave, currentLeaveDuration);
 			
 			if (currentLeaveDuration > 14) {
 				effectiveLeaveDuration = (double) currentLeaveDuration;
-			} else if (totalLeaveDuration > 14) {
-				effectiveLeaveDuration = (double) totalLeaveDuration - existConsumedDays;
+			} else if (totalLeaveChainSpan > 14) {
+				effectiveLeaveDuration = (double) totalLeaveChainSpan - getAlreadyDeductionInChain(leave);
 			} else {
 				effectiveLeaveDuration = calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
 			}
@@ -307,7 +299,72 @@ public class LeaveService {
 	}
 
 	/*
-	 * d. Helper Method: calcLeaveDeductibles --> If the Total Leave Duration is less than 14 days, weekends and PH should be excluded
+	 * d. Helper Method: getCombinedLeaveChainSpan --> Find the Total Calendar Days for Chained Leave
+	 */
+	private long getCombinedLeaveChainSpan(LeaveApplication leave, Long currentLeaveDuration) {
+		// --> Check if there is an existing leave application just before the new leave application starts
+		int dialback = (leave.getFromDate().getDayOfWeek() == DayOfWeek.MONDAY) ? 3 : 1;
+		LocalDate backBridge = leave.getFromDate().minusDays(dialback);
+		List<LeaveApplication> preLeaves = laRepo.findOverlappingApplication(
+				List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED), leave.getEmployee(),
+				backBridge, leave.getFromDate().minusDays(1));
+
+		// --> Check if there is an existing leave application just after the new leave application ends
+		int dialForward = (leave.getToDate().getDayOfWeek() == DayOfWeek.FRIDAY) ? 3 : 1;
+		LocalDate forwardBridge = leave.getToDate().plusDays(dialForward);
+		List<LeaveApplication> postLeaves = laRepo.findOverlappingApplication(
+				List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED), leave.getEmployee(),
+				leave.getToDate().plusDays(1), forwardBridge);
+
+		long totalLeaveDuration = currentLeaveDuration;
+		
+		// --> Validate if the 'ANNUAL' leaves are chained
+		boolean hasPreAnnual = !preLeaves.isEmpty()
+				&& "Annual".equalsIgnoreCase(preLeaves.get(0).getLeaveType().getLeaveType());
+		boolean hasPostAnnual = !postLeaves.isEmpty()
+				&& "Annual".equalsIgnoreCase(postLeaves.get(0).getLeaveType().getLeaveType());
+
+		if (hasPreAnnual) {
+			return ChronoUnit.DAYS.between(preLeaves.get(0).getFromDate(), leave.getToDate()) + 1;
+		} else if (hasPostAnnual) {
+			return ChronoUnit.DAYS.between(leave.getFromDate(), postLeaves.get(0).getToDate()) + 1;
+		}
+		return totalLeaveDuration;
+	}
+
+	/*
+	 * e. Helper Method: getAlreadyDeductionInChain --> Identifies the deduction already taken by the "Other" half of a chain
+	 */
+	private double getAlreadyDeductionInChain(LeaveApplication leave) {
+		// --> Check if there is an existing leave application just before the new leave application starts
+		int dialback = (leave.getFromDate().getDayOfWeek() == DayOfWeek.MONDAY) ? 3 : 1;
+		LocalDate backBridge = leave.getFromDate().minusDays(dialback);
+		List<LeaveApplication> preLeaves = laRepo.findOverlappingApplication(
+				List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED), leave.getEmployee(),
+				backBridge, leave.getFromDate().minusDays(1));
+
+		// --> Check if there is an existing leave application just after the new leave application ends
+		int dialForward = (leave.getToDate().getDayOfWeek() == DayOfWeek.FRIDAY) ? 3 : 1;
+		LocalDate forwardBridge = leave.getToDate().plusDays(dialForward);
+		List<LeaveApplication> postLeaves = laRepo.findOverlappingApplication(
+				List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED), leave.getEmployee(),
+				leave.getToDate().plusDays(1), forwardBridge);
+
+		// --> Validate if the 'ANNUAL' leaves are chained
+		boolean hasPreAnnual = !preLeaves.isEmpty()
+				&& "Annual".equalsIgnoreCase(preLeaves.get(0).getLeaveType().getLeaveType());
+		boolean hasPostAnnual = !postLeaves.isEmpty()
+				&& "Annual".equalsIgnoreCase(postLeaves.get(0).getLeaveType().getLeaveType());
+
+		if (hasPreAnnual) {
+			return calcLeaveDeductibles(preLeaves.get(0).getFromDate(), preLeaves.get(0).getToDate());
+		} else if (hasPostAnnual) {
+			return calcLeaveDeductibles(postLeaves.get(0).getFromDate(), postLeaves.get(0).getToDate());
+		}
+		return 0;
+	}
+	/*
+	 * e. Helper Method: calcLeaveDeductibles --> If the Total Leave Duration is less than 14 days, weekends and PH should be excluded
 	 */
 	private double calcLeaveDeductibles(LocalDate fromDate, LocalDate toDate) {
 		List<LocalDate> holidays = holRepo.findAllHolidayDates();
@@ -322,7 +379,7 @@ public class LeaveService {
 	}
 
 	/*
-	 * e. Helper Method: applyDeduction --> Translate the Calculated Leave Deductible into No. of Consumed Days
+	 * f. Helper Method: applyDeduction --> Translate the Calculated Leave Deductible into No. of Consumed Days
 	 */
 	private void applyDeduction(LeaveApplication leave, double effectiveLeaveDuration) {
 		int fromYear = leave.getFromDate().getYear();
@@ -353,11 +410,11 @@ public class LeaveService {
 	}
 
 	/*
-	 * f. Helper Method: updateLeaveRecordwithJITInject --> Update the Leave Record DB
+	 * g. Helper Method: updateLeaveRecordwithJITInject --> Update the Leave Record DB
 	 */
 	private void updateLeaveRecordwithJITInject(Employee employee, LeaveType leaveType, int year, double leaveDays) {
 		LeaveRecord lr = lrRepo.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employee.getId(), leaveType.getId(), year)
-				.orElseGet(() -> initializeNewYearRecord(employee, leaveType, year));
+				.orElseGet(() -> initializeNewYearLeaveRecord(employee, leaveType, year));
 		
 		double availableLeave = lr.getEntitledDays() - lr.getConsumedDays();
 		if (availableLeave < leaveDays) {
@@ -369,9 +426,9 @@ public class LeaveService {
 	}
 	
 	/*
-	 * g. Helper Method: initializeNewYearRecord --> JIT Creation of Leave Record for the following Year
+	 * h. Helper Method: initializeNewYearLeaveRecord --> JIT Creation of Leave Record for the following Year
 	 */
-	private LeaveRecord initializeNewYearRecord(Employee employee, LeaveType leaveType, int year) {
+	private LeaveRecord initializeNewYearLeaveRecord(Employee employee, LeaveType leaveType, int year) {
 		LeaveRecord newLeaveRecord = new LeaveRecord();
 		newLeaveRecord.setEmployee(employee);
 		newLeaveRecord.setLeaveType(leaveType);
@@ -393,6 +450,69 @@ public class LeaveService {
 		
 		newLeaveRecord.setEntitledDays(entitledDays);
 		return lrRepo.save(newLeaveRecord);		
+	}
+
+	/*
+	 * i. Helper Method: calculateEffectiveDurationForRestore --> Re-runs the
+	 * business rules to find the original deduction value.
+	 */
+	private double calculateEffectiveDurationForRestore(LeaveApplication leave) {
+		String leaveType = leave.getLeaveType().getLeaveType();
+		long currentLeaveDuration = ChronoUnit.DAYS.between(leave.getFromDate(), leave.getToDate()) + 1;
+
+		if ("Medical".equalsIgnoreCase(leaveType)) {
+			return (double) currentLeaveDuration;
+		}
+
+		if ("Annual".equalsIgnoreCase(leaveType)) {
+			long totalLeaveChainSpan = getCombinedLeaveChainSpan(leave, currentLeaveDuration);
+
+			if (currentLeaveDuration > 14) {
+				return (double) currentLeaveDuration;
+			} else if (totalLeaveChainSpan > 14) {
+				return (double) totalLeaveChainSpan - getAlreadyDeductionInChain(leave);
+			}
+		}
+
+		return calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
+	}
+
+	/*
+	 * j. Helper Method: reverseDeduction --> Restores balance to LeaveRecord, handling crossover years.
+	 */
+	private void reverseDeduction(LeaveApplication leave, double leaveDays) {
+		int fromYear = leave.getFromDate().getYear();
+		int toYear = leave.getToDate().getYear();
+
+		if (fromYear == toYear) {
+			restoreBalance(leave.getEmployee(), leave.getLeaveType(), fromYear, leaveDays);
+		} else {
+			LocalDate lastDay = LocalDate.of(fromYear, 12, 31);
+
+			double restoreY1;
+			double restoreY2;
+
+			long totalLeaveDuration = ChronoUnit.DAYS.between(leave.getFromDate(), leave.getToDate()) + 1;
+
+			if (totalLeaveDuration > 14 || "Medical".equalsIgnoreCase(leave.getLeaveType().getLeaveType())) {
+				restoreY1 = (double) ChronoUnit.DAYS.between(leave.getFromDate(), lastDay) + 1;
+				restoreY2 = leaveDays - restoreY1;
+			} else {
+				restoreY1 = calcLeaveDeductibles(leave.getFromDate(), lastDay);
+				restoreY2 = leaveDays - restoreY1;
+			}
+
+			restoreBalance(leave.getEmployee(), leave.getLeaveType(), fromYear, restoreY1);
+			restoreBalance(leave.getEmployee(), leave.getLeaveType(), toYear, restoreY2);
+		}
+	}
+	
+	private void restoreBalance(Employee employee, LeaveType leaveType, int year, double leaveDays) {
+		LeaveRecord lr = lrRepo.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employee.getId(), leaveType.getId(), year)
+				.orElseThrow(() -> new RuntimeException("Leave Record not found for reversal."));
+		
+		lr.setConsumedDays(lr.getConsumedDays() - leaveDays);
+		lrRepo.save(lr);
 	}
 
 	// --- Dash-Board Builder Methods ---
@@ -458,13 +578,4 @@ public class LeaveService {
 
 	}
 
-	// RULE: Only 'APPROVED' leaves can be 'CANCELLED'
-	@Transactional
-	public void cancelLeave(Long id) {
-		LeaveApplication leaveApplication = laRepo.findById(id).orElse(null);
-		if (leaveApplication != null && leaveApplication.getStatus() == LeaveStatus.APPROVED) {
-			leaveApplication.setStatus(LeaveStatus.CANCELLED);
-			laRepo.save(leaveApplication);
-		}
-	}
 }

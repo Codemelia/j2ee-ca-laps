@@ -34,7 +34,7 @@
 						
 					    <tr th:each="leave : ${leaveList}">
 			                <td th:text="${leave.employee.firstName}"></td>
-			                <td th:text="${leave.leaveType.name}"></td>
+			                <td th:text="${leave.leaveType.leaveType}"></td>
 							<td th:text="${#temporals.format(leave.fromDate, 'dd/MM/yyyy')}"></td>
 							<td th:text="${#temporals.format(leave.toDate, 'dd/MM/yyyy')}"></td>
 			                <td th:text="${leave.status}"></td>
@@ -43,17 +43,6 @@
 							    <a th:href="@{/manager/leave/{id}(id=${leave.id})}">
 							        View
 							    </a><br><br>
-
-							    <form th:action="@{/manager/approve}" method="post" style="display:inline;">
-							        <input type="hidden" name="id" th:value="${leave.id}" />
-							        <button type="submit">Approve</button>
-							    </form>
-
-							    <form th:action="@{/manager/reject}" method="post" style="display:inline;">
-							        <input type="hidden" name="id" th:value="${leave.id}" />
-							        <input type="text" name="comment" placeholder="Enter rejection reason" required />
-							        <button type="submit">Reject</button>
-							    </form>
 							</td>
 			            </tr>
 			        </tbody>
