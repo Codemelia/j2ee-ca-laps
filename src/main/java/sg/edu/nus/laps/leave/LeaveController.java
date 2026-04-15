@@ -118,7 +118,7 @@ public class LeaveController {
     	LeaveApplication leaveCancel = lService.findLeaveById(id).orElse(null);
     	if (leaveCancel == null) {
             ra.addFlashAttribute("error", "No such leave application exists");
-            return "redirect:/leave";
+            return "redirect:/leaves";
     	 }
     	Long leaveEmpId = leaveCancel.getEmployee().getId();
         Long currViewerId = user.getEmployeeId();
@@ -136,7 +136,7 @@ public class LeaveController {
             //  catches "started leave" or "Not Approved" exceptions
             ra.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/leave"; // Redirect back to the list
+        return "redirect:/leaves"; // Redirect back to the list
     }
     
     @PostMapping("/delete/{id}")
@@ -144,7 +144,7 @@ public class LeaveController {
     	LeaveApplication leaveDel = lService.findLeaveById(id).orElse(null);
     	if (leaveDel == null) {
             ra.addFlashAttribute("error", "No such leave application exists");
-            return "redirect:/leave";
+            return "redirect:/leaves";
         }
     	Long leaveEmpId = leaveDel.getEmployee().getId();
         Long currViewerId = user.getEmployeeId();
@@ -165,7 +165,7 @@ public class LeaveController {
             ra.addFlashAttribute("error", e.getMessage());
         }
         // 4. Redirect to the list
-        return "redirect:/leave"; 
+        return "redirect:/leaves"; 
     }
        
   
