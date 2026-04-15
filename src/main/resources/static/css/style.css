@@ -483,7 +483,7 @@ textarea {
 
 .data-table th {
     padding: 12px 14px;
-    text-align: left;
+    text-align: center;
     font-family: 'Source Sans 3', sans-serif;
     font-weight: 600;
     font-size: 0.88rem;
@@ -493,6 +493,7 @@ textarea {
 
 .data-table td {
     padding: 11px 14px;
+	text-align: center;
     border-bottom: 1px solid var(--border);
     vertical-align: middle;
 }
@@ -501,13 +502,51 @@ textarea {
 
 .data-table tbody tr:hover { background-color: #f0f4f9; }
 
+.data-table-med {
+    width: 75%;
+    border-collapse: collapse;
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    margin-top: 16px;
+    font-size: 0.95rem;
+}
+
+.data-table-med thead {
+    background-color: var(--navy);
+    color: #ffffff;
+}
+
+.data-table-med th {
+    padding: 12px 14px;
+    text-align: center;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    font-size: 0.88rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.data-table-med td {
+    padding: 11px 14px;
+	text-align: center;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+.data-table-med tbody tr:last-child td { border-bottom: none; }
+
+.data-table-med tbody tr:hover { background-color: #f0f4f9; }
+
+
 table, th, td{
-	width: 100%;
+	width: 90%;
 	border: 1px solid black;
 	border-collapse: collapse;
 	padding: 10px;
 	white-space: nowrap;
-	width: 100%;
+	width: 90%;
 }
 
 .logout {

@@ -12,17 +12,18 @@
 
 	<body>
 		<header th:replace="~{fragments/header :: header}"></header>
-		
+		<div class="container py-4"><a th:href="@{/}" class="text-decoration-none"><i class="bi bi-arrow-left"></i> ← Back to Home</a>
+		</div>
         <div class="page-wrapper">
 			<h1>My Leave History</h1>
-			<a th:href="@{/}">Back to Home</a>
+	
             <!-- th:if checks whether the list is empty -->
 	
 			<p th:if="${#lists.isEmpty (leaveList)} ">
 				You have not applied for any leave yet.
 			</p>
 
-			<table th:unless="${#lists. isEmpty (leaveList)}" class="data-table" >
+			<table th:unless="${#lists. isEmpty (leaveList)}" class="data-table-med" >
 				<thead>
 					<tr>
 						<th>Leave Type</th>
@@ -59,7 +60,7 @@
 						<td>
 						<!--Link to detail page, passing leave id in the URL -->
 							<a th:href="@{/leaves/details/{id}(id=${leave.id})}" 
-							class="btn btn-sm btn-info text-white">View details</a>
+							class=".btn-secondary">View details</a>
 						</td>
 					</tr>
 				</tbody>
@@ -77,8 +78,8 @@
 			                <a class="page-link" th:href="@{/leaves(page=${page.number + 1})}">Next</a>
 			            </li>
 			        </ul>
-			    </nav></div>
-			<br>
+			    </nav>  </div>		
+			<br>	
 		</div>
 
         <footer th:replace="~{fragments/footer :: footer}"></footer>

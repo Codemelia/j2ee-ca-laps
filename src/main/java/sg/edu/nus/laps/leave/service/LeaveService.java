@@ -442,7 +442,9 @@ public class LeaveService {
 	// 5. The Retrieval Logic (Sharing the count into the entity)
 	@Transactional(readOnly = true)
 	public Page <LeaveApplication> getEmployeeLeaveHistory(Long employeeId , Pageable pageable) {
-		Page<LeaveApplication> history = laRepo.findByEmployeeIdOrderByFromDateDesc(employeeId, pageable);
+		// 1. Get current year 
+	    int currentYear = LocalDate.now().getYear();
+		Page<LeaveApplication> history = laRepo.findByEmployeeIdAndYear(employeeId, currentYear, pageable);
 		// List<LocalDate> holidays = holRepo.findAllHolidayDates();
 
 		for (LeaveApplication leave : history.getContent()) {

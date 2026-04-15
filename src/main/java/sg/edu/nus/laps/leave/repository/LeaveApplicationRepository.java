@@ -72,5 +72,14 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 	@Query("UPDATE LeaveApplication l SET l.status = 'CANCELLED' WHERE l.id = :id")
 	void cancelLeave(@Param("id") Long id);
 	*/
+	// display leave history (fromDate or toDate) containing current year
 	Page<LeaveApplication> findByEmployeeIdOrderByFromDateDesc(Long employeeId, Pageable pageable);
+	@Query("SELECT l FROM LeaveApplication l WHERE l.employee.id = :empId " +
+		       "AND (FUNCTION('YEAR', l.fromDate) = :year OR FUNCTION('YEAR', l.toDate) = :year) " +
+		       "ORDER BY l.fromDate DESC")
+		Page<LeaveApplication> findByEmployeeIdAndYear(
+		    @Param("empId") Long empId, 
+		    @Param("year") int year, 
+		    Pageable pageable
+		);
 }
