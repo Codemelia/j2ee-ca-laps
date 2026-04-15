@@ -1,26 +1,74 @@
 package sg.edu.nus.laps.approval;
 
+import java.util.List;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import sg.edu.nus.laps.leave.model.LeaveApplication;
+import sg.edu.nus.laps.security.AuthUserDetails;
 
-/*
-    ApprovalController handles manager-facing pages
-
-                    CONTROLLER SCOPE
-    ------------------------------------------------
-    GET /manager/subordinates/{employeeId}/leaves
-        - Display leave history for a subordinate
-    GET /manager/team-leaves
-        - Display all team leave requests pending/reviewed
-    GET /manager/team-leaves/{leaveId}
-        - Display information of specific leave request
-    POST /manager/team-leaves/{leaveId}/approve
-        - Process leave request approval
-    POST /manager/team-leaves/{leaveId}/reject
-        - Process leave request rejection
-*/
 @RequestMapping("/manager")
 @Controller
 public class ApprovalController {
+
+    private final ApprovalService approvalService;
+
+    public ApprovalController(ApprovalService approvalService) {
+        this.approvalService = approvalService;
+    }
+
+    /**
+     * Corresponds to the "Team Leave Applications" HTML page.
+     * Displays all pending leave requests for the manager's team.
+     */
+    @GetMapping("/team-leaves")
+    public String viewTeamLeaves(@AuthenticationPrincipal AuthUserDetails user, Model model) {
+        // Retrieve the current manager's ID from the Security Context
+        List<LeaveApplication> pendingList = approvalService.getPendingRequests(user.getEmployeeId());
+        model.addAttribute("leaveList", pendingList);
+        return "manager/team-leave-list"; 
+    }
+
+    /**
+     * Handles the approval request.
+     * Triggered by the form action="/manager/approve" in HTML.
+     */
+    @PostMapping("/approve")
+    public String approveLeave(@RequestParam("id") Long id) {
+        approvalService.approveRequest(id);
+        return "redirect:/manager/team-leaves";
+    }
+
+    /**
+     * Handles the rejection request.
+     * Triggered by the form action="/manager/reject" in HTML.
+     */
+    @PostMapping("/reject")
+    public String rejectLeave(@RequestParam("id") Long id, @RequestParam("comment") String comment) {
+        approvalService.rejectRequest(id, comment);
+        return "redirect:/manager/team-leaves";
+    }
+
+    /**
+     * View the complete leave history for a specific subordinate.
+     */
+    @GetMapping("/subordinate/history/{empId}")
+    public String viewSubordinateHistory(@PathVariable Long empId, Model model) {
+        model.addAttribute("history", approvalService.getSubordinateHistory(empId));
+        return "manager/subordinate-history";
+    }
     
+    /**
+     * View details of a single leave application.
+     * Accessible via /manager/leave/{id}.
+     */
+    @GetMapping("/leave/{id}")
+    public String viewLeaveDetails(@PathVariable Long id, Model model) {
+        approvalService.findLeaveById(id).ifPresent(l -> model.addAttribute("leaveApplication", l));
+        
+        // Reuses the detail page; isSelf=false ensures approval buttons are visible to managers
+        model.addAttribute("isSelf", false); 
+        return "leave/leave-details";
+    }
 }

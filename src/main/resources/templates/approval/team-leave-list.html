@@ -34,7 +34,7 @@
 						
 					    <tr th:each="leave : ${leaveList}">
 			                <td th:text="${leave.employee.firstName}"></td>
-			                <td th:text="${leave.leaveType.name}"></td>
+			                <td th:text="${leave.leaveType.leaveType}"></td>
 							<td th:text="${#temporals.format(leave.fromDate, 'dd/MM/yyyy')}"></td>
 							<td th:text="${#temporals.format(leave.toDate, 'dd/MM/yyyy')}"></td>
 			                <td th:text="${leave.status}"></td>
