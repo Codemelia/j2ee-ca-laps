@@ -82,6 +82,7 @@ public class UserService {
 
         // Retrieve old hashed password from DB
         User user = optUser.get();
+
         String oldPasswordHash = user.getPasswordHash();
 
         // use encoder to match old passwords

@@ -17,12 +17,16 @@ document.addEventListener("DOMContentLoaded", function () {
             confirmPassword: this.confirmPassword.value
         }
 
+        const token = document.querySelector('meta[name="_csrf"]').content;
+        const header = document.querySelector('meta[name="_csrf_header"]').content;
+
         // fetch Controller endpoint response
         // Pass in formData as JSON
         const resp = await fetch("/auth/change-password", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                [header]: token
             },
             body: JSON.stringify(formData)
         });

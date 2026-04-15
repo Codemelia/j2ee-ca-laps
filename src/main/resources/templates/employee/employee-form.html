@@ -113,6 +113,9 @@
                         <span class="error" th:if="${#fields.hasErrors('jobTitle')}"
                             th:errors="*{jobTitle}"></span>
                     </div>
+
+                    <input type="hidden" th:name="${_csrf.parameterName}"
+                        th:value="${_csrf.token}">
                     
                     <button type="button" onclick="history.back()">Back</button>
 

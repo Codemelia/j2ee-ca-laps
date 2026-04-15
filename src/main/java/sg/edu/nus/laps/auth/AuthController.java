@@ -106,6 +106,9 @@ public class AuthController {
         @RequestBody @Valid PasswordDTO passwordDto,
         BindingResult result,
         @AuthenticationPrincipal AuthUserDetails user) {
+
+        System.out.println("RECEIVED: " + user.toString());
+        System.out.println("RECEIVED: " + passwordDto.toString());
         
         // Check if confirm password same as new
         // If no match, add as field error under confirm password

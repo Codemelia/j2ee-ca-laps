@@ -52,6 +52,9 @@
               placeholder="State your reason"
             ></textarea>
           </div>
+
+          <input type="hidden" th:name="${_csrf.parameterName}"
+            th:value="${_csrf.token}">
           <div class="nav-links">
             <button
               type="submit"
