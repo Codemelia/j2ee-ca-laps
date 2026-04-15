@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -32,17 +33,21 @@ public class AuthController {
 
     // Employee - GET /auth/employee/login
     @GetMapping("/employee/login")
-    public String employeeLogin(Model model) {
+    public String employeeLogin(
+        @RequestParam(value = "email", required = false) String email,
+        Model model) {
         model.addAttribute("entryPoint", "employee");
-        model.addAttribute("user", new LoginUserDTO());
+        model.addAttribute("user", new LoginUserDTO(email));
         return "auth/login";
     }
 
     // Admin - GET /auth/admin/login
     @GetMapping("/admin/login")
-    public String adminLogin(Model model) {
+    public String adminLogin(
+        @RequestParam(value = "email", required = false) String email,
+        Model model) {
         model.addAttribute("entryPoint", "admin");
-        model.addAttribute("user", new LoginUserDTO());
+        model.addAttribute("user", new LoginUserDTO(email));
         return "auth/login";
     }
 
@@ -52,9 +57,6 @@ public class AuthController {
         @Valid @ModelAttribute(name="user") LoginUserDTO user,
         BindingResult result, Model model,
         HttpServletRequest request) {
-
-        System.out.println("EMAIL: " + user.getEmail());
-        System.out.println("PASSWORD: " + user.getPassword());
 
         // Validation error = stay on login page
         if (result.hasErrors()) {
@@ -70,11 +72,7 @@ public class AuthController {
     @PostMapping("/admin/login-validate")
     public String processAdminLogin(
         @Valid @ModelAttribute(name="user") LoginUserDTO user,
-        BindingResult result, Model model,
-        HttpServletRequest request) {
-
-        System.out.println("EMAIL: " + user.getEmail());
-        System.out.println("PASSWORD: " + user.getPassword());
+        BindingResult result, Model model) {
 
         // Validation error = stay on login page
         if (result.hasErrors()) {

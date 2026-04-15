@@ -22,6 +22,9 @@ public class LoginUserDTO {
         this.email = email;
         this.password = password;
     }
+	public LoginUserDTO(String email) {
+		this.email = email;
+	}
     public LoginUserDTO() {}
 
 }

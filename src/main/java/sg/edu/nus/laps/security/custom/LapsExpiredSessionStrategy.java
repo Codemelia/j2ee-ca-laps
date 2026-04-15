@@ -23,9 +23,9 @@ public class LapsExpiredSessionStrategy implements SessionInformationExpiredStra
 
         // SET REDIRECT TO ADMIN / EMPLOYEE LOGIN BASED ON URI BASE
         if (uri.startsWith("/admin")) {
-            response.sendRedirect("/auth/admin/login?expired");
+            response.sendRedirect("/auth/admin/login?expired=true");
         } else {
-            response.sendRedirect("/auth/employee/login?expired");
+            response.sendRedirect("/auth/employee/login?expired=true");
         }
 
     }
