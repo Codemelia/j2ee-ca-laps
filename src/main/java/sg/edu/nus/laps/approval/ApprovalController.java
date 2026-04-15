@@ -63,12 +63,17 @@ public class ApprovalController {
      * View details of a single leave application.
      * Accessible via /manager/leave/{id}.
      */
-    @GetMapping("/leave/{id}")
-    public String viewLeaveDetails(@PathVariable Long id, Model model) {
-        approvalService.findLeaveById(id).ifPresent(l -> model.addAttribute("leaveApplication", l));
-        
-        // Reuses the detail page; isSelf=false ensures approval buttons are visible to managers
-        model.addAttribute("isSelf", false); 
-        return "leave/leave-details";
-    }
+   @GetMapping("/leave/{id}")
+public String viewLeaveDetails(@PathVariable Long id, @AuthenticationPrincipal AuthUserDetails user, Model model) {
+    LeaveApplication la = approvalService.findLeaveById(id).orElseThrow();
+    
+    // Add logic to see who else is on leave
+    List<LeaveApplication> conflicts = leaveRepo.findConflictingLeaves(
+        user.getEmployeeId(), la.getFromDate(), la.getToDate(), id);
+    
+    model.addAttribute("leaveApplication", la);
+    model.addAttribute("conflicts", conflicts); // Display this in a table on the page
+    model.addAttribute("isSelf", false);
+    return "leave/leave-details";
+}
 }
