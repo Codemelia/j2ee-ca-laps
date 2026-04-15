@@ -414,7 +414,7 @@ public class LeaveService {
 	 */
 	private void updateLeaveRecordwithJITInject(Employee employee, LeaveType leaveType, int year, double leaveDays) {
 		LeaveRecord lr = lrRepo.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employee.getId(), leaveType.getId(), year)
-				.orElseGet(() -> initializeNewYearRecord(employee, leaveType, year));
+				.orElseGet(() -> initializeNewYearLeaveRecord(employee, leaveType, year));
 		
 		double availableLeave = lr.getEntitledDays() - lr.getConsumedDays();
 		if (availableLeave < leaveDays) {
@@ -426,9 +426,9 @@ public class LeaveService {
 	}
 	
 	/*
-	 * h. Helper Method: initializeNewYearRecord --> JIT Creation of Leave Record for the following Year
+	 * h. Helper Method: initializeNewYearLeaveRecord --> JIT Creation of Leave Record for the following Year
 	 */
-	private LeaveRecord initializeNewYearRecord(Employee employee, LeaveType leaveType, int year) {
+	private LeaveRecord initializeNewYearLeaveRecord(Employee employee, LeaveType leaveType, int year) {
 		LeaveRecord newLeaveRecord = new LeaveRecord();
 		newLeaveRecord.setEmployee(employee);
 		newLeaveRecord.setLeaveType(leaveType);
