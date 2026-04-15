@@ -79,6 +79,6 @@ public String viewLeaveDetails(@PathVariable Long id, @AuthenticationPrincipal A
     model.addAttribute("leaveApplication", la);
     model.addAttribute("conflicts", conflicts); // Display this in a table on the page
     model.addAttribute("isSelf", false);
-    return "leave/leave-details";
+    return "manager/leave-detail";  
 }
 }

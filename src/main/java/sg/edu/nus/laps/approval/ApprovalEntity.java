@@ -1,7 +1,6 @@
 package sg.edu.nus.laps.approval;
 
 import sg.edu.nus.laps.leave.model.LeaveApplication;
-import sg.edu.nus.laps.leave.model.LeaveStatus;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -28,6 +28,8 @@
             padding: 5px 10px;
             border-radius: 4px;
             font-weight: bold;
+            font-size: 0.85em;
+            display: inline-block;
         }
         .status-applied {
             background-color: #ffc107;
@@ -40,6 +42,7 @@
         .action-buttons {
             display: flex;
             gap: 5px;
+            flex-wrap: wrap;
         }
         .btn-sm {
             padding: 4px 8px;
@@ -50,9 +53,38 @@
             padding: 40px;
             color: #666;
         }
+        .table thead {
+            background-color: #343a40;
+            color: white;
+        }
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
     </style>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">LAPS System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manager/team-leaves">Team Leaves</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manager/team-leaves-overview">Overview</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
     <div class="container-custom">
         <div class="header-section">
             <h1 class="mb-0">Team Leave Applications</h1>
@@ -60,13 +92,13 @@
         </div>
 
         <!-- Alert if no pending requests -->
-        <div th:if="${#lists.isEmpty(leaveList)}" class="alert alert-info empty-state">
+        <div th:if="${leaveList == null || leaveList.isEmpty()}" class="alert alert-info empty-state">
             <h5>No Pending Leave Applications</h5>
             <p>All leave applications have been reviewed.</p>
         </div>
 
         <!-- Table of leave applications -->
-        <div th:if="${!#lists.isEmpty(leaveList)}" class="table-responsive">
+        <div th:if="${leaveList != null && !leaveList.isEmpty()}" class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead class="table-dark">
                     <tr>
@@ -84,15 +116,22 @@
                     <tr th:each="leave : ${leaveList}">
                         <td th:text="${leave.employee.name}">Employee Name</td>
                         <td th:text="${leave.leaveType.name}">Leave Type</td>
-                        <td th:text="${#dates.format(leave.fromDate, 'dd-MMM-yyyy')}">From Date</td>
-                        <td th:text="${#dates.format(leave.toDate, 'dd-MMM-yyyy')}">To Date</td>
-                        <td th:text="${leave.numberOfDays}">Days</td>
+                        <td th:text="${#temporals.format(leave.fromDate, 'dd-MMM-yyyy')}">From Date</td>
+                        <td th:text="${#temporals.format(leave.toDate, 'dd-MMM-yyyy')}">To Date</td>
+                        <td th:text="${leave.duration}">Days</td>
                         <td>
                             <span class="status-badge" 
-                                  th:classappend="${leave.status.name() == 'APPLIED' ? 'status-applied' : 'status-updated'}"
-                                  th:text="${leave.status.name()}">Status</span>
+                                  th:if="${leave.status.name().equals('APPLIED')}" 
+                                  class="status-applied">
+                                Applied
+                            </span>
+                            <span class="status-badge" 
+                                  th:if="${leave.status.name().equals('UPDATED')}" 
+                                  class="status-updated">
+                                Updated
+                            </span>
                         </td>
-                        <td th:text="${#dates.format(leave.appliedDate, 'dd-MMM-yyyy')}">Applied Date</td>
+                        <td th:text="${#temporals.format(leave.createdAt, 'dd-MMM-yyyy')}">Applied Date</td>
                         <td>
                             <div class="action-buttons">
                                 <a th:href="@{/manager/leave/{id}(id=${leave.id})}" class="btn btn-info btn-sm">View</a>
@@ -101,7 +140,7 @@
                                     <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Approve this leave?')">Approve</button>
                                 </form>
                                 <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal" 
-                                        th:data-leave-id="${leave.id}">Reject</button>
+                                        th:onclick="'setLeaveId(' + ${leave.id} + ')'">Reject</button>
                             </div>
                         </td>
                     </tr>
@@ -123,8 +162,8 @@
                         <input type="hidden" name="id" id="leaveId">
                         <div class="mb-3">
                             <label for="comment" class="form-label">Reason for Rejection <span class="text-danger">*</span></label>
-                            <textarea class="form-control" id="comment" name="comment" rows="4" required></textarea>
-                            <small class="form-text text-muted">Please provide a clear explanation for the rejection.</small>
+                            <textarea class="form-control" id="comment" name="comment" rows="4" required placeholder="Please provide a clear explanation for the rejection..."></textarea>
+                            <small class="form-text text-muted">This comment will be visible to the employee.</small>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -138,11 +177,31 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Pass leave ID to modal
-        document.getElementById('rejectModal').addEventListener('show.bs.modal', function(event) {
-            var button = event.relatedTarget;
-            var leaveId = button.getAttribute('data-leave-id');
+        /**
+         * Set the leave ID in the reject modal
+         */
+        function setLeaveId(leaveId) {
             document.getElementById('leaveId').value = leaveId;
+        }
+
+        /**
+         * Form validation before submitting
+         */
+        document.getElementById('rejectForm').addEventListener('submit', function(e) {
+            const comment = document.getElementById('comment').value.trim();
+            if (!comment || comment.length < 5) {
+                e.preventDefault();
+                alert('Please provide a comment of at least 5 characters.');
+                return false;
+            }
+        });
+
+        /**
+         * Reset modal when closed
+         */
+        document.getElementById('rejectModal').addEventListener('hidden.bs.modal', function() {
+            document.getElementById('comment').value = '';
+            document.getElementById('leaveId').value = '';
         });
     </script>
 </body>

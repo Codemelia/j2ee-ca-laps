@@ -32,6 +32,7 @@ public class ApprovalDTO {
         this.daysDuration = daysDuration;
         this.reason = reason;
         this.status = status;
+        this.appliedDate = appliedDate;
     }
     
     // Getters and Setters
