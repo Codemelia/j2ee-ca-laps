@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 
-import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -78,16 +77,10 @@ public class LeaveController {
             
         LeaveApplication leaveApp = leaveAppOpt.get();
         Long leaveEmpId = leaveApp.getEmployee().getId();
-        Long currViewerId = user.getEmployeeId();
-
-        // If current session user = id, employee is viewing own page
-        boolean isSelf = currViewerId != null && currViewerId.equals(leaveEmpId);
-    
-        // Get managerName from ID
         String managerName = empService.getManagerName(leaveEmpId);
-        model.addAttribute("managerName", managerName);
 
-        model.addAttribute("isSelf", isSelf);
+        model.addAttribute("managerName", managerName);
+        model.addAttribute("isSelf", true);
         model.addAttribute("leaveApp", leaveApp);
 
         return "leave/leave-details";
@@ -96,8 +89,9 @@ public class LeaveController {
     // View personal leave history
     @GetMapping
     public String viewLeaveHistory(@AuthenticationPrincipal AuthUserDetails user,Model model) {
-        List <LeaveApplication> history  = lService.getEmployeeLeaveHistory(user.getEmployeeId());
-        model.addAttribute("leaveList", history);
+        List <LeaveApplication> leaveList  = lService.getEmployeeLeaveHistory(user.getEmployeeId());
+        model.addAttribute("leaveList", leaveList);
+        model.addAttribute("isSelf", true);
         return "leave/leave-list";
     }
 

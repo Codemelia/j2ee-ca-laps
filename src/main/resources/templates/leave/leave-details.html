@@ -36,7 +36,7 @@
 		    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 		</div>
 
-		<div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+		<div th:if="${error}" class="alert alert-error alert-dismissible fade show" role="alert">
 		    <i class="bi bi-exclamation-triangle-fill"></i>
 		    <span th:text="${error}"></span>
 		    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -44,15 +44,22 @@
         <div class="page-wrapper">
             <div class="card leave-details">
                 <div class="card-body">
-                    <div th:if="${leaveApp}" th:object="${leaveApp}">
+                    <div th:if="${leaveApp == null}">
+                        No such leave application exists.
+                    </div>
+                    <div th:if="${leaveApp != null}" th:object="${leaveApp}">
 
                         <!-- Leave ID & Status -->
                         <div class="card-header">
                             <h2>Leave Application #<span th:text="*{id}"></span></h2>
                             <p>Applied On <span th:text="*{#temporals.format(createdAt, 'dd MMM yyyy')}"></span></p>
-                            <span class="status-badge" 
-                                th:attr="data-status=*{status.name()}" 
-                                th:text="*{status.name()}"></span>
+							<span class="badge rounded-pill"
+							      th:attr="data-status=*{status}"
+							      th:classappend="*{status.name() == 'APPROVED' ? 'bg-success' : 
+							                       (status.name() == 'REJECTED' ? 'bg-danger' : 
+							                       (status.name() == 'CANCELLED' or status.name() == 'DELETED' ? 'bg-secondary' : 'bg-info'))}"
+							      th:text="*{status}">
+							</span>
                         </div>
 
                         <!-- Employee Info -->
@@ -115,6 +122,50 @@
                                 <dd th:text="*{#temporals.format(updatedAt, 'dd MMM yyyy')}"></dd>
                             </dl>
                         </section>
+
+                        <!-- Team's conflicts on manager view -->
+                        <section sec:authorize="hasRole('ROLE_MANAGER')" 
+                            th:if="${!isSelf}">
+                            <h3>Team Leave Conflicts</h3>
+
+                            <p th:if="${conflicts == null || #lists.isEmpty(conflicts)}">
+                                No overlapping team leave applications during this period.
+                            </p>
+
+                            <div class="table-responsive" th:if="${conflicts != null
+                                && !#lists.isEmpty(conflicts)}">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Leave Type</th>
+                                            <th>From</th>
+                                            <th>To</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="conflict : ${conflicts}">
+                                            <td th:text="${conflict.employee.firstName + ' ' + conflict.employee.lastName}">
+                                                UNAVAILABLE
+                                            </td>
+                                            <td th:text="${conflict.leaveType.leaveType}">
+                                                UNAVAILABLE
+                                            </td>
+                                            <td th:text="${#temporals.format(conflict.fromDate, 'dd MMM yyyy')}">
+                                                DD MMM YYYY
+                                            </td>
+                                            <td th:text="${#temporals.format(conflict.toDate, 'dd MMM yyyy')}">
+                                                DD MMM YYYY
+                                            </td>
+                                            <td th:text="${conflict.status}">
+                                                UNAVAILABLE
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
                     </div>
 
                     <!-- Global error -->
@@ -122,9 +173,14 @@
                         th:if="${globalError}"
                         th:text="${globalError}"></div>
 
-                    <div class="card-footer">
-                        <!-- Goes back to previous page -->
-                        <button class="btn" type="button" onclick="history.back()">Back</button>
+                    <!-- Success -->
+                    <div class="alert alert-success"
+                        th:if="${successMsg}"
+                        th:text="${successMsg}"></div>
+
+                    <div class="card-footer" th:if="${leaveApp != null}">
+                        <!-- Goes back to previous page
+                        <button class="btn" type="button" onclick="history.back()">Back</button> -->
 
                         <!-- Employee (self view) buttons -->
                         <div th:if="${isSelf}">
@@ -174,7 +230,8 @@
 		</div>
 
         <!-- Reject Modal -->
-        <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+        <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true"
+            th:if="${leaveApp != null}">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">

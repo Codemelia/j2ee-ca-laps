@@ -578,7 +578,8 @@ public class LeaveService {
 	// 1. Gets Recent Leave Applications
 	@Transactional(readOnly=true)
 	public List<LeaveApplication> getRecentLeaveApplications(Long employeeId) {
-		return laRepo.findTop5ByEmployeeIdOrderByFromDateDesc(employeeId);
+		
+		return laRepo.findTop5ByEmployeeIdOrderByUpdatedAtDesc(employeeId);
 	}
 	
 	// 2. Retrieve Leave Applications by employee ID

@@ -12,28 +12,21 @@
 			<div class="container mt-4">
 			    <div class="d-flex justify-content-between align-items-start mb-4">
 			        
-			        <div class="user-greeting">
-			            <h1>Welcome, <span th:if="${employeeFirstName}" th:text="${employeeFirstName} ?: 'Admin User'"></span>!</h1>
-			            </div>
-			        
+			        <div>
+			            <h1>Welcome, <span th:if="${employeeFirstName}" th:text="${employeeFirstName} ?: 'Admin User'"></span>!</h1></div>
+			        <div>
+			            <a th:href="@{/leaves/apply}" class="btn btn-primary">
+			                Apply Leave
+			            </a>
+			        </div>
 			        
 			    </div>
 
-			    
+			    </div>	
 
 		    <!-- Leave Balance Cards -->
-		    <div >
-		    <div class="d-flex justify-content-between align-items-start mb-4">
-		    <div>
 		    <h2>My Leave Balance</h2>
-		    </div>
-		    <div>
-			    <a th:href="@{/leave/apply}" class="btn btn-primary">
-			         Apply Leave
-			    </a>
-			</div>
-			</div>
-		    <div class="cards-container justify-content-center mb-4">
+		    <div class="cards-container">
 		        <div class="card" th:each="rec : ${leaveRecords}">
 		            <h3 th:text="${rec.leaveType.leaveType}">Leave Type</h3>
 		            <p>Entitled: <span th:text="${rec.entitledDays}">0</span></p>
@@ -44,31 +37,22 @@
 		            </p>
 		        </div>
 		        <!-- Fallback if no records -->
-		        <div>
 		        <p th:if="${#lists.isEmpty(leaveRecords)}">
 		            No leave records found.
 		        </p>
-		        </div>
-		    </div>
 		    </div>
 
 		    <!-- My Recent Leave Requests -->
-		    <div>
-		    <div class="d-flex justify-content-between align-items-center mb-4">
-		    <div>
 		    <h2>My Latest Leave Applications</h2>
-		    </div>
-		    
-			</div>
-		    <div >
-		    <div>
-		    <table class="data-table-med">
+		    <table class="table">
 		        <thead>
 		            <tr>
 		                <th>Leave Type</th>
-		                <th>From</th>
-		                <th>To</th>
+		                <th>Start Date</th>
+		                <th>End Date</th>
 		                <th>Status</th>
+						<th>Applied</th>
+						<th>Updated</th>
 		            </tr>
 		        </thead>
 		        <tbody>
@@ -77,17 +61,15 @@
 		                <td th:text="${#temporals.format(app.fromDate, 'dd MMM yyyy')}">-</td>
 		                <td th:text="${#temporals.format(app.toDate, 'dd MMM yyyy')}">-</td>
 		                <td th:text="${app.status}">-</td>
+						<td th:text="${app.createdAt != null ? #temporals.format(app.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
+						<td th:text="${app.updatedAt != null ? #temporals.format(app.updatedAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
 		            </tr>
 		            <tr th:if="${#lists.isEmpty(recentApplications)}">
-		                <td colspan="4">No leave applications found.</td>
+		                <td colspan="6">No leave applications found.</td>
 		            </tr>
 		        </tbody>
 		    </table>
-		    </div>
-		    </div>
-		    </div>
 		</div>
-	    </div>	
 
 		<footer th:replace="~{fragments/footer :: footer}"></footer>
 

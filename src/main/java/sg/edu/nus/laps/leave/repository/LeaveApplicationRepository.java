@@ -63,7 +63,7 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 	//List<LeaveApplication> findByEmployeeIdOrderByFromDateDesc(Long employeeId);
 	
 	// 11. For Dashboard: Limit leave applications to top 5
-	List<LeaveApplication> findTop5ByEmployeeIdOrderByFromDateDesc(Long employeeId);
+	List<LeaveApplication> findTop5ByEmployeeIdOrderByUpdatedAtDesc(Long employeeId);
 
 	/*
 	// Remove, SET of Status should be Managed in the Service Layer
@@ -77,6 +77,7 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 	List<LeaveApplication> findByEmployeeIdOrderByFromDateDesc(Long employeeId);
 	@Query("SELECT l FROM LeaveApplication l WHERE l.employee.id = :empId " +
 		       "AND (FUNCTION('YEAR', l.fromDate) = :year OR FUNCTION('YEAR', l.toDate) = :year) " +
+		       "AND l.status <> 'DELETED' " +
 		       "ORDER BY l.fromDate DESC")
 		List<LeaveApplication> findByEmployeeIdAndYear(
 		    @Param("empId") Long empId, 
