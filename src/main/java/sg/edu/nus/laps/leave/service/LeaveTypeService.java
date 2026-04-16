@@ -26,5 +26,8 @@ public class LeaveTypeService {
     public Optional<LeaveType> findLeaveTypeById(Long id) {
         return ltRepo.findById(id);
     }
-
+    
+    public Optional<LeaveType> findByLeaveType(String leaveType) {
+    	return ltRepo.findByLeaveType(leaveType);
+    }
 }
