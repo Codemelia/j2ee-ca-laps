@@ -87,8 +87,8 @@ public class Employee extends SetCreatedUpdated {
 	
 	@Transient //Don't persist in db
 	@NotNull(message = "Annual Leave Entitlement cannot be blank")
-	@DecimalMin("14.0")
-	@DecimalMax("21.0")
+	@DecimalMin(value="14.0", inclusive=true, message="")
+	@DecimalMax(value="21.0", inclusive=true, message="")
 	private Double annualLeave;
 
 	// ADDED for form binding
