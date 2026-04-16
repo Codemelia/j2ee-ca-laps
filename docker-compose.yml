@@ -11,8 +11,8 @@ services:
   db:
     image: mysql:8
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: lapsdb
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-lapsdb}
     volumes:
       - mysql_data:/var/lib/mysql
 
