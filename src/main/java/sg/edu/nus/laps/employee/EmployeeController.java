@@ -19,15 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import sg.edu.nus.laps.auth.model.Role;
 import sg.edu.nus.laps.auth.service.RoleService;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
-import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveRecord;
-import sg.edu.nus.laps.leave.model.LeaveType;
 import sg.edu.nus.laps.leave.service.HolidayService;
 import sg.edu.nus.laps.leave.service.LeaveRecordService;
 import sg.edu.nus.laps.security.AuthUserDetails;
@@ -52,7 +48,7 @@ public class EmployeeController {
 	private final RoleService rService;
 	private final HolidayService hService;
 	private final LeaveRecordService lrService;
-	private LocalDate date;
+	// private LocalDate date;
 	
 	public EmployeeController(EmployeeService eService,
 		RoleService rService, HolidayService hService, LeaveRecordService lrService) {

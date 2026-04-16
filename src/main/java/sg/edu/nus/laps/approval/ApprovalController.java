@@ -1,11 +1,17 @@
 package sg.edu.nus.laps.approval;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import sg.edu.nus.laps.employee.EmployeeService;
+import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
+import sg.edu.nus.laps.leave.model.LeaveStatus;
+import sg.edu.nus.laps.leave.service.LeaveService;
 import sg.edu.nus.laps.security.AuthUserDetails;
 
 /**
@@ -23,10 +29,14 @@ import sg.edu.nus.laps.security.AuthUserDetails;
 @Controller
 public class ApprovalController {
 
-    private final ApprovalService approvalService;
-
-    public ApprovalController(ApprovalService approvalService) {
-        this.approvalService = approvalService;
+    private final LeaveService lService;
+    private final ApprovalService aService;
+    private final EmployeeService eService;
+    public ApprovalController(LeaveService lService, 
+        ApprovalService aService, EmployeeService eService) {
+        this.lService = lService;
+        this.aService = aService;
+        this.eService = eService;
     }
 
     /**
@@ -34,24 +44,93 @@ public class ApprovalController {
      * Pending means status is APPLIED or UPDATED.
      * 
      * Request: GET /manager/team-leaves
-     * Template: manager/team-leave-list.html
+     * Template: approval/team-leave-list.html
      * 
      * @param user the authenticated manager
      * @param model the model to pass data to template
      * @return the team leave list view
      */
     @GetMapping("/team-leaves")
-    public String viewTeamLeaves(@AuthenticationPrincipal AuthUserDetails user, Model model) {
-        // Security check
-        if (user == null) {
-            return "redirect:/auth/login";
-        }
-
+    public String viewTeamLeaves(@AuthenticationPrincipal AuthUserDetails user, 
+        Model model) {
         // Retrieve pending requests for this manager's team
-        List<LeaveApplication> pendingList = approvalService.getPendingRequests(user.getEmployeeId());
+        List<LeaveApplication> pendingList = aService.getPendingRequests(user.getEmployeeId());
         model.addAttribute("leaveList", pendingList);
         
-        return "manager/team-leave-list";
+        return "approval/team-leave-list";
+    }
+
+        /**
+     * Displays the complete leave history for a specific subordinate.
+     * Shows all leaves for the current calendar year, including approved and rejected ones.
+     * Verifies that the requesting manager actually manages the specified employee.
+     * 
+     * Request: GET /manager/subordinate/history/{empId}
+     * Template: leave/leave-list.html
+     * 
+     * @param empId the subordinate's employee ID
+     * @param user the authenticated manager
+     * @param model the model to pass data to template
+     * @return the subordinate history view, or redirect if unauthorized
+     */
+    @GetMapping("/subordinate/history/{empId}")
+    public String viewSubordinateHistory(@PathVariable Long empId, 
+        @AuthenticationPrincipal AuthUserDetails user, Model model) {
+        
+        // Verify the manager actually manages this employee
+        Optional<Employee> subordinate = eService.findById(empId);
+        if (subordinate.isEmpty() || !subordinate.get().getManagerId().equals(user.getEmployeeId())) {
+            return "redirect:/manager/team-leaves?error=Unauthorized";
+        }
+        
+        // Retrieve complete leave history for the subordinate
+        model.addAttribute("leaveList", aService.getSubordinateHistory(empId));
+        model.addAttribute("empId", empId);
+        
+        return "leave/leave-list";
+    }
+
+        /**
+     * Displays detailed information about a single leave application.
+     * Also shows conflicting/overlapping leave requests from other team members
+     * to help the manager make an informed decision.
+     * Verifies that the leave application belongs to an employee managed by this manager.
+     * 
+     * Request: GET /manager/leave/{id}
+     * Template: leave/leave-details.html
+     * 
+     * @param id the leave application ID to view
+     * @param user the authenticated manager
+     * @param model the model to pass data to template
+     * @return the leave detail view, or redirect if unauthorized
+     */
+    @GetMapping("/leaves/{id}")
+    public String viewLeaveDetails(@PathVariable Long id, 
+        @AuthenticationPrincipal AuthUserDetails user, 
+        Model model) {
+
+        // Get leave application
+        LeaveApplication la = lService.findLeaveById(id)
+            .orElseThrow(() -> new RuntimeException("Leave application not found"));
+
+        // Verify the manager owns this leave application (employee is in their team)
+        if (!la.getEmployee().getManagerId().equals(user.getEmployeeId())) {
+            return "redirect:/manager/team-leaves?error=Unauthorized";
+        }
+
+        // Get conflicting leave applications from team members during the same period
+        List<LeaveApplication> conflicts = aService.getConflictingLeaves(
+            user.getEmployeeId(), 
+            la.getFromDate(), 
+            la.getToDate(), 
+            id);
+
+        // Pass data to template
+        model.addAttribute("leaveApplication", la);
+        model.addAttribute("conflicts", conflicts);
+        model.addAttribute("isSelf", false);
+        
+        return "leave/leave-details";
     }
 
     /**
@@ -67,7 +146,7 @@ public class ApprovalController {
     @PostMapping("/approve")
     public String approveLeave(@RequestParam("id") Long id) {
         try {
-            approvalService.approveRequest(id);
+            lService.processApproveOrRejectLeave(id, LeaveStatus.APPROVED, null);
         } catch (RuntimeException e) {
             return "redirect:/manager/team-leaves?error=" + e.getMessage();
         }
@@ -87,73 +166,14 @@ public class ApprovalController {
      * @return redirect to team-leaves view with success/error message
      */
     @PostMapping("/reject")
-    public String rejectLeave(@RequestParam("id") Long id, @RequestParam("comment") String comment) {
+    public String rejectLeave(@RequestParam("id") Long id, 
+        @RequestParam("comment") String comment) {
         try {
-            approvalService.rejectRequest(id, comment);
+            lService.processApproveOrRejectLeave(id, LeaveStatus.REJECTED, comment);
         } catch (RuntimeException e) {
             return "redirect:/manager/team-leaves?error=" + e.getMessage();
         }
         return "redirect:/manager/team-leaves";
     }
 
-    /**
-     * Displays the complete leave history for a specific subordinate.
-     * Shows all leaves for the current calendar year, including approved and rejected ones.
-     * 
-     * Request: GET /manager/subordinate/history/{empId}
-     * Template: manager/subordinate-history.html
-     * 
-     * @param empId the subordinate's employee ID
-     * @param model the model to pass data to template
-     * @return the subordinate history view
-     */
-    @GetMapping("/subordinate/history/{empId}")
-    public String viewSubordinateHistory(@PathVariable Long empId, Model model) {
-        // Retrieve complete leave history for the subordinate
-        model.addAttribute("history", approvalService.getSubordinateHistory(empId));
-        model.addAttribute("empId", empId);
-        
-        return "manager/subordinate-history";
-    }
-
-    /**
-     * Displays detailed information about a single leave application.
-     * Also shows conflicting/overlapping leave requests from other team members
-     * to help the manager make an informed decision.
-     * 
-     * Request: GET /manager/leave/{id}
-     * Template: manager/leave-detail.html
-     * 
-     * @param id the leave application ID to view
-     * @param user the authenticated manager
-     * @param model the model to pass data to template
-     * @return the leave detail view
-     */
-    @GetMapping("/leave/{id}")
-    public String viewLeaveDetails(@PathVariable Long id, 
-                                   @AuthenticationPrincipal AuthUserDetails user, 
-                                   Model model) {
-        // Security check
-        if (user == null) {
-            return "redirect:/auth/login";
-        }
-
-        // Get the leave application
-        LeaveApplication la = approvalService.findLeaveById(id)
-            .orElseThrow(() -> new RuntimeException("Leave application not found"));
-
-        // Get conflicting leave applications from team members during the same period
-        List<LeaveApplication> conflicts = approvalService.getConflictingLeaves(
-            user.getEmployeeId(), 
-            la.getFromDate(), 
-            la.getToDate(), 
-            id);
-
-        // Pass data to template
-        model.addAttribute("leaveApplication", la);
-        model.addAttribute("conflicts", conflicts);
-        model.addAttribute("isSelf", false);
-        
-        return "manager/leave-detail";
-    }
 }

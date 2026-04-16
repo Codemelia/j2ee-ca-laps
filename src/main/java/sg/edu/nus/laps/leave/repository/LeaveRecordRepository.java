@@ -35,7 +35,7 @@ public interface LeaveRecordRepository extends JpaRepository<LeaveRecord, Long> 
 	List<LeaveRecord> findDeficitRecords();
 
 	// 7. Custom Query: Find Conflicting Leaves for a Manager's Team
-	@Query("SELECT l FROM LeaveApplication l WHERE l.employee.manager.id = :managerId " +
+	@Query("SELECT l FROM LeaveApplication l WHERE l.employee.managerId = :managerId " +
        "AND l.status = 'APPROVED' " +
        "AND l.id <> :currentLeaveId " +
        "AND l.fromDate <= :toDate AND l.toDate >= :fromDate")

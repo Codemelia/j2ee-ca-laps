@@ -1,8 +1,8 @@
 package sg.edu.nus.laps.leave;
 
+import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
 import sg.edu.nus.laps.employee.EmployeeService;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
-import sg.edu.nus.laps.leave.repository.LeaveTypeRepository;
+import sg.edu.nus.laps.leave.model.LeaveType;
 import sg.edu.nus.laps.leave.service.LeaveService;
+import sg.edu.nus.laps.leave.service.LeaveTypeService;
 import sg.edu.nus.laps.security.AuthUserDetails;
 
 /*
@@ -46,44 +49,31 @@ import sg.edu.nus.laps.security.AuthUserDetails;
 @RequestMapping("/leaves")
 @Controller
 public class LeaveController {
-	/* 20260416 by ymw
-	 * @Autowired
-    private LeaveService leaveService;*/
-	private final LeaveService leaveService;
-	// View personal leave history
 
+	private final LeaveService lService;
     private final EmployeeService empService;
-    private final LeaveService c;
-    private final LeaveTypeRepository ltRepo;
+    private final LeaveTypeService ltService;
 
-    /* by ymw
-     * public LeaveController(LeaveService lService,
+    public LeaveController(
+        LeaveService lService,
         EmployeeService empService,
-        LeaveTypeRepository ltRepo) {
+        LeaveTypeService ltService) {
         this.lService = lService;
         this.empService = empService;
-		this.ltRepo = ltRepo;
-    } */
-    public LeaveController(LeaveService leaveService,
-            EmployeeService empService,
-            LeaveTypeRepository ltRepo, LeaveService c) {
-            this.leaveService = leaveService;
-			this.empService = empService;
-			this.c = c;
-			this.ltRepo = ltRepo;
+        this.ltService = ltService;
     }
 
-    // TEST leave-details.html - DELETE when updated
+    // Leave Details View
     @GetMapping("/details/{id}")
     public String showLeaveDetails(@AuthenticationPrincipal AuthUserDetails user,
         @PathVariable Long id, Model model) {
 
         // Get curr leave app and viewer id
-        Optional<LeaveApplication> leaveAppOpt = leaveService.findLeaveById(id);
+        Optional<LeaveApplication> leaveAppOpt = lService.findLeaveById(id);
 
         // Handle null leave app
         if (leaveAppOpt.isEmpty()) {
-            model.addAttribute("errorMessage", "No such leave application exists");
+            model.addAttribute("globalError", "No such leave application exists");
             return "leave/leave-details";
         }
             
@@ -91,19 +81,11 @@ public class LeaveController {
         Long leaveEmpId = leaveApp.getEmployee().getId();
         Long currViewerId = user.getEmployeeId();
 
-        // External admins cannot access leave details
-        // Internal admins cannot access others' leave details
-        if (user.isExternalAdmin()
-            || (user.isInternalAdmin() 
-            && (currViewerId == null || !currViewerId.equals(leaveEmpId)))) {
-            return "error/forbidden";
-        }
-
         // If current session user = id, employee is viewing own page
         boolean isSelf = currViewerId != null && currViewerId.equals(leaveEmpId);
     
-        // Else, manager is viewing employee's page
-        String managerName = isSelf ? null : empService.getManagerName(leaveEmpId);
+        // Get managerName from ID
+        String managerName = empService.getManagerName(leaveEmpId);
         model.addAttribute("managerName", managerName);
 
         model.addAttribute("isSelf", isSelf);
@@ -112,104 +94,172 @@ public class LeaveController {
         return "leave/leave-details";
     }
     
+    // View personal leave history
     @GetMapping
     public String viewLeaveHistory(@AuthenticationPrincipal AuthUserDetails user, @PageableDefault(size = 5) Pageable pageable, 
     	    Model model) {
-
-        Page<LeaveApplication> page = leaveService.getEmployeeLeaveHistory(user.getEmployeeId(), pageable);
+        Page<LeaveApplication> page = lService.getEmployeeLeaveHistory(user.getEmployeeId(), pageable);
         model.addAttribute("leaveList", page.getContent());
         model.addAttribute("currentPage", page.getNumber());
         model.addAttribute("totalPages", page.getTotalPages());
         model.addAttribute("page", page);
         return "leave/leave-list"; // The Thymeleaf template
     }
- /* by ymw
-  *   @GetMapping("/apply")
-    public String showApplyForm(Model model) {
-        
-        model.addAttribute("leaveApplication", new LeaveApplication()); 
-        model.addAttribute("leaveTypes", ltRepo.findAll());
-        return "leave/leave-form"; 
-    } */
+
+    // View new Leave Application form
     @GetMapping("/apply")
     public String showApplyForm(Model model) {
-
-        model.addAttribute("leaveApplication", new LeaveApplication());
-
-        var leaveTypes = ltRepo.findAll();
-
-        System.out.println("leaveTypes = " + leaveTypes); // 👈 加这个
-
+        List<LeaveType> leaveTypes = ltService.findAllLeaveTypes();
         model.addAttribute("leaveTypes", leaveTypes);
-
+        model.addAttribute("leaveApp", new LeaveApplication());
         return "leave/leave-form";
     }
 
-    @PostMapping("/apply")
-    public String saveLeaveApplication(@Valid @ModelAttribute LeaveApplication leaveApp, BindingResult result, Model model) {
-    	if (result.hasErrors()) {
-    		model.addAttribute("leaveTypes", ltRepo.findAll());
-    		return "leave/leave-form";
-    		}
-    	leaveService.submitLeave(leaveApp); 
-        
-        return "redirect:/leaves";
-
-    @PostMapping("/cancel/{id}")
-    public String cancelLeave(@AuthenticationPrincipal AuthUserDetails user, @PathVariable Long id, RedirectAttributes ra) {
-    	LeaveApplication leaveCancel = lService.findLeaveById(id).orElse(null);
-    	if (leaveCancel == null) {
-            ra.addFlashAttribute("error", "No such leave application exists");
-            return "redirect:/leaves";
-    	 }
-    	Long leaveEmpId = leaveCancel.getEmployee().getId();
-        Long currViewerId = user.getEmployeeId();
-     // Security Check
-        boolean isSelf = currViewerId != null && currViewerId.equals(leaveEmpId);
-
-     // Logic: Block if not self 
-        if (!isSelf) {
-            return "error/forbidden";
+    // View existing Leave Application form
+    @GetMapping("/edit/{id}")
+    public String showUpdateForm(@PathVariable Long id, Model model,
+        RedirectAttributes redirAttr) {
+        Optional<LeaveApplication> optLeaveApp = lService.findLeaveById(id);
+        if (optLeaveApp.isEmpty()) {
+            redirAttr.addAttribute("globalError", "No such application exists. Please fill a new application.");
+            return "redirect:/leaves/apply"; // redirect to new form endpoint with no population
         }
-    	try {
-            leaveService.cancelLeave(id);
-            ra.addFlashAttribute("message", "Leave application cancelled.");
-        } catch (RuntimeException e) {
-            //  catches "started leave" or "Not Approved" exceptions
-            ra.addFlashAttribute("error", e.getMessage());
-        }
-        return "redirect:/leaves"; // Redirect back to the list
+
+        List<LeaveType> leaveTypes = ltService.findAllLeaveTypes();
+        LeaveApplication leaveApp = optLeaveApp.get();
+
+        // Set flags for buttons
+        String status = leaveApp.getStatus().getDisplayLeaveStatus();
+        model.addAttribute("status", status); // Flag for button UI
+        model.addAttribute("leaveTypes", leaveTypes);
+        model.addAttribute("leaveApp", leaveApp);
+        return "leave/leave-form";
     }
-    
-    @PostMapping("/delete/{id}")
-    public String deleteLeave(@AuthenticationPrincipal AuthUserDetails user, @PathVariable Long id,RedirectAttributes ra) {
-    	LeaveApplication leaveDel = lService.findLeaveById(id).orElse(null);
-    	if (leaveDel == null) {
-            ra.addFlashAttribute("error", "No such leave application exists");
-            return "redirect:/leaves";
+
+    // Processing save draft
+    // DRAFT -> DRAFT
+    @PostMapping("/save")
+    public String saveLeaveApplication(@AuthenticationPrincipal AuthUserDetails user, 
+        @Valid @ModelAttribute LeaveApplication leaveApp, 
+        BindingResult result, Model model,
+        RedirectAttributes redirAttr) {
+        List<LeaveType> leaveTypes = ltService.findAllLeaveTypes();
+
+        // If error, go back to form
+        // result maps LeaveApplication
+    	if (result.hasErrors()) { 
+            model.addAttribute("leaveTypes", leaveTypes);
+            return "leave/leave-form"; 
         }
-    	Long leaveEmpId = leaveDel.getEmployee().getId();
-        Long currViewerId = user.getEmployeeId();
-     // Security Check
-        boolean isSelf = currViewerId != null && currViewerId.equals(leaveEmpId);
 
-     // Logic: Block if not self 
-        if (!isSelf) {
-            return "error/forbidden";
-        } 
+        try {
+            lService.saveAsDraft(user.getEmployeeId(), leaveApp);
+            redirAttr.addAttribute("successMsg", 
+                String.format("Leave Application #%d was saved successfully", leaveApp.getId()));
+            return "redirect:/leaves";
+        } catch (RuntimeException ex) {
+            String status = leaveApp.getStatus().getDisplayLeaveStatus();
+            model.addAttribute("status", status); // Flag for button UI
+            model.addAttribute("globalError", "An error occurred: " + ex.getMessage());
+            model.addAttribute("leaveApp", leaveApp);
+            model.addAttribute("leaveTypes", leaveTypes);
+            return "leave/leave-form";
+        }
+    }
 
+    // Processing submit new/draft leave app
+    // DRAFT / - -> APPLIED
+    @PostMapping("/submit")
+    public String submitLeaveApplication(@AuthenticationPrincipal AuthUserDetails user, 
+        @Valid @ModelAttribute LeaveApplication leaveApp, 
+        BindingResult result, Model model,
+        @RequestParam(name = "action", required = false) String action, // Determines whether it is a save/submit
+        RedirectAttributes redirAttr) {
+        List<LeaveType> leaveTypes = ltService.findAllLeaveTypes();
+
+        // If error, go back to form
+    	if (result.hasErrors()) { 
+            model.addAttribute("leaveTypes", leaveTypes);
+            return "leave/leave-form"; 
+        }
+
+        try {
+            lService.submitLeave(user.getEmployeeId(), leaveApp);
+            redirAttr.addAttribute("successMsg", 
+                String.format("Leave Application #%d was submitted successfully", leaveApp.getId()));
+            return "redirect:/leaves";
+        } catch (RuntimeException ex) {
+            String status = leaveApp.getStatus().getDisplayLeaveStatus();
+            model.addAttribute("status", status); // Flag for button UI
+            model.addAttribute("globalError", "An error occurred: " + ex.getMessage());
+            model.addAttribute("leaveApp", leaveApp);
+            model.addAttribute("leaveTypes", leaveTypes);
+            return "leave/leave-form";
+        }
+    }
+
+    // Processing update existing leave app
+    // APPLIED / UPDATED -> UPDATED
+    @PostMapping("/update")
+    public String updateLeaveApplication(@AuthenticationPrincipal AuthUserDetails user, 
+        @Valid @ModelAttribute LeaveApplication leaveApp, 
+        BindingResult result, Model model,
+        @RequestParam(name = "action", required = false) String action, // Determines whether it is a save/submit
+        RedirectAttributes redirAttr) {
+        List<LeaveType> leaveTypes = ltService.findAllLeaveTypes();
+
+        // If error, go back to form
+    	if (result.hasErrors()) { 
+            model.addAttribute("leaveTypes", leaveTypes);
+            return "leave/leave-form"; 
+        }
+
+        try {
+            lService.updateLeave(user.getEmployeeId(), leaveApp);
+            redirAttr.addAttribute("successMsg", 
+                String.format("Leave Application #%d was updated successfully", leaveApp.getId()));
+            return "redirect:/leaves";
+        } catch (RuntimeException ex) {
+            String status = leaveApp.getStatus().getDisplayLeaveStatus();
+            model.addAttribute("status", status); // Flag for button UI
+            model.addAttribute("globalError", "An error occurred: " + ex.getMessage());
+            model.addAttribute("leaveApp", leaveApp);
+            model.addAttribute("leaveTypes", leaveTypes);
+            return "leave/leave-form";
+        }
+    }
+
+    // Delete leave application
+    // APPLIED / UPDATED -> DELETED
+    @PostMapping("/delete/{id}")
+    public String deleteLeave(@AuthenticationPrincipal AuthUserDetails user, 
+        @PathVariable Long id, RedirectAttributes redirAttr) {
      // 3. Perform delete action  
         try {
-            lService.deleteLeave(id); 
-            ra.addFlashAttribute("message", "Leave application deleted.");
+            lService.deleteLeave(id, user.getEmployeeId());
+            redirAttr.addAttribute("successMsg", 
+                String.format("Leave Application #%d was deleted successfully", id));
         } catch (RuntimeException e) {
-            // catches (APPLIED/UPDATED only)
-            ra.addFlashAttribute("error", e.getMessage());
+            redirAttr.addAttribute("globalError",
+                "Delete failed: " + e.getMessage());
         }
-        // 4. Redirect to the list
-        return "redirect:/leaves"; 
+        return "redirect:/leaves";
     }
-       
-  
+
+    // Cancel leave application
+    // APPROVED -> CANCELLED
+    @PostMapping("/cancel/{id}")
+    public String cancelLeave(@AuthenticationPrincipal AuthUserDetails user, 
+        @PathVariable Long id, RedirectAttributes redirAttr) {
+    	try {
+            lService.cancelLeave(id, user.getEmployeeId());
+            redirAttr.addAttribute("successMsg", 
+                String.format("Leave Application #%d was deleted successfully", id));
+        } catch (RuntimeException e) {
+            redirAttr.addAttribute("globalError",
+                "Cancel failed: " + e.getMessage());
+        }
+        return "redirect:/leaves";
+    }
+
 }
-    }

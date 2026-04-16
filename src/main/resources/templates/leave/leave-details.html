@@ -6,6 +6,26 @@
         <!-- For scripts -->
 		<th:block th:fragment="extra">
 			<script th:src="@{/js/main.js}" defer></script>
+			<script defer>
+				/**
+				* Form validation before submitting reject
+				*/
+				document.getElementById('rejectForm').addEventListener('submit', function(e) {
+				    const comment = document.getElementById('comment').value.trim();
+				    if (!comment || comment.length < 5) {
+				        e.preventDefault();
+				        alert('Please provide a comment of at least 5 characters.');
+				        return false;
+				    }
+				});
+
+				/**
+				* Reset modal when closed
+				*/
+				document.getElementById('rejectModal').addEventListener('hidden.bs.modal', function() {
+				    document.getElementById('comment').value = '';
+				});
+			</script>
 		</th:block>
     </head>
 
@@ -95,8 +115,10 @@
                         </section>
                     </div>
 
-                    <div th:if="${errorMessage}" th:text="${errorMessage}">
-                    </div>
+                    <!-- Global error -->
+                    <div class="alert alert-error"
+                        th:if="${globalError}"
+                        th:text="${globalError}"></div>
 
                     <div class="card-footer">
                         <!-- Goes back to previous page -->
@@ -134,17 +156,44 @@
                         <!-- Manager (view subordinate) buttons -->
                         <div sec:authorize="hasRole('ROLE_MANAGER')" 
                             th:if="${!isSelf}">
-                            <button class="btn" type="button" id="approveBtn">Approve</button>
-                            <button class="btn" type="button" id="rejectBtn">Reject</button>
+                            <form th:action="@{/manager/approve}" method="post" style="display:inline;">
+                                <input type="hidden" name="id" th:value="${leaveApplication.id}">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button class="btn btn-success" type="submit" onclick="return confirm('Approve this leave?')">Approve</button>
+                            </form>
+                            <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">Reject</button>
                         </div>
                     </div>
-                    <!-- Global error -->
-                    <div class="alert alert-error"
-                        th:if="${globalError}"
-                        th:text="${globalError}"></div>
                 </div>
             </div>
 		</div>
+
+        <!-- Reject Modal -->
+        <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="rejectModalLabel">Reject Leave Application</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form th:action="@{/manager/reject}" method="post" id="rejectForm">
+                        <div class="modal-body">
+                            <input type="hidden" name="id" th:value="${leaveApplication.id}">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Reason for Rejection <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="comment" name="comment" rows="4" required placeholder="Please provide a clear explanation for the rejection..."></textarea>
+                                <small class="form-text text-muted">This comment will be visible to the employee.</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Reject</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
         <footer th:replace="~{fragments/footer :: footer}"></footer>
 

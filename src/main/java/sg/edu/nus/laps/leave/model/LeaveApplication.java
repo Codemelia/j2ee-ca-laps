@@ -30,7 +30,6 @@ public class LeaveApplication extends SetCreatedUpdated {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    
     @NotNull(message = "Start date is mandatory")
     @Column(name = "from_date", nullable = false)
     private LocalDate fromDate;
@@ -46,13 +45,11 @@ public class LeaveApplication extends SetCreatedUpdated {
     @Column(nullable = false, length = 255)
     private String reason;
 
-    
     @Column(name = "work_dissemination")
     private String workDissemination;
 
     @Column(name = "contact_details")
     private String contactDetails;
-
     
     @Column(name = "manager_comment")
     private String managerComment;
@@ -74,10 +71,12 @@ public class LeaveApplication extends SetCreatedUpdated {
     public double getDuration() { return duration;	}
 	public void setDuration(double duration) {this.duration = duration;}
 	
-	
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "leave_type_id")
     private LeaveType leaveType;
+
+    @Transient
+    private Long leaveTypeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id")
@@ -118,6 +117,8 @@ public class LeaveApplication extends SetCreatedUpdated {
 	public void setHalfDay(boolean isHalfDay) 					{ this.isHalfDay = isHalfDay; }
 	public LeaveType getLeaveType() 							{ return leaveType; }
     public void setLeaveType(LeaveType leaveType) 				{ this.leaveType = leaveType; }
+    public Long getLeaveTypeId() 								{ return leaveTypeId; }
+    public void setLeaveTypeId(Long leaveTypeId) 				{ this.leaveTypeId = leaveTypeId; }
     public Employee getEmployee() 								{ return employee; }
     public void setEmployee(Employee employee) 					{ this.employee = employee; }
 	public String getWorkDissemination() 						{ return workDissemination; }

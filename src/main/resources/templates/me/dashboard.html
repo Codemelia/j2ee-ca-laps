@@ -2,12 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
     xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 
-	<head th:replace="~{fragments/head ::head('Dashboard', ~{::extra})}">
-		<!-- For scripts -->
-		<th:block th:fragment="extra">
-			<script th:src="@{/js/main.js}" defer></script>
-		</th:block>
-	</head>
+	<head th:replace="~{fragments/head ::head('Dashboard', ~{::extra})}"></head>
 
 	<body>
 		<header th:replace="~{fragments/header :: header}"></header>

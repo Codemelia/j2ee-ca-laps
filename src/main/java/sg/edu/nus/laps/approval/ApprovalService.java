@@ -1,35 +1,18 @@
 package sg.edu.nus.laps.approval;
 
 import java.util.List;
-import java.util.Optional;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
 import sg.edu.nus.laps.leave.repository.LeaveApplicationRepository;
-import sg.edu.nus.laps.leave.service.LeaveService;
 
-/**
- * ApprovalService handles manager-specific leave approval workflow.
- * It delegates actual leave processing to LeaveService to avoid code duplication.
- * 
- * Responsibilities:
- * - Retrieve pending leave requests for a manager's team
- * - Retrieve subordinate leave history
- * - Delegate approval/rejection to LeaveService
- * - Display leave details with team conflict information
- */
-@Service
 public class ApprovalService {
 
-    private final LeaveApplicationRepository leaveRepo;
-    private final LeaveService leaveService;
-
-    public ApprovalService(LeaveApplicationRepository leaveRepo, 
-                          LeaveService leaveService) {
-        this.leaveRepo = leaveRepo;
-        this.leaveService = leaveService;
+    private final LeaveApplicationRepository laRepo;
+    public ApprovalService(LeaveApplicationRepository laRepo) {
+        this.laRepo = laRepo;
     }
+
+    // Manager Approval functions
 
     /**
      * Retrieves all pending leave applications for a manager's subordinates.
@@ -39,10 +22,9 @@ public class ApprovalService {
      * @return list of pending leave applications
      */
     public List<LeaveApplication> getPendingRequests(Long managerId) {
-        List<LeaveApplication> applied = leaveRepo.findByEmployeeManagerIdAndStatus(managerId, LeaveStatus.APPLIED);
-        List<LeaveApplication> updated = leaveRepo.findByEmployeeManagerIdAndStatus(managerId, LeaveStatus.UPDATED);
-        applied.addAll(updated);
-        return applied;
+		List<LeaveApplication> pendingApplications = laRepo.findByEmployeeManagerIdAndStatusIn(
+			managerId, List.of(LeaveStatus.APPLIED, LeaveStatus.UPDATED));
+        return pendingApplications;
     }
 
     /**
@@ -53,46 +35,7 @@ public class ApprovalService {
      * @return list of all leave applications for the employee
      */
     public List<LeaveApplication> getSubordinateHistory(Long employeeId) {
-        return leaveRepo.findByEmployeeIdOrderByFromDateDesc(employeeId);
-    }
-
-    /**
-     * Finds a specific leave application by its ID.
-     * 
-     * @param id the leave application ID
-     * @return Optional containing the leave application if found
-     */
-    public Optional<LeaveApplication> findLeaveById(Long id) {
-        return leaveService.findLeaveById(id);
-    }
-
-    /**
-     * Approves a leave application.
-     * Delegates to LeaveService to handle complex business rules including:
-     * - Leave duration calculation
-     * - Leave balance deduction
-     * - Year crossover handling
-     * - Back-to-back leave chain calculation
-     * 
-     * @param leaveId the leave application ID to approve
-     * @throws RuntimeException if approval fails
-     */
-    @Transactional
-    public void approveRequest(Long leaveId) {
-        leaveService.processApproveOrRejectLeave(leaveId, LeaveStatus.APPROVED, null);
-    }
-
-    /**
-     * Rejects a leave application with a manager's comment.
-     * Comment is mandatory and will be visible to the employee.
-     * 
-     * @param leaveId the leave application ID to reject
-     * @param comment mandatory reason for rejection
-     * @throws RuntimeException if rejection fails or comment is blank
-     */
-    @Transactional
-    public void rejectRequest(Long leaveId, String comment) {
-        leaveService.processApproveOrRejectLeave(leaveId, LeaveStatus.REJECTED, comment);
+        return laRepo.findByEmployeeIdOrderByFromDateDesc(employeeId);
     }
 
     /**
@@ -106,9 +49,10 @@ public class ApprovalService {
      * @return list of approved leave applications that overlap the specified date range
      */
     public List<LeaveApplication> getConflictingLeaves(Long managerId, 
-                                                        java.time.LocalDate fromDate, 
-                                                        java.time.LocalDate toDate, 
-                                                        Long excludeId) {
-        return leaveRepo.findConflictingLeaves(managerId, fromDate, toDate, excludeId);
+		java.time.LocalDate fromDate, 
+		java.time.LocalDate toDate, 
+		Long excludeId) {
+        return laRepo.findConflictingLeaves(managerId, fromDate, toDate, excludeId);
     }
+
 }
