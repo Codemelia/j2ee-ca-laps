@@ -151,9 +151,29 @@ public class EmployeeController {
 	}
 	
 	@PostMapping("/create")
-	public String createEmployee(@Valid @ModelAttribute Employee employee, 
-		BindingResult bindingResult, RedirectAttributes redirectAttrs) {
+	public String createEmployee(@Valid @ModelAttribute (name="employee") Employee employee, 
+		BindingResult bindingResult, RedirectAttributes redirectAttrs, Model model) {
+		if(employee.getRank().equals(EmployeeRank.PROFESSIONAL)) {
+			if(employee.getAnnualLeave() < 18 || employee.getAnnualLeave() > 21) {
+				bindingResult.rejectValue("annualLeave", "error.leave", "For Professionals, Annual Leave must be between 18 and 21.");
+			}
+		}
+		
+		if(employee.getRank().equals(EmployeeRank.NON_EXECUTIVE)) {
+			if(employee.getAnnualLeave() < 14 || employee.getAnnualLeave() > 17) {
+				bindingResult.rejectValue("annualLeave", "error.leave", "For Non-Executives, Annual Leave must be between 14 and 17.");
+			}
+		}
+			
+		
 		if (bindingResult.hasErrors()) {
+			// Pull list of roles
+			List<Role> roleList = rService.findAllRoles();
+
+			// Add to model
+			model.addAttribute("roleList", roleList);
+			// Add enum values for rank
+			model.addAttribute("rankList", EmployeeRank.values());
 			return "employee/employee-form";
 		}
         
@@ -194,6 +214,10 @@ public class EmployeeController {
         //     return "redirect:/auth/admin/login";
         // }
 		
+		List<Role> roleList = rService.findAllRoles();
+
+		// Add to model
+		model.addAttribute("roleList", roleList);
 		model.addAttribute("rankList", EmployeeRank.values());
 		
 		Optional<Employee> empOpt = eService.findById(id);
@@ -225,8 +249,8 @@ public class EmployeeController {
 	
 	@PostMapping("/update/{id}")
 	public String updateEmployeeDetails(@PathVariable Long id, 
-		@Valid @ModelAttribute Employee employee, 
-		BindingResult bindingResult, RedirectAttributes redirectAttrs) {
+		@Valid @ModelAttribute (name="employee") Employee employee, 
+		BindingResult bindingResult, RedirectAttributes redirectAttrs, Model model) {
 		
 		if(employee.getRank().equals(EmployeeRank.PROFESSIONAL)) {
 			if(employee.getAnnualLeave() < 18 || employee.getAnnualLeave() > 21) {
@@ -241,6 +265,13 @@ public class EmployeeController {
 		}
 		
 		if (bindingResult.hasErrors()) {
+			// Pull list of roles
+			List<Role> roleList = rService.findAllRoles();
+
+			// Add to model
+			model.addAttribute("roleList", roleList);
+			// Add enum values for rank
+			model.addAttribute("rankList", EmployeeRank.values());
 			return "employee/employee-form";
 		}
 		
