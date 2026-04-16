@@ -28,7 +28,7 @@
 
     --radius:     6px;
     --shadow:     0 2px 8px rgba(0,0,0,0.09);
-    --max-width:  960px;
+    --max-width:  1735px;
 }
 
 /* --- Reset & Base ------------------------------------------ */
@@ -51,23 +51,8 @@ body {
     
 }
 
-.page-wrapper {
-	display: flex;
-	margin: 0 auto;
-    flex-direction: column; /* Stack items vertically */
-    width: 100%;            /* Ensure it spans the whole screen width */
-    max-width: var(--max-width);
-    padding: 0 24px;     /* Top/Bottom and Left/Right padding */
-    box-sizing: border-box; /* Ensures padding doesn't break the width */
-    flex: 1;
-}
 
-/* .page-wrapper {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 24px;
-    flex: 1 0 auto;
-} */
+
 
 /* .content-container {
 	This ensures the container only expands as wide as the table
@@ -103,6 +88,19 @@ a:hover { color: var(--blue-dark); }
 .error { color: red; font-size: 0.9em; }
 
 /* --- Page Wrapper ------------------------------------------ */
+
+.page-wrapper {
+	display: flex;
+	/* align-items: center; */
+	margin: 0 auto;
+    flex-direction: column; /* Stack items vertically */
+    width: 100%;            /* Ensure it spans the whole screen width */
+    max-width: var(--max-width);
+    padding: 0 24px;     /* Top/Bottom and Left/Right padding */
+    box-sizing: border-box; /* Ensures padding doesn't break the width */
+    flex: 1 0 auto;
+}
+
 /* .page-wrapper {
     max-width: var(--max-width);
     margin: 0 auto;
@@ -195,6 +193,10 @@ a:hover { color: var(--blue-dark); }
 .topbar a.logout-link:hover { color: #ffffff; } */
 
 /* ------------------------ User Info ------------------------ */
+.user-greeting {
+	font-style: italic;
+}
+
 .user-menu {
     position: relative;
     display: flex;
@@ -488,6 +490,7 @@ textarea {
     font-size: 0.88rem;
     letter-spacing: 0.04em;
     text-transform: uppercase;
+    
 }
 
 .data-table td {
@@ -502,7 +505,7 @@ textarea {
 .data-table tbody tr:hover { background-color: #f0f4f9; }
 
 .data-table-med {
-    width: 85%;
+    width: 100%;
     border-collapse: collapse;
     background: var(--white);
     border-radius: var(--radius);
@@ -510,11 +513,14 @@ textarea {
     box-shadow: var(--shadow);
     margin-top: 16px;
     font-size: 0.95rem;
+    border: 1px solid black;
+	padding: 0 10;
 }
 
 .data-table-med thead {
     background-color: var(--navy);
     color: #ffffff;
+    text-wrap: nowrap;
 }
 
 .data-table-med th {
@@ -539,14 +545,7 @@ textarea {
 .data-table-med tbody tr:hover { background-color: #f0f4f9; }
 
 
-table, th, td{
-	width: 90%;
-	border: 1px solid black;
-	border-collapse: collapse;
-	padding: 10px;
-	white-space: nowrap;
-	width: 90%;
-}
+
 
 .logout {
 	border: 0;
