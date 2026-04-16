@@ -84,4 +84,17 @@ public class AuthUserDetails implements UserDetails {
                 .getAuthority().equals("AUTH_EXTERNAL_ADMIN"));
     }
 
+    // TO STRING
+
+    @Override
+    public String toString() {
+        return "{" +
+            " email='" + getEmail() + "'" +
+            ", passwordHash='" + getPassword() + "'" +
+            ", roleName='" + getRoleName() + "'" +
+            ", employeeId='" + getEmployeeId() + "'" +
+            ", enabled='" + isEnabled() + "'" +
+            "}";
+    }
+
 }

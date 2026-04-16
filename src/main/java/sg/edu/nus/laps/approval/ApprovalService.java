@@ -1,9 +1,9 @@
 package sg.edu.nus.laps.approval;
 
 import java.util.List;
-import java.util.Optional;
+
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
 import sg.edu.nus.laps.leave.repository.LeaveApplicationRepository;
@@ -11,85 +11,52 @@ import sg.edu.nus.laps.leave.repository.LeaveApplicationRepository;
 @Service
 public class ApprovalService {
 
-    private final LeaveApplicationRepository leaveRepo;
-
-    public ApprovalService(LeaveApplicationRepository leaveRepo) {
-        this.leaveRepo = leaveRepo;
+    private final LeaveApplicationRepository laRepo;
+    public ApprovalService(LeaveApplicationRepository laRepo) {
+        this.laRepo = laRepo;
     }
 
+    // Manager Approval functions
+
     /**
-     * Retrieves all pending leave applications for a manager's subordinates 
-     * (Status: APPLIED or UPDATED).
+     * Retrieves all pending leave applications for a manager's subordinates.
+     * Status: APPLIED or UPDATED
+     * 
+     * @param managerId the manager's employee ID
+     * @return list of pending leave applications
      */
     public List<LeaveApplication> getPendingRequests(Long managerId) {
-        // Fetch applications with status APPLIED and UPDATED separately and merge them
-        List<LeaveApplication> applied = leaveRepo.findByEmployeeManagerIdAndStatus(managerId, LeaveStatus.APPLIED);
-        List<LeaveApplication> updated = leaveRepo.findByEmployeeManagerIdAndStatus(managerId, LeaveStatus.UPDATED);
-        applied.addAll(updated);
-        return applied;
+		List<LeaveApplication> pendingApplications = laRepo.findByEmployeeManagerIdAndStatusIn(
+			managerId, List.of(LeaveStatus.APPLIED, LeaveStatus.UPDATED));
+        return pendingApplications;
     }
 
     /**
      * Retrieves the complete leave history for a specific subordinate.
+     * All records are sorted by from date in descending order.
+     * 
+     * @param employeeId the subordinate's employee ID
+     * @return list of all leave applications for the employee
      */
     public List<LeaveApplication> getSubordinateHistory(Long employeeId) {
-        return leaveRepo.findByEmployeeIdOrderByFromDateDesc(employeeId);
+        return laRepo.findByEmployeeIdOrderByFromDateDesc(employeeId);
     }
 
     /**
-     * Finds a specific leave application by its ID.
+     * Retrieves conflicting/overlapping leave applications for the manager's team.
+     * This helps the manager see how many team members are on leave during a specific period.
+     * 
+     * @param managerId the manager's ID
+     * @param fromDate leave start date
+     * @param toDate leave end date
+     * @param excludeId leave application ID to exclude from results
+     * @return list of approved leave applications that overlap the specified date range
      */
-    public Optional<LeaveApplication> findLeaveById(Long id) {
-        return leaveRepo.findById(id);
+    public List<LeaveApplication> getConflictingLeaves(Long managerId, 
+		java.time.LocalDate fromDate, 
+		java.time.LocalDate toDate, 
+		Long excludeId) {
+        return laRepo.findConflictingLeaves(managerId, fromDate, toDate, excludeId);
     }
 
-    /**
-     * Updates the leave application status to APPROVED.
-     */
-   @Transactional
-public void approveRequest(Long leaveId) {
-    leaveRepo.findById(leaveId).ifPresent(l -> {
-        // 1. Update Status
-        l.setStatus(LeaveStatus.APPROVED);
-        
-        // 2. Logic: Update Leave Balance (Consumed Days)
-        // Retrieve the record for this specific year and leave type
-        int year = l.getFromDate().getYear();
-        Optional<LeaveRecord> recordOpt = lrRepo.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(
-            l.getEmployee().getId(), l.getLeaveType().getId(), year);
-
-        if (recordOpt.isPresent()) {
-            LeaveRecord record = recordOpt.get();
-            double daysToDeduct = calculateActualLeaveDays(l);
-            record.setConsumedDays(record.getConsumedDays().add(BigDecimal.valueOf(daysToDeduct)));
-            lrRepo.save(record);
-        }
-        
-        leaveRepo.save(l);
-    });
-}
-
-// Helper method to implement the <= 14 days rule
-private double calculateActualLeaveDays(LeaveApplication l) {
-    long totalDays = ChronoUnit.DAYS.between(l.getFromDate(), l.getToDate()) + 1;
-    
-    // Requirement: If <= 14 days, exclude weekends/public holidays
-    if (totalDays <= 14) {
-        // call a utility here that checks against your 'holidays' table and skips Saturdays/Sundays
-        return countWorkingDays(l.getFromDate(), l.getToDate());
-    }
-    return (double) totalDays;
-}
-
-    /**
-     * Updates the leave application status to REJECTED and adds a manager's comment.
-     */
-    @Transactional
-    public void rejectRequest(Long leaveId, String comment) {
-        leaveRepo.findById(leaveId).ifPresent(l -> {
-            l.setStatus(LeaveStatus.REJECTED);
-            l.setManagerComment(comment);
-            leaveRepo.save(l);
-        });
-    }
 }

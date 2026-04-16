@@ -13,10 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
+import sg.edu.nus.laps.employee.repository.EmployeeRepository;
 
 import org.springframework.data.domain.Pageable;
 
-import sg.edu.nus.laps.employee.repository.EmployeeRepository;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveRecord;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
@@ -50,24 +50,30 @@ public class LeaveService {
 	private final HolidayRepository holRepo;
 	private final EmployeeRepository empRepo;
 
-	public LeaveService(LeaveApplicationRepository laRepo, LeaveTypeRepository ltRepo, LeaveRecordRepository lrRepo,
-			HolidayRepository holRepo, EmployeeRepository empRepo) {
+	public LeaveService(LeaveApplicationRepository laRepo, 
+		LeaveRecordRepository lrRepo, HolidayRepository holRepo,
+		LeaveTypeRepository ltRepo, EmployeeRepository empRepo) {
 		this.laRepo = laRepo;
-		this.ltRepo = ltRepo;
 		this.lrRepo = lrRepo;
 		this.holRepo = holRepo;
+		this.ltRepo = ltRepo;
 		this.empRepo = empRepo;
 	}
 
 	// --- CRUD OPERATIONS ---
 	
-	/* 
-	 * 1. Create Method: saveAsDraft --> Allows User to Soft-Save their Leave Application.
-	 * 		Here a Simple Validation will be Done on the fromDate and toDate
-	 */
+	// /* 
+	//  * 1. Create Method: saveAsDraft --> Allows User to Soft-Save their Leave Application.
+	//  * 		Here slight validation will be done to ensure data integrity
+	//  */
 	@Transactional
-	public LeaveApplication saveAsDraft(LeaveApplication leave) {
+	public LeaveApplication saveAsDraft(Long empId, LeaveApplication leave) {
+		Employee employee = validateAndRetrieveEmployee(empId);
+		LeaveType leaveType = validateAndRetrieveLeaveType(leave.getLeaveTypeId());
 		validateDate(leave);
+
+		leave.setEmployee(employee);
+        leave.setLeaveType(leaveType);
 		leave.setStatus(LeaveStatus.DRAFT);
 		return laRepo.save(leave);
 	}
@@ -82,8 +88,11 @@ public class LeaveService {
 	 * 		If Leave Type is 'Medical', both 'proof' and'reason' ATTR cannot be NULL.
 	 */
 	@Transactional
-	public LeaveApplication submitLeave(LeaveApplication leave) {
+	public LeaveApplication submitLeave(Long empId, LeaveApplication leave) {
+		Employee employee = validateAndRetrieveEmployee(empId);
+		LeaveType leaveType = validateAndRetrieveLeaveType(leave.getLeaveTypeId());
 		validateDate(leave);
+		validateMedicalLeave(leave);
 		
 		List<LeaveApplication> overlaps = laRepo.findOverlappingApplication(
 				List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED),
@@ -93,15 +102,10 @@ public class LeaveService {
 		if (!overlaps.isEmpty()) {
 			throw new RuntimeException("Selected Dates overlap with an Existing Approved Leave Application.");
 		}
-		
-		if ("Medical".equalsIgnoreCase(leave.getLeaveType().getLeaveType())) {
-			if ((leave.getReason() == null || leave.getReason().isBlank()) 
-					|| (leave.getProof() == null || leave.getProof().isBlank())) {
-				throw new RuntimeException("Proof and Reason are mandatory for Medical Leave Application.");
-			}
-		}
-		
-		leave.setStatus(LeaveStatus.APPLIED);
+
+		leave.setEmployee(employee);
+        leave.setLeaveType(leaveType);
+        leave.setStatus(LeaveStatus.APPLIED);
 		return laRepo.save(leave);
 	}
 	
@@ -111,20 +115,24 @@ public class LeaveService {
 	 * 		All ATTRs are Editable except for Leave Type. Here Validation should still be Enforced.
 	 */
 	@Transactional
-	public void updateLeave(LeaveApplication updatedLeave) {
+	public void updateLeave(Long empId, LeaveApplication updatedLeave) {
+		if (empId == null) { throw new RuntimeException("Invalid Employee Profile"); }
+
+		validateDate(updatedLeave);
+		validateMedicalLeave(updatedLeave);
 		
 		LeaveApplication existingLeave = laRepo.findById(updatedLeave.getId())
 				.orElseThrow(() -> new RuntimeException("Leave Application does not Exist."));
 		if (existingLeave.getStatus() != LeaveStatus.APPLIED 
-				|| existingLeave.getStatus() != LeaveStatus.UPDATED) {
-			throw new RuntimeException("Only Leave Application in 'APPLIED' or 'UPDATED' statecan be Edited. "
-					+ "Current Status : " + existingLeave.getStatus());
+			&& existingLeave.getStatus() != LeaveStatus.UPDATED) {
+			throw new RuntimeException("Only Leave Application in 'APPLIED' or 'UPDATED' state can be Edited. "
+				+ "Current Status : " + existingLeave.getStatus());
 		}
 		if (!existingLeave.getLeaveType().getId().equals(updatedLeave.getLeaveType().getId())) {
 			throw new RuntimeException("Leave Type cannot be Edited. Please create a New Leave Application instead.");
 		}
-		
-		validateDate(updatedLeave);
+
+		verifySelfIdentity(empId, existingLeave);
 		
 		List<LeaveApplication> overlaps = laRepo.findOverlappingApplication(
 				List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED),
@@ -135,13 +143,6 @@ public class LeaveService {
 				.anyMatch(l -> !l.getId().equals(updatedLeave.getId()));
 		if (trueOverlap) {
 			throw new RuntimeException("Updated Date Range overlaps with Existing Approved Leave Application.");
-		}
-		
-		if ("Medical".equalsIgnoreCase(updatedLeave.getLeaveType().getLeaveType())) {
-			if ((updatedLeave.getReason() == null || updatedLeave.getReason().isBlank()) 
-					|| (updatedLeave.getProof() == null || updatedLeave.getProof().isBlank())) {
-				throw new RuntimeException("Proof and Reason are mandatory for Medical Leave Application.");
-			}
 		}
 		
 		existingLeave.setFromDate(updatedLeave.getFromDate());
@@ -161,13 +162,16 @@ public class LeaveService {
 	 * 		Once deleted, the record remains in the DB but is locked from further edits or approval.
 	 */
 	@Transactional
-	public void deleteLeave(Long id) {
-		LeaveApplication leave = laRepo.findById(id)
-				.orElseThrow(() -> new RuntimeException("Leave Application does not Exist."));
+	public void deleteLeave(Long leaveId, Long empId) {
+
+		LeaveApplication leave = laRepo.findById(leaveId)
+			.orElseThrow(() -> new RuntimeException("Leave Application does not Exist."));
 		
+		verifySelfIdentity(empId, leave);
+
 		if (leave.getStatus() != LeaveStatus.APPLIED && leave.getStatus() != LeaveStatus.UPDATED) {
 			throw new RuntimeException("Only Leave Application in 'APPLIED' or'UPDATED' state can be DELETED. "
-					+ "Current Status : " + leave.getStatus());
+				+ "Current Status : " + leave.getStatus());
 		}
 		
 		leave.setStatus(LeaveStatus.DELETED);
@@ -210,9 +214,11 @@ public class LeaveService {
 	 * 		Cancellation is only permitted if the start date hasn't passed.
 	 */
 	@Transactional
-	public void cancelLeave(Long id) {
-		LeaveApplication leave = laRepo.findById(id)
+	public void cancelLeave(Long leaveId, Long empId) {
+		LeaveApplication leave = laRepo.findById(leaveId)
 				.orElseThrow(() -> new RuntimeException("Leave Application does not Exist."));
+
+		verifySelfIdentity(empId, leave);
 
 		if (leave.getStatus() != LeaveStatus.APPROVED) {
 			throw new RuntimeException("Only APPROVED applications can be cancelled.");
@@ -230,7 +236,40 @@ public class LeaveService {
 		laRepo.save(leave);
 	}
 
-	// --- COMPUTATION & LOGIC ---
+	// Verification + Validation helpers
+
+	// Helper method: Verify employee is performing delete/cancel/update for themselves
+	private void verifySelfIdentity(Long empId, LeaveApplication leave) {
+		// Check if employee id matches records
+		if (!empId.equals(leave.getEmployee().getId())) {
+			throw new RuntimeException("Leave Application can only be deleted by requester");
+		}
+	}
+
+	// Helper method: validateAndRetrieveEmployee --> Null / Exists Employee check
+	private Employee validateAndRetrieveEmployee(Long empId) {
+		if (empId == null) { throw new RuntimeException("Invalid Employee Profile"); }
+		return empRepo.findById(empId)
+			.orElseThrow(() -> new RuntimeException("Employee Profile does not exist"));
+	}
+
+	// Helper method: ValidateLeaveType --> Null / Exists LeaveType check
+	private LeaveType validateAndRetrieveLeaveType (Long leaveTypeId) {
+		if (leaveTypeId == null) { throw new RuntimeException("Invalid Leave Type"); }
+		return ltRepo.findById(leaveTypeId)
+			.orElseThrow(() -> new RuntimeException("Leave Type does not exist"));
+	}
+
+	// Helper method: ValidateMedicalLeave --> Validate fields required for Medical Leave
+	private void validateMedicalLeave(LeaveApplication leave) {
+		if ("Medical".equalsIgnoreCase(leave.getLeaveType().getLeaveType())) {
+			if ((leave.getReason() == null || leave.getReason().isBlank()) 
+					|| (leave.getProof() == null || leave.getProof().isBlank())) {
+				throw new RuntimeException("Proof and Reason are mandatory for Medical Leave Application.");
+			}
+		}
+	}
+
 	/*
 	 * a. Helper Method: ValidateDate --> Validate if the fromDate and toDate is in Chronological Order.
 	 * 		Validate if the fromDate is later or equals to Today's Date.
@@ -258,6 +297,8 @@ public class LeaveService {
 			throw new RuntimeException("Half-Day are only Permitted for Compensation Leave.");
 		}
 	}
+
+	// Computation + Logic helpers
 	
 	/*
 	 * b. Helper Method: isWeekend --> Check if Selected Date falls on SAT or SUN
@@ -515,8 +556,27 @@ public class LeaveService {
 		lrRepo.save(lr);
 	}
 
+	/*
+	// 1. The Calculation Logic
+	public int calculateActualLeaveDays(LocalDate start, LocalDate end, List<LocalDate> holidays) {
+		int count = 0;
+		LocalDate curr = start;
+		while (!curr.isAfter(end)) {
+			DayOfWeek day = curr.getDayOfWeek();
+			boolean isWeekend = (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY);
+			boolean isHoliday = holidays.contains(curr);
+			if (!isWeekend && !isHoliday) {
+				count++;
+			}
+			curr = curr.plusDays(1);
+		}
+		return count;
+	}
+	 */
+
 	// --- Dash-Board Builder Methods ---
 	// 1. Gets Recent Leave Applications
+	@Transactional(readOnly=true)
 	public List<LeaveApplication> getRecentLeaveApplications(Long employeeId) {
 		return laRepo.findTop5ByEmployeeIdOrderByFromDateDesc(employeeId);
 	}
@@ -540,24 +600,6 @@ public class LeaveService {
 	public boolean existsByLeaveId(Long id) {
 		return laRepo.existsById(id);
 	}
-	
-	/*
-	// 1. The Calculation Logic
-	public int calculateActualLeaveDays(LocalDate start, LocalDate end, List<LocalDate> holidays) {
-		int count = 0;
-		LocalDate curr = start;
-		while (!curr.isAfter(end)) {
-			DayOfWeek day = curr.getDayOfWeek();
-			boolean isWeekend = (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY);
-			boolean isHoliday = holidays.contains(curr);
-			if (!isWeekend && !isHoliday) {
-				count++;
-			}
-			curr = curr.plusDays(1);
-		}
-		return count;
-	}
-	 */
 	
 	// 5. The Retrieval Logic (Sharing the count into the entity)
 	@Transactional(readOnly = true)

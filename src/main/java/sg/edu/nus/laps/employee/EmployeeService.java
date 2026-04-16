@@ -19,6 +19,7 @@ import sg.edu.nus.laps.auth.repository.RoleRepository;
 import sg.edu.nus.laps.auth.repository.UserRepository;
 import sg.edu.nus.laps.employee.exception.InvalidEmployeeException;
 import sg.edu.nus.laps.employee.model.Employee;
+import sg.edu.nus.laps.employee.model.EmployeeRank;
 import sg.edu.nus.laps.employee.model.NewEmployeeRecord;
 import sg.edu.nus.laps.employee.repository.EmployeeRepository;
 
@@ -106,6 +107,13 @@ public class EmployeeService {
 	    );
 
 	    return eRepo.searchAndFilter(search, role, sortedPageable);
+	}
+	
+	@Transactional(readOnly = true)
+	public List<Employee> findByRank(EmployeeRank rank) {
+		List<Employee> allEmployeesByRank = eRepo.findByRank(rank);
+		
+		return allEmployeesByRank;
 	}
 	
 	@Transactional(readOnly=true)
@@ -266,7 +274,7 @@ public class EmployeeService {
 
 	// Check if employee exists for new save
 	private void checkEmployeeExistsForNew(Long employeeId) {
-		if (employeeId != null) {
+		if (employeeId != null && eRepo.existsById(employeeId)) {
 			throw new InvalidEmployeeException("Employee already has an existing profile");
 		}
 	}

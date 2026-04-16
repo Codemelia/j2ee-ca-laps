@@ -6,16 +6,45 @@
         <!-- For scripts -->
 		<th:block th:fragment="extra">
 			<script th:src="@{/js/main.js}" defer></script>
+			<script defer>
+				/**
+				* Form validation before submitting reject
+				*/
+				document.getElementById('rejectForm').addEventListener('submit', function(e) {
+				    const comment = document.getElementById('comment').value.trim();
+				    if (!comment || comment.length < 5) {
+				        e.preventDefault();
+				        alert('Please provide a comment of at least 5 characters.');
+				        return false;
+				    }
+				});
+
+				/**
+				* Reset modal when closed
+				*/
+				document.getElementById('rejectModal').addEventListener('hidden.bs.modal', function() {
+				    document.getElementById('comment').value = '';
+				});
+			</script>
 		</th:block>
     </head>
 
 	<body>
 		<header th:replace="~{fragments/header :: header}"></header>
-		
+		<div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+		    <span th:text="${message}"></span>
+		    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+
+		<div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+		    <i class="bi bi-exclamation-triangle-fill"></i>
+		    <span th:text="${error}"></span>
+		    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
         <div class="page-wrapper">
             <div class="card leave-details">
                 <div class="card-body">
-                    <div th:if="${leaveApplication}" th:object="${leaveApplication}">
+                    <div th:if="${leaveApp}" th:object="${leaveApp}">
 
                         <!-- Leave ID & Status -->
                         <div class="card-header">
@@ -27,7 +56,7 @@
                         <!-- Employee Info -->
                         <section>
                             <h3>Employee Information</h3>
-                                <dl th:object="${leaveApplication.employee}">
+                                <dl th:object="${leaveApp.employee}">
                                     <dt><b>Name</b></dt>
                                     <dd th:text="*{firstName + ' ' + lastName}"></dd>
 
@@ -86,33 +115,93 @@
                         </section>
                     </div>
 
-                    <div th:if="${errorMessage}" th:text="${errorMessage}">
-                    </div>
+                    <!-- Global error -->
+                    <div class="alert alert-error"
+                        th:if="${globalError}"
+                        th:text="${globalError}"></div>
 
                     <div class="card-footer">
                         <!-- Goes back to previous page -->
                         <button class="btn" type="button" onclick="history.back()">Back</button>
 
                         <!-- Employee (self view) buttons -->
-                        <div sec:authorize="hasAnyRole('ROLE_EMPLOYEE','ROLE_MANAGER')" 
-                            th:if="${isSelf}">
-                            <button class="btn" type="button" id="updateBtn">Update</button>
-                            <button class="btn" type="button" id="cancelBtn">Cancel</button>
-                            <button class="btn" type="button" id="deleteBtn">Delete</button>
+                        <div th:if="${isSelf}">
+                            <div th:if="${#lists.contains({'APPLIED', 'UPDATED'}, leaveApp.status.name())}">
+                                <form th:action="@{/leaves/edit/{id}(id=${leaveApp.id})}"
+                                    method="get">
+                                    <button class="btn btn-secondary" 
+                                    type="submit">Update</button>
+                                </form>
+                                <form th:action="@{/leaves/delete/{id}(id=${leaveApp.id})}" 
+                                    method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}"
+                                        th:value="${_csrf.token}">
+                                    <button class="btn btn-warning" type="submit" 
+                                            onclick="return confirm('Are you sure you want to delete this leave record?')">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>											          				
+
+							<form th:if="${leaveApp.status.name() == 'APPROVED' and 
+                                !T(java.time.LocalDate).now().isAfter(leaveApp.fromDate)}"
+                                th:action="@{/leaves/cancel/{id}(id=${leaveApp.id})}" 
+                                method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}"
+                                    th:value="${_csrf.token}">
+							    <button class="btn btn-warning" type="submit" 
+							            onclick="return confirm('Are you sure you want to cancel this leave record?')">
+							        Cancel
+							    </button>
+							</form>
                         </div>
 
                         <!-- Manager (view subordinate) buttons -->
                         <div sec:authorize="hasRole('ROLE_MANAGER')" 
                             th:if="${!isSelf}">
-                            <button class="btn" type="button" id="approveBtn">Approve</button>
-                            <button class="btn" type="button" id="rejectBtn">Reject</button>
+                            <form th:action="@{/manager/approve}" method="post" style="display:inline;">
+                                <input type="hidden" name="id" th:value="${leaveApp.id}">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button class="btn btn-success" type="submit" onclick="return confirm('Approve this leave?')">Approve</button>
+                            </form>
+                            <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">Reject</button>
                         </div>
                     </div>
                 </div>
             </div>
 		</div>
 
+        <!-- Reject Modal -->
+        <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="rejectModalLabel">Reject Leave Application</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form th:action="@{/manager/reject}" method="post" id="rejectForm">
+                        <div class="modal-body">
+                            <input type="hidden" name="id" th:value="${leaveApp.id}">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Reason for Rejection <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="comment" name="comment" rows="4" required placeholder="Please provide a clear explanation for the rejection..."></textarea>
+                                <small class="form-text text-muted">This comment will be visible to the employee.</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Reject</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+		<div th:replace="~{fragments/modal :: changePasswordModal}"></div>
+
 	</body>
 
 </html>

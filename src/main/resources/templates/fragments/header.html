@@ -12,7 +12,8 @@
 
         <!-- Spring Security user role auth -->
         <!-- Only if is not login page -->
-        <div th:if="${entryPoint == null}">
+        <div th:if="${entryPoint == null
+            and status == null}">
             <!-- Topbar links -->
             <nav class="top-links">
 
@@ -68,12 +69,16 @@
                     <hr>
 
                     <!-- User actions -->
+                    <!-- Instead of form page, use modal-->
                     <a th:if="${#authentication.principal.email}" 
-                        th:href="@{/auth/change-password}">Change Password</a>
+                        href="#" data-bs-toggle="modal"
+                        data-bs-target="#changePasswordModal">Change Password</a>
 
                     <!-- Admin logout -->
                     <form th:action="@{/auth/admin/logout}" method="POST"
                         sec:authorize="hasRole('ADMIN')">
+                        <input type="hidden" th:name="${_csrf.parameterName}"
+                            th:value="${_csrf.token}">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                         <button type="submit" class="dropdown-link">Logout</button>
                     </form>
@@ -81,6 +86,8 @@
                     <!-- Employee logout -->
                     <form th:action="@{/auth/employee/logout}" method="POST"
                         sec:authorize="hasAnyRole('EMPLOYEE','MANAGER')">
+                        <input type="hidden" th:name="${_csrf.parameterName}"
+                            th:value="${_csrf.token}">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                         <button type="submit" class="dropdown-link">Logout</button>
                     </form>

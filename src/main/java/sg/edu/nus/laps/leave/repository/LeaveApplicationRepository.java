@@ -27,6 +27,9 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 	
 	// 4. Read-Method: Manager's Open Leave Application
 	List<LeaveApplication> findByEmployeeManagerIdAndStatus(Long managerId, LeaveStatus status);
+
+	// Read-Method: Manager's team leaves
+	List<LeaveApplication> findByEmployeeManagerIdAndStatusIn(Long managerId, List<LeaveStatus> statusList);
 	
 	// 5. Read-Method: Manager's Team History
 	List<LeaveApplication> findByEmployeeManagerId(Long managerId);
@@ -82,4 +85,19 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 		    @Param("year") int year, 
 		    Pageable pageable
 		);
+
+  	@Query("SELECT l FROM LeaveApplication l WHERE l.employee.managerId = :managerId " +
+       "AND l.status = 'APPROVED' " +
+       "AND l.id != :excludeId " +
+       "AND l.fromDate <= :toDate AND l.toDate >= :fromDate")
+		List<LeaveApplication> findConflictingLeaves(
+		@Param("managerId") Long managerId,
+		@Param("fromDate") LocalDate fromDate,
+		@Param("toDate") LocalDate toDate,
+		@Param("excludeId") Long excludeId);
+    
+    /**
+     * Find leave applications by employee and status
+     */
+    List<LeaveApplication> findByEmployeeIdAndStatus(Long employeeId, LeaveStatus status);
 }
