@@ -137,7 +137,7 @@ public class LeaveController {
     // DRAFT -> DRAFT
     @PostMapping("/save")
     public String saveLeaveApplication(@AuthenticationPrincipal AuthUserDetails user, 
-        @Valid @ModelAttribute LeaveApplication leaveApp, 
+        @Valid @ModelAttribute("leaveApp") LeaveApplication leaveApp, 
         BindingResult result, Model model,
         RedirectAttributes redirAttr) {
         List<LeaveType> leaveTypes = ltService.findAllLeaveTypes();
@@ -187,7 +187,7 @@ public class LeaveController {
     // DRAFT / - -> APPLIED
     @PostMapping("/submit")
     public String submitLeaveApplication(@AuthenticationPrincipal AuthUserDetails user, 
-        @Valid @ModelAttribute LeaveApplication leaveApp, 
+        @Valid @ModelAttribute("leaveApp") LeaveApplication leaveApp, 
         BindingResult result, Model model,
         @RequestParam(name = "action", required = false) String action, // Determines whether it is a save/submit
         RedirectAttributes redirAttr) {
@@ -223,7 +223,7 @@ public class LeaveController {
     // APPLIED / UPDATED -> UPDATED
     @PostMapping("/update")
     public String updateLeaveApplication(@AuthenticationPrincipal AuthUserDetails user, 
-        @Valid @ModelAttribute LeaveApplication leaveApp, 
+        @Valid @ModelAttribute("leaveApp") LeaveApplication leaveApp, 
         BindingResult result, Model model,
         @RequestParam(name = "action", required = false) String action, // Determines whether it is a save/submit
         RedirectAttributes redirAttr) {
