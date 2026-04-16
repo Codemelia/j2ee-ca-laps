@@ -1,4 +1,4 @@
- package sg.edu.nus.laps.employee;
+package sg.edu.nus.laps.employee;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -82,10 +82,8 @@ public class EmployeeController {
 		}
 	}
 	
-	
 	@GetMapping
-	public String showEmployees(@AuthenticationPrincipal AuthUserDetails user,
-		Model model, RedirectAttributes redirectAttrs, @PageableDefault(size = 10) Pageable pageable) {
+	public String showEmployees(@AuthenticationPrincipal AuthUserDetails user, Model model) {
 		// if (!isLoggedIn(session)) {
         //     redirectAttrs.addFlashAttribute("errorMessage",
         //             "Please log in to view employees.");
@@ -101,14 +99,11 @@ public class EmployeeController {
 		Integer adminCount = eService.countEmployeesByRoleIdAdmin();
 		model.addAttribute("adminCount", adminCount);
 		
-//		List<Employee> allEmployees = eService.findAll();
-//		model.addAttribute("allEmployees", allEmployees);
+        // List<Employee> allEmployees = eService.findAll();
+        // model.addAttribute("allEmployees", allEmployees);
 		
-		Page<Employee> page = eService.findAll(pageable);
-        model.addAttribute("allEmployees", page.getContent());
-        model.addAttribute("currentPage", page.getNumber());
-        model.addAttribute("totalPages", page.getTotalPages());
-        model.addAttribute("page", page);
+	    List<Employee> allEmployees = eService.findAll();
+	    model.addAttribute("allEmployees", allEmployees);
 
 		// Retrieve user email from session
 		// String userEmail = (String) session.getAttribute("userEmail");
