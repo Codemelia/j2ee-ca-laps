@@ -15,7 +15,7 @@
 			        <div>
 			            <h1>Welcome, <span th:if="${employeeFirstName}" th:text="${employeeFirstName} ?: 'Admin User'"></span>!</h1></div>
 			        <div>
-			            <a th:href="@{/leave/apply}" class="btn btn-primary">
+			            <a th:href="@{/leaves/apply}" class="btn btn-primary">
 			                Apply Leave
 			            </a>
 			        </div>
@@ -48,9 +48,11 @@
 		        <thead>
 		            <tr>
 		                <th>Leave Type</th>
-		                <th>From</th>
-		                <th>To</th>
+		                <th>Start Date</th>
+		                <th>End Date</th>
 		                <th>Status</th>
+						<th>Applied</th>
+						<th>Updated</th>
 		            </tr>
 		        </thead>
 		        <tbody>
@@ -59,9 +61,11 @@
 		                <td th:text="${#temporals.format(app.fromDate, 'dd MMM yyyy')}">-</td>
 		                <td th:text="${#temporals.format(app.toDate, 'dd MMM yyyy')}">-</td>
 		                <td th:text="${app.status}">-</td>
+						<td th:text="${app.createdAt != null ? #temporals.format(app.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
+						<td th:text="${app.updatedAt != null ? #temporals.format(app.updatedAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
 		            </tr>
 		            <tr th:if="${#lists.isEmpty(recentApplications)}">
-		                <td colspan="4">No leave applications found.</td>
+		                <td colspan="6">No leave applications found.</td>
 		            </tr>
 		        </tbody>
 		    </table>
