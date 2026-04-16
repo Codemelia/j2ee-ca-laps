@@ -7,7 +7,7 @@
 		<style>
 			label {
 				display: inline-block;
-				width: 150px; /* Specify your desired width here */
+				width: 250px; /* Specify your desired width here */
 				margin-right: 10px;
 				margin-bottom: 10px;
 			}
@@ -18,7 +18,7 @@
         <!-- For scripts -->
 		<script th:src="@{/js/main.js}" defer></script>
 	</th:block>
-	<script th:src="@{/js/employee-form.js}" defer></script>
+	<!-- moved employee-form.js link to bottom of <body>, just before </body> -->
     </head>
 
 	<body>
@@ -51,28 +51,28 @@
                     </div>
 
                     <div>
-                        <label>First Name:</label>
+                        <label for="firstName">First Name:</label>
                         <input type="text" th:field="*{firstName}" placeholder="First name"><br> 
                         <span class="error" th:if="${#fields.hasErrors('firstName')}"
                             th:errors="*{firstName}"></span>
                     </div>
                     
                     <div>    
-                        <label>Last Name:</label>
+                        <label for="lastName">Last Name:</label>
                         <input type="text" th:field="*{lastName}" placeholder="Last name"><br>
                         <span class="error" th:if="${#fields.hasErrors('lastName')}"
                             th:errors="*{lastName}"></span>
                     </div>
                     
                     <div>    
-                        <label>Contact number:</label> 
+                        <label for="contactNumber">Contact number:</label> 
                         <input type="text" th:field="*{contactNumber}"><br>
                         <span class="error" th:if="${#fields.hasErrors('contactNumber')}"
                             th:errors="*{contactNumber}"></span>
                     </div>
 
                     <div>
-                        <label>Employee's User Role:</label>
+                        <label for="roleName">Employee's User Role:</label>
                         <select th:field="*{roleName}">
                             <option value="" disabled>-- Select User Role --</option>
                             <option th:each="role : ${roleList}"
@@ -85,8 +85,8 @@
                     </div>
                     
                     <div>    
-                        <label>Employee's Rank:</label>
-                        <select id="rank" th:field="*{rank}">
+                        <label for="rank">Employee's Rank:</label>
+                        <select th:field="*{rank}">
                             <option value="" th:selected="${employee.rank == null}">
                                 -- Select Employee's Rank --
                             </option>
@@ -100,29 +100,29 @@
                     </div>    
                         
                     <div>    
-                        <label>Manager's ID:</label>
+                        <label for="managerId">Manager's ID:</label>
                         <input type="text" th:field="*{managerId}"><br>
                         <span class="error" th:if="${#fields.hasErrors('managerId')}"
                             th:errors="*{managerId}"></span>
                     </div>
                     
                     <div>    
-                        <label>Team Name:</label>
+                        <label for="teamName">Team Name:</label>
                         <input type="text" th:field="*{teamName}"><br>
                         <span class="error" th:if="${#fields.hasErrors('teamName')}"
                             th:errors="*{teamName}"></span>
                     </div>
                     
                     <div>    
-                        <label>Job Title:</label>
+                        <label for="jobTitle">Job Title:</label>
                         <input type="text" th:field="*{jobTitle}"><br>
                         <span class="error" th:if="${#fields.hasErrors('jobTitle')}"
                             th:errors="*{jobTitle}"></span>
                     </div>
                     
                     <div>    
-                        <label>Annual Leave Entitlement:</label>
-                        <input id="leave" type="number" th:field="*{annualLeave}"><br>
+                        <label for="annualLeave">Annual Leave Entitlement:</label>
+                        <input type="text" th:field="*{annualLeave}"><br>
                         <span class="error" th:if="${#fields.hasErrors('annualLeave')}"
                             th:errors="*{annualLeave}"></span>
                     </div>
@@ -150,7 +150,7 @@
 
 		<div th:replace="~{fragments/modal :: changePasswordModal}"></div>
 		
-		
+		<script th:src="@{/js/employee-form.js}" defer></script>
     </body>
 
 </html>
