@@ -263,9 +263,6 @@ public class LeaveService {
 
 	// Helper method: ValidateMedicalLeave --> Validate fields required for Medical Leave
 	private void validateMedicalLeave(LeaveApplication leave) {
-		if (leave.getLeaveType() == null) {
-			throw new RuntimeException("Invalid Leave Type");
-		}
 		if ("Medical".equalsIgnoreCase(leave.getLeaveType().getLeaveType())) {
 			if ((leave.getReason() == null || leave.getReason().isBlank()) 
 					|| (leave.getProof() == null || leave.getProof().isBlank())) {
@@ -282,9 +279,6 @@ public class LeaveService {
 	private void validateDate(LeaveApplication leave) {
 		LocalDate fromDate = leave.getFromDate();
 		LocalDate toDate = leave.getToDate();
-		if (leave.getLeaveType() == null) {
-			throw new RuntimeException("Invalid Leave Type");
-		}
 		String typeName = leave.getLeaveType().getLeaveType();
 		
 		if (fromDate.isBefore(LocalDate.now())) {
