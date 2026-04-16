@@ -25,7 +25,7 @@
 				        <div>
 				           	<h1 th:text="${empId != null ? 'Subordinate Leave History' : 'My Leave History'}">Leave History</h1></div>
 				        <div>
-				            <a th:href="@{/leave/apply}" class="btn btn-primary">
+				            <a th:href="@{/leaves/apply}" class="btn btn-primary">
 				                Apply Leave
 				            </a>
 				        </div>
@@ -68,8 +68,8 @@
 					<tr th:each="leave : ${leaveList} ">
 					
 						<td th:text="${leave.leaveType?.leaveType}">Annual</td>
-						<td th:text="${leave.fromDate != null ? #temporals.format(leave.fromDate, 'dd MMM yyyy') : 'N/A'}">01 Jan 2026</td>
-						<td th:text="${leave.toDate != null ? #temporals.format(leave.toDate, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
+						<td th:attr="data-order=${leave.fromDate}" th:text="${leave.fromDate != null ? #temporals.format(leave.fromDate, 'dd MMM yyyy') : 'N/A'}">01 Jan 2026</td>
+						<td th:attr="data-order=${leave.toDate}"  th:text="${leave.toDate != null ? #temporals.format(leave.toDate, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
 						<td th:text="${leave.duration}">0.0</td>
 						<td>
 						    <span class="badge rounded-pill"
@@ -82,8 +82,8 @@
 						          }">
 						    </span>
 						</td>
-						<td th:text="${leave.toDate != null ? #temporals.format(leave.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
-							<td th:text="${leave.toDate != null ? #temporals.format(leave.updatedAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
+						<td th:attr="data-order=${leave.createdAt}" th:text="${leave.createdAt != null ? #temporals.format(leave.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
+							<td th:attr="data-order=${leave.updatedAt}" th:text="${leave.toDate != null ? #temporals.format(leave.updatedAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
 													<td>
 						<!--Link to detail page, passing leave id in the URL -->
 							<a sec:authorize="hasRole('ROLE_MANAGER')" th:if="${!isSelf}"

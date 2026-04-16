@@ -50,9 +50,13 @@
                         <div class="card-header">
                             <h2>Leave Application #<span th:text="*{id}"></span></h2>
                             <p>Applied On <span th:text="*{#temporals.format(createdAt, 'dd MMM yyyy')}"></span></p>
-                            <span class="status-badge" 
-                                th:attr="data-status=*{status.name()}" 
-                                th:text="*{status.name()}"></span>
+							<span class="badge rounded-pill"
+							      th:attr="data-status=*{status}"
+							      th:classappend="*{status.name() == 'APPROVED' ? 'bg-success' : 
+							                       (status.name() == 'REJECTED' ? 'bg-danger' : 
+							                       (status.name() == 'CANCELLED' or status.name() == 'DELETED' ? 'bg-secondary' : 'bg-info'))}"
+							      th:text="*{status}">
+							</span>
                         </div>
 
                         <!-- Employee Info -->
