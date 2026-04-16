@@ -35,7 +35,7 @@
 				You have not applied for any leave yet.
 			</p>
 
-			<table th:unless="${#lists.isEmpty(leaveList)}" class="data-table-med" >
+			<table id="myLeaveTable" th:unless="${#lists.isEmpty(leaveList)}" class="data-table-med" >
 				<thead>
 					<tr>
 						<th>Leave Type</th>
