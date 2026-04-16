@@ -52,7 +52,8 @@ public class ApprovalService {
      * @param excludeId leave application ID to exclude from results
      * @return list of approved leave applications that overlap the specified date range
      */
-    public List<LeaveApplication> getConflictingLeaves(Long managerId, 
+    public List<LeaveApplication> getConflictingLeaves(
+        Long managerId, 
 		java.time.LocalDate fromDate, 
 		java.time.LocalDate toDate, 
 		Long excludeId) {

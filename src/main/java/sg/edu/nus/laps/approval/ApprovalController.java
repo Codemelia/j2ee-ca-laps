@@ -132,7 +132,7 @@ public class ApprovalController {
             user.getEmployeeId(), 
             la.getFromDate(), 
             la.getToDate(), 
-            la.getEmployee().getId());
+            la.getId());
 
         model.addAttribute("leaveApp", la);
         model.addAttribute("conflicts", conflicts);

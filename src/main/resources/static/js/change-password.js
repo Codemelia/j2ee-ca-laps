@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // fetch Controller endpoint response
         // Pass in formData as JSON
         const resp = await fetch("/auth/change-password", {
-            method: "POST",
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 [header]: token

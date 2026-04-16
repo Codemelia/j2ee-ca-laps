@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -61,7 +61,7 @@ public class AuthController {
     }
 
     // Handle password change request
-    @PostMapping("/change-password")
+    @PutMapping("/change-password")
     @ResponseBody
     public ResponseEntity<?> changePassword(
         @RequestBody @Valid PasswordDTO passwordDto,

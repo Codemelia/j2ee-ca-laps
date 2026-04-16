@@ -11,7 +11,7 @@ window.addEventListener("click", function() {
         .classList.remove("show"); // Remove dropdown menu
 })
 
-// Initialize datatables on employeeTable if it exists
+// Init datatables on employeeTable if it exists
 document.addEventListener('DOMContentLoaded', function() {
     var table = document.getElementById('employeeTable');
     if (table && typeof $ !== 'undefined' && $.fn.dataTable) {
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Initialize datatables on myLeaveTable if it exists
+// Init datatables on myLeaveTable if it exists
 document.addEventListener('DOMContentLoaded', function() {
     var table = document.getElementById('myLeaveTable');
     if (table && typeof $ !== 'undefined' && $.fn.dataTable) {
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Initialize datatables on teamLeaveTable if it exists
+// Init datatables on teamLeaveTable if it exists
 document.addEventListener('DOMContentLoaded', function() {
     var table = document.getElementById('teamLeaveTable');
     if (table && typeof $ !== 'undefined' && $.fn.dataTable) {
