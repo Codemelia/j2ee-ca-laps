@@ -24,8 +24,10 @@ import sg.edu.nus.laps.auth.service.RoleService;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
 import sg.edu.nus.laps.leave.model.LeaveRecord;
+import sg.edu.nus.laps.leave.model.LeaveType;
 import sg.edu.nus.laps.leave.service.HolidayService;
 import sg.edu.nus.laps.leave.service.LeaveRecordService;
+import sg.edu.nus.laps.leave.service.LeaveTypeService;
 import sg.edu.nus.laps.security.AuthUserDetails;
 
 /*
@@ -48,15 +50,19 @@ public class EmployeeController {
 	private final RoleService rService;
 	private final HolidayService hService;
 	private final LeaveRecordService lrService;
+	private final LeaveTypeService ltService;
 	// private LocalDate date;
 	
 	public EmployeeController(EmployeeService eService,
-		RoleService rService, HolidayService hService, LeaveRecordService lrService) {
+		RoleService rService, HolidayService hService, LeaveRecordService lrService,
+		LeaveTypeService ltService) {
+		
 		super();
 		this.eService = eService;
 		this.rService = rService;
 		this.hService = hService;
 		this.lrService = lrService;
+		this.ltService = ltService;
 	}
 	
 	// private boolean isLoggedIn(HttpSession session) {
@@ -152,18 +158,25 @@ public class EmployeeController {
 		}
         
 		try { 
-			Long annualLeaveTypeId = 1L;
-			Integer currentYear = LocalDate.now().getYear();
 			
 			eService.saveNewEmployee(employee);
 			redirectAttrs.addFlashAttribute("success", "Employee has been created.");
 			
 			// find employee's AL leave record
 			// set entitled days in employee's AL leave record based on created employee's annualLeave input
-			Optional<LeaveRecord> empAnnualLeaveRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employee.getId(), annualLeaveTypeId, currentYear);
-			if(empAnnualLeaveRecord.isPresent()) {
-				empAnnualLeaveRecord.get().setEntitledDays(employee.getAnnualLeave());
-			} 
+			Long annualLeaveTypeId;
+			Integer currentYear = LocalDate.now().getYear();
+			
+			Optional<LeaveType> annualLeaveType = ltService.findByLeaveType("Annual");
+			
+			if(annualLeaveType.isPresent()) {
+				annualLeaveTypeId = annualLeaveType.get().getId();
+				
+				Optional<LeaveRecord> empAnnualLeaveRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employee.getId(), annualLeaveTypeId, currentYear);
+				if(empAnnualLeaveRecord.isPresent()) {
+					empAnnualLeaveRecord.get().setEntitledDays(employee.getAnnualLeave());
+				} 
+			}
 			
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
@@ -242,14 +255,23 @@ public class EmployeeController {
 			eService.updateEmployee(employee);
 			redirectAttrs.addFlashAttribute("success", "Employee #" + id + " has been updated.");
 			
-			Long annualLeaveTypeId = 1L;
-			Integer currentYear = LocalDate.now().getYear();
 			
 			// Update employee's AL leave record entitled days
-			Optional<LeaveRecord> empAnnualRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(id, annualLeaveTypeId, currentYear);
-			if(empAnnualRecord.isPresent()) {
-				empAnnualRecord.get().setEntitledDays(employee.getAnnualLeave());
+			Long annualLeaveTypeId;
+			Integer currentYear = LocalDate.now().getYear();
+			
+			Optional<LeaveType> annualLeaveType = ltService.findByLeaveType("Annual");
+			
+			if(annualLeaveType.isPresent()) {
+				annualLeaveTypeId = annualLeaveType.get().getId();
+				
+				Optional<LeaveRecord> empAnnualRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(id, annualLeaveTypeId, currentYear);
+				
+				if(empAnnualRecord.isPresent()) {
+					empAnnualRecord.get().setEntitledDays(employee.getAnnualLeave());
+				}
 			}
+
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
 			bindingResult.reject("error", "Update failed: " + ex.getMessage());
