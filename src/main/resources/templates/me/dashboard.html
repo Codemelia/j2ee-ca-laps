@@ -8,8 +8,21 @@
 		<header th:replace="~{fragments/header :: header}"></header>
 	
 		<div class="page-wrapper">
-			<h1>Welcome, <span th:if="${employeeFirstName}" th:text="${employeeFirstName} ?: 'Admin User'"></span>!</h1>
-				
+			
+			<div class="container mt-4">
+			    <div class="d-flex justify-content-between align-items-start mb-4">
+			        
+			        <div>
+			            <h1>Welcome, <span th:if="${employeeFirstName}" th:text="${employeeFirstName} ?: 'Admin User'"></span>!</h1></div>
+			        <div>
+			            <a th:href="@{/leave/apply}" class="btn btn-primary">
+			                Apply Leave
+			            </a>
+			        </div>
+			        
+			    </div>
+
+			    </div>	
 
 		    <!-- Leave Balance Cards -->
 		    <h2>My Leave Balance</h2>

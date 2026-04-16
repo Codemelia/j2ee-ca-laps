@@ -450,6 +450,7 @@ textarea {
 .btn-primary {
     background-color: var(--blue);
     color: #ffffff;
+	border: 1px solid var(--blue);
 }
 .btn-primary:hover  { background-color: var(--blue-dark); color: #ffffff; }
 
@@ -501,7 +502,7 @@ textarea {
 .data-table tbody tr:hover { background-color: #f0f4f9; }
 
 .data-table-med {
-    width: 75%;
+    width: 85%;
     border-collapse: collapse;
     background: var(--white);
     border-radius: var(--radius);

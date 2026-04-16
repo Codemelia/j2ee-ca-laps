@@ -2,12 +2,10 @@ package sg.edu.nus.laps.leave.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.data.domain.Page;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
@@ -62,7 +60,7 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 	List<LeaveApplication> findAllByEmployeeId(Long employeeId);
 	
 	// 10. Read-Method: Find Leave Application by Employee, Sorted by From Date in DESC
-	List<LeaveApplication> findByEmployeeIdOrderByFromDateDesc(Long employeeId);
+	//List<LeaveApplication> findByEmployeeIdOrderByFromDateDesc(Long employeeId);
 	
 	// 11. For Dashboard: Limit leave applications to top 5
 	List<LeaveApplication> findTop5ByEmployeeIdOrderByFromDateDesc(Long employeeId);
@@ -76,14 +74,14 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 	void cancelLeave(@Param("id") Long id);
 	*/
 	// display leave history (fromDate or toDate) containing current year
-	Page<LeaveApplication> findByEmployeeIdOrderByFromDateDesc(Long employeeId, Pageable pageable);
+	List<LeaveApplication> findByEmployeeIdOrderByFromDateDesc(Long employeeId);
 	@Query("SELECT l FROM LeaveApplication l WHERE l.employee.id = :empId " +
 		       "AND (FUNCTION('YEAR', l.fromDate) = :year OR FUNCTION('YEAR', l.toDate) = :year) " +
 		       "ORDER BY l.fromDate DESC")
-		Page<LeaveApplication> findByEmployeeIdAndYear(
+		List<LeaveApplication> findByEmployeeIdAndYear(
 		    @Param("empId") Long empId, 
-		    @Param("year") int year, 
-		    Pageable pageable
+		    @Param("year") int year
+		    //Pageable pageable
 		);
 
   	@Query("SELECT l FROM LeaveApplication l WHERE l.employee.managerId = :managerId " +
