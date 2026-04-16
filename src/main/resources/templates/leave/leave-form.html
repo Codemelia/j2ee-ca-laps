@@ -37,38 +37,32 @@
           method="post">
           <div class="form-group">
             <label for="leaveType">Leave Type</label>
-			
             <select id="leaveType"
 			        th:field="*{leaveTypeId}" 
-					class="form-control" 
-					
-                th:disabled="${leaveApp != null and leaveApp.id != null}"
-					required>
+					    class="form-control"
+              th:disabled="${leaveApp != null and leaveApp.id != null}"
+					    required>
               <option value="" disabled selected>Select Type</option>
               <option th:each="leaveType : ${leaveTypes}" 
                 th:value="${leaveType.id}" 
                 th:text="${leaveType.leaveType}">Annual</option>
-              
             </select>
-			<!--add ymw-->
-			<input type="hidden"
-             th:if="${leaveApp != null and leaveApp.id != null}"
-           th:field="*{leaveTypeId}"/>
-				   
             <span class="error" th:if="${#fields.hasErrors('leaveTypeId')}"
-                  th:errors="*{leaveTypeId}"></span>
+              th:errors="*{leaveTypeId}"></span>
           </div>
           <div class="form-group">
             <label>From</label>
             <input type="date"  th:field="*{fromDate}" required />
-			<span class="error" th:if="${#fields.hasErrors('fromDate')}"
-										th:errors="*{fromDate}"></span>
+            <span class="error" th:if="${#fields.hasErrors('fromDate')}"
+              th:errors="*{fromDate}"></span>
           </div>
           <div class="form-group">
             <label>To</label>
             <input type="date"  th:field="*{toDate}" required />
-            <span class="field-error" th:if="${dateError}"
-              >You have an existing Leave within this date range</span>
+            <span class="field-error" th:if="${dateError}">
+              You have an existing Leave within this date range</span>
+            <span class="error" th:if="${#fields.hasErrors('toDate')}"
+              th:errors="*{toDate}"></span>
           </div>
           <div class="form-group">
             <label>Proof</label>
@@ -78,19 +72,25 @@
           <div class="form-group">
             <label>Reason</label>
             <textarea
-              th:field="*{reason}" placeholder="State your reason"
-            ></textarea>
+              th:field="*{reason}" placeholder="State your reason">
+            </textarea>
+            <span class="error" th:if="${#fields.hasErrors('reason')}"
+                th:errors="*{reason}"></span>
           </div>
 		  <!-- add ymw -->	  
-		  <div class="form-group">
+		        <div class="form-group">
 		  		    <label>Work Dissemination</label>
 		  		    <textarea th:field="*{workDissemination}"
-		  		              placeholder="Describe work handover details"></textarea>
+                placeholder="Describe work handover details"></textarea>
+              <span class="error" th:if="${#fields.hasErrors('workDissemination')}"
+                th:errors="*{workDissemination}"></span>
 		  		  </div>
 		  		  <div class="form-group">
 		  		    <label>Contact Details</label>
 		  		    <input type="text" th:field="*{contactDetails}"
-		  		           placeholder="Phone / Email / WhatsApp" />
+                placeholder="Phone / Email / WhatsApp" />
+              <span class="error" th:if="${#fields.hasErrors('contactDetails')}"
+                th:errors="*{contactDetails}"></span>
 		  		  </div>
 
           <!-- Hidden ID for update -->
@@ -107,7 +107,7 @@
                 th:formaction="@{/leaves/save}">
                 Save
               </button>
-              <button type="submit" class="btn btn-primary"
+              <button type="submit" class="btn btn-primary" 
                 th:formaction="@{/leaves/submit}">
                 Submit
               </button>

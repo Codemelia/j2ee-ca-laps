@@ -3,10 +3,6 @@
     xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 
 	<head th:insert="~{fragments/head ::head('Leave History', ~{::extra})}">
-		<!-- For scripts -->
-		<th:block th:fragment="extra">
-			<script th:src="@{/js/main.js}" defer></script>
-		</th:block>
 	</head>
 
 	<body>
@@ -35,7 +31,7 @@
 				You have not applied for any leave yet.
 			</p>
 
-			<table th:unless="${#lists.isEmpty(leaveList)}" class="data-table-med" >
+			<table id="myLeaveTable" th:unless="${#lists.isEmpty(leaveList)}" class="data-table-med" >
 				<thead>
 					<tr>
 						<th>Leave Type</th>

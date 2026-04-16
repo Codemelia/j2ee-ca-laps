@@ -82,6 +82,11 @@ public class EmployeeController {
 		}
 	}
 	
+	// Original - Deleted 
+	// @GetMapping public String showEmployees(@AuthenticationPrincipal AuthUserDetails user,
+    //Model model, RedirectAttributes redirectAttrs, @PageableDefault(size = 10) Pageable pageable) { 
+	
+	// UPDATED
 	@GetMapping
 	public String showEmployees(@AuthenticationPrincipal AuthUserDetails user, Model model) {
 		// if (!isLoggedIn(session)) {
@@ -102,8 +107,17 @@ public class EmployeeController {
         // List<Employee> allEmployees = eService.findAll();
         // model.addAttribute("allEmployees", allEmployees);
 		
+		// Original - Deleted 
+		   // Page<Employee> page = eService.findAll(pageable);
+		   // model.addAttribute("allEmployees", page.getContent());
+		   // model.addAttribute("currentPage", page.getNumber());
+		   // model.addAttribute("totalPages", page.getTotalPages());
+		   // model.addAttribute("page", page);
+		
+		// UPDATED 
 	    List<Employee> allEmployees = eService.findAll();
 	    model.addAttribute("allEmployees", allEmployees);
+	    //End of update
 
 		// Retrieve user email from session
 		// String userEmail = (String) session.getAttribute("userEmail");
@@ -269,9 +283,7 @@ public class EmployeeController {
 			model.addAttribute("rankList", EmployeeRank.values());
 			return "employee/employee-form";
 		}
-		
-		
-
+	
 		// ID passed in as hidden form field
 		// But if null, set via Path Variable
 		if (employee.getId() == null) { employee.setId(id); }

@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Handle field errors
-        if (result.errors) {
+        else if (result.errors) {
             for (const field in result.errors) {
                 const elem = document.getElementById(field + "Error"); // Find fieldError
                 if (elem) {
@@ -56,8 +56,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Handle any other errors
-        document.getElementById("globalError")
-            .innerText = result.message;
+        else if (!resp.ok) {
+            document.getElementById("globalError")
+                .innerText = result.message;
+        }
 
     })
 
