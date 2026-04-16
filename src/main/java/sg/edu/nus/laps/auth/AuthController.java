@@ -60,40 +60,6 @@ public class AuthController {
         return "auth/login";
     }
 
-    // Getting errors using this method - let Spring Security handle full login flow
-    // // Employee - POST /auth/employee/login-validate
-    // @PostMapping("/employee/login-validate")
-    // public String processEmployeeLogin(
-    //     @Valid @ModelAttribute(name="user") LoginUserDTO user,
-    //     BindingResult result, Model model,
-    //     HttpServletRequest request) {
-
-    //     // Validation error = stay on login page
-    //     if (result.hasErrors()) {
-    //         model.addAttribute("entryPoint", "employee");
-    //         return "auth/login";
-    //     }
-
-    //     return "forward:/auth/employee/login"; // Let Spring Security authenticate
-
-    // }
-
-    // // Admin - POST /auth/admin/login-validate
-    // @PostMapping("/admin/login-validate")
-    // public String processAdminLogin(
-    //     @Valid @ModelAttribute(name="user") LoginUserDTO user,
-    //     BindingResult result, Model model) {
-
-    //     // Validation error = stay on login page
-    //     if (result.hasErrors()) {
-    //         model.addAttribute("entryPoint", "admin");
-    //         return "auth/login";
-    //     }
-
-    //     return "forward:/auth/admin/login"; // Let Spring Security authenticate
-
-    // }
-
     // Handle password change request
     @PostMapping("/change-password")
     @ResponseBody
@@ -136,5 +102,39 @@ public class AuthController {
         return ResponseEntity.ok(
             Map.of("message", "Password updated successfully"));
     }
+
+    // Getting errors using this method - let Spring Security handle full login flow
+    // // Employee - POST /auth/employee/login-validate
+    // @PostMapping("/employee/login-validate")
+    // public String processEmployeeLogin(
+    //     @Valid @ModelAttribute(name="user") LoginUserDTO user,
+    //     BindingResult result, Model model,
+    //     HttpServletRequest request) {
+
+    //     // Validation error = stay on login page
+    //     if (result.hasErrors()) {
+    //         model.addAttribute("entryPoint", "employee");
+    //         return "auth/login";
+    //     }
+
+    //     return "forward:/auth/employee/login"; // Let Spring Security authenticate
+
+    // }
+
+    // // Admin - POST /auth/admin/login-validate
+    // @PostMapping("/admin/login-validate")
+    // public String processAdminLogin(
+    //     @Valid @ModelAttribute(name="user") LoginUserDTO user,
+    //     BindingResult result, Model model) {
+
+    //     // Validation error = stay on login page
+    //     if (result.hasErrors()) {
+    //         model.addAttribute("entryPoint", "admin");
+    //         return "auth/login";
+    //     }
+
+    //     return "forward:/auth/admin/login"; // Let Spring Security authenticate
+
+    // }
 
 }
