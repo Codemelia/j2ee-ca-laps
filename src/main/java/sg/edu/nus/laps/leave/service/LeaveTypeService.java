@@ -1,5 +1,6 @@
 package sg.edu.nus.laps.leave.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +18,9 @@ public class LeaveTypeService {
     }
 
     public List<LeaveType> findAllLeaveTypes() {
-        return ltRepo.findAll();
+        List<LeaveType> types = ltRepo.findAll();
+        
+        return types != null ? types : new ArrayList<>();
     }
 
     public Optional<LeaveType> findLeaveTypeById(Long id) {

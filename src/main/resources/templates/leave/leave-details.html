@@ -127,7 +127,7 @@
                         <!-- Employee (self view) buttons -->
                         <div th:if="${isSelf}">
                             <div th:if="${#lists.contains({'APPLIED', 'UPDATED'}, leaveApp.status.name())}">
-                                <form th:action="{@/leaves/edit/{id}(id=${leaveApp.id})}"
+                                <form th:action="@{/leaves/edit/{id}(id=${leaveApp.id})}"
                                     method="get">
                                     <button class="btn btn-secondary" 
                                     type="submit">Update</button>

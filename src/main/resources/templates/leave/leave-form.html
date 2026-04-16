@@ -39,9 +39,7 @@
             <label for="leaveType">Leave Type</label>
             <select id="leaveType" th:field="*{leaveTypeId}" class="form-control" required>
               <option value="" disabled selected>Select Type</option>
-              <option  th:each="lt : ${leaveTypes}" 
-			            th:value="${lt.id}" 
-			            th:text="${lt.leaveType}">Annual</option>
+              <option th:each="lt : ${leaveTypes}" th:value="${lt.id}" th:text="${lt.leaveType}">Annual</option>
               
             </select>
             <span class="error" th:if="${#fields.hasErrors('leaveTypeId')}"
@@ -92,7 +90,7 @@
             </div>
             <div th:if="${leaveApp.id != null 
               && (leaveApp.status.name() == 'APPLIED'
-              || leave.status.name == 'UPDATED')}">
+              || leaveApp.status.name() == 'UPDATED')}">
               <button type="submit" class="btn btn-secondary" 
                 th:formaction="@{/leaves/update}">
                 Update
