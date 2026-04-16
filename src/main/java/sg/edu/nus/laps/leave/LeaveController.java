@@ -148,16 +148,35 @@ public class LeaveController {
             model.addAttribute("leaveTypes", leaveTypes);
             return "leave/leave-form"; 
         }
-
+//    	add ymw
+    	if (leaveApp.getLeaveTypeId() != null) {
+    	    LeaveType lt = ltService.findLeaveTypeById(leaveApp.getLeaveTypeId())
+    	            .orElseThrow(() -> new RuntimeException("LeaveType not found"));
+    	    leaveApp.setLeaveType(lt);
+    	}
         try {
             lService.saveAsDraft(user.getEmployeeId(), leaveApp);
             redirAttr.addAttribute("successMsg", 
                 String.format("Leave Application #%d was saved successfully", leaveApp.getId()));
             return "redirect:/leaves";
         } catch (RuntimeException ex) {
-            model.addAttribute("globalError", 
+//    changed ymw   
+        	String statusDisplay = (leaveApp.getStatus() != null) 
+                    ? leaveApp.getStatus().getDisplayLeaveStatus() 
+                    : "DRAFT";
+        	String typeName = "Not Specified";
+            if (leaveApp.getLeaveType() != null) {
+                typeName = leaveApp.getLeaveType().getLeaveType(); 
+            }
+            
+            model.addAttribute("globalError", "Error: " + ex.getMessage() + 
+                                ", Status: " + statusDisplay + 
+                                ", Type: " + typeName);
+//            overchanged
+           /*  comment out after add up
+            *  model.addAttribute("globalError", 
                 "Error: " + ex.getMessage() + ", Status: " + leaveApp.getStatus()
-                .getDisplayLeaveStatus());
+                .getDisplayLeaveStatus());*/
             model.addAttribute("leaveApp", leaveApp);
             model.addAttribute("leaveTypes", leaveTypes);
             return "leave/leave-form";
@@ -179,7 +198,12 @@ public class LeaveController {
             model.addAttribute("leaveTypes", leaveTypes);
             return "leave/leave-form"; 
         }
-
+// add
+    	if (leaveApp.getLeaveTypeId() != null) {
+    	    LeaveType lt = ltService.findLeaveTypeById(leaveApp.getLeaveTypeId())
+    	            .orElseThrow(() -> new RuntimeException("LeaveType not found"));
+    	    leaveApp.setLeaveType(lt);
+    	}
         try {
             lService.submitLeave(user.getEmployeeId(), leaveApp);
             redirAttr.addAttribute("successMsg", 
@@ -210,6 +234,12 @@ public class LeaveController {
             model.addAttribute("leaveTypes", leaveTypes);
             return "leave/leave-form"; 
         }
+//    	add ymw
+    	if (leaveApp.getLeaveTypeId() != null) {
+    	    LeaveType lt = ltService.findLeaveTypeById(leaveApp.getLeaveTypeId())
+    	            .orElseThrow(() -> new RuntimeException("LeaveType not found"));
+    	    leaveApp.setLeaveType(lt);
+    	}
 
         try {
             lService.updateLeave(user.getEmployeeId(), leaveApp);
