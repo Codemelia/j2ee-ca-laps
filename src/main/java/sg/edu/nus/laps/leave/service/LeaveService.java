@@ -70,10 +70,9 @@ public class LeaveService {
 	public LeaveApplication saveAsDraft(Long empId, LeaveApplication leave) {
 		Employee employee = validateAndRetrieveEmployee(empId);
 		LeaveType leaveType = validateAndRetrieveLeaveType(leave.getLeaveTypeId());
-		validateDate(leave);
-
 		leave.setEmployee(employee);
         leave.setLeaveType(leaveType);
+		validateDate(leave);
 		leave.setStatus(LeaveStatus.DRAFT);
 		return laRepo.save(leave);
 	}
@@ -91,6 +90,8 @@ public class LeaveService {
 	public LeaveApplication submitLeave(Long empId, LeaveApplication leave) {
 		Employee employee = validateAndRetrieveEmployee(empId);
 		LeaveType leaveType = validateAndRetrieveLeaveType(leave.getLeaveTypeId());
+		leave.setEmployee(employee);
+		leave.setLeaveType(leaveType);
 		validateDate(leave);
 		validateMedicalLeave(leave);
 		
@@ -103,8 +104,6 @@ public class LeaveService {
 			throw new RuntimeException("Selected Dates overlap with an Existing Approved Leave Application.");
 		}
 
-		leave.setEmployee(employee);
-        leave.setLeaveType(leaveType);
         leave.setStatus(LeaveStatus.APPLIED);
 		return laRepo.save(leave);
 	}
@@ -117,9 +116,6 @@ public class LeaveService {
 	@Transactional
 	public void updateLeave(Long empId, LeaveApplication updatedLeave) {
 		if (empId == null) { throw new RuntimeException("Invalid Employee Profile"); }
-
-		validateDate(updatedLeave);
-		validateMedicalLeave(updatedLeave);
 		
 		LeaveApplication existingLeave = laRepo.findById(updatedLeave.getId())
 				.orElseThrow(() -> new RuntimeException("Leave Application does not Exist."));
@@ -128,11 +124,16 @@ public class LeaveService {
 			throw new RuntimeException("Only Leave Application in 'APPLIED' or 'UPDATED' state can be Edited. "
 				+ "Current Status : " + existingLeave.getStatus());
 		}
-		if (!existingLeave.getLeaveType().getId().equals(updatedLeave.getLeaveType().getId())) {
+		if (updatedLeave.getLeaveTypeId() != null
+				&& !existingLeave.getLeaveType().getId().equals(updatedLeave.getLeaveTypeId())) {
 			throw new RuntimeException("Leave Type cannot be Edited. Please create a New Leave Application instead.");
 		}
 
 		verifySelfIdentity(empId, existingLeave);
+		updatedLeave.setEmployee(existingLeave.getEmployee());
+		updatedLeave.setLeaveType(existingLeave.getLeaveType());
+		validateDate(updatedLeave);
+		validateMedicalLeave(updatedLeave);
 		
 		List<LeaveApplication> overlaps = laRepo.findOverlappingApplication(
 				List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED),

@@ -4,6 +4,8 @@ package sg.edu.nus.laps.leave.model;
 import java.time.LocalDate;
 // import java.time.LocalDateTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -31,10 +33,12 @@ public class LeaveApplication extends SetCreatedUpdated {
     private Long id;
 
     @NotNull(message = "Start date is mandatory")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "from_date", nullable = false)
     private LocalDate fromDate;
 
     @NotNull(message = "End date is mandatory")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "to_date", nullable = false)
     private LocalDate toDate;
 
@@ -45,13 +49,13 @@ public class LeaveApplication extends SetCreatedUpdated {
     @Column(nullable = false, length = 255)
     private String reason;
 
-    @Column(name = "work_dissemination")
+    @Column(name = "work_dissemination", nullable = true)
     private String workDissemination;
 
-    @Column(name = "contact_details")
+    @Column(name = "contact_details", nullable = true)
     private String contactDetails;
     
-    @Column(name = "manager_comment")
+    @Column(name = "manager_comment", nullable = true)
     private String managerComment;
 
     @Column(name = "is_half_day")

@@ -121,7 +121,7 @@ public class LeaveController {
         RedirectAttributes redirAttr) {
         Optional<LeaveApplication> optLeaveApp = lService.findLeaveById(id);
         if (optLeaveApp.isEmpty()) {
-            redirAttr.addAttribute("globalError", "No such application exists. Please fill a new application.");
+            model.addAttribute("globalError", "No such application exists. Please fill a new application.");
             return "redirect:/leaves/apply"; // redirect to new form endpoint with no population
         }
 
@@ -137,7 +137,7 @@ public class LeaveController {
     // DRAFT -> DRAFT
     @PostMapping("/save")
     public String saveLeaveApplication(@AuthenticationPrincipal AuthUserDetails user, 
-        @Valid @ModelAttribute LeaveApplication leaveApp, 
+        @Valid @ModelAttribute("leaveApp") LeaveApplication leaveApp, 
         BindingResult result, Model model,
         RedirectAttributes redirAttr) {
         List<LeaveType> leaveTypes = ltService.findAllLeaveTypes();
@@ -156,7 +156,7 @@ public class LeaveController {
     	}
         try {
             lService.saveAsDraft(user.getEmployeeId(), leaveApp);
-            redirAttr.addAttribute("successMsg", 
+            redirAttr.addFlashAttribute("successMsg", 
                 String.format("Leave Application #%d was saved successfully", leaveApp.getId()));
             return "redirect:/leaves";
         } catch (RuntimeException ex) {
@@ -187,7 +187,7 @@ public class LeaveController {
     // DRAFT / - -> APPLIED
     @PostMapping("/submit")
     public String submitLeaveApplication(@AuthenticationPrincipal AuthUserDetails user, 
-        @Valid @ModelAttribute LeaveApplication leaveApp, 
+        @Valid @ModelAttribute("leaveApp") LeaveApplication leaveApp, 
         BindingResult result, Model model,
         @RequestParam(name = "action", required = false) String action, // Determines whether it is a save/submit
         RedirectAttributes redirAttr) {
@@ -206,7 +206,7 @@ public class LeaveController {
     	}
         try {
             lService.submitLeave(user.getEmployeeId(), leaveApp);
-            redirAttr.addAttribute("successMsg", 
+            redirAttr.addFlashAttribute("successMsg", 
                 String.format("Leave Application #%d was submitted successfully", leaveApp.getId()));
             return "redirect:/leaves";
         } catch (RuntimeException ex) {
@@ -223,7 +223,7 @@ public class LeaveController {
     // APPLIED / UPDATED -> UPDATED
     @PostMapping("/update")
     public String updateLeaveApplication(@AuthenticationPrincipal AuthUserDetails user, 
-        @Valid @ModelAttribute LeaveApplication leaveApp, 
+        @Valid @ModelAttribute("leaveApp") LeaveApplication leaveApp, 
         BindingResult result, Model model,
         @RequestParam(name = "action", required = false) String action, // Determines whether it is a save/submit
         RedirectAttributes redirAttr) {
@@ -243,7 +243,7 @@ public class LeaveController {
 
         try {
             lService.updateLeave(user.getEmployeeId(), leaveApp);
-            redirAttr.addAttribute("successMsg", 
+            redirAttr.addFlashAttribute("successMsg", 
                 String.format("Leave Application #%d was updated successfully", leaveApp.getId()));
             return "redirect:/leaves";
         } catch (RuntimeException ex) {
@@ -264,10 +264,10 @@ public class LeaveController {
      // 3. Perform delete action  
         try {
             lService.deleteLeave(id, user.getEmployeeId());
-            redirAttr.addAttribute("successMsg", 
+            redirAttr.addFlashAttribute("successMsg", 
                 String.format("Leave Application #%d was deleted successfully", id));
         } catch (RuntimeException e) {
-            redirAttr.addAttribute("globalError",
+            redirAttr.addFlashAttribute("globalError",
                 "Delete failed: " + e.getMessage());
         }
         return "redirect:/leaves";
@@ -280,10 +280,10 @@ public class LeaveController {
         @PathVariable Long id, RedirectAttributes redirAttr) {
     	try {
             lService.cancelLeave(id, user.getEmployeeId());
-            redirAttr.addAttribute("successMsg", 
-                String.format("Leave Application #%d was deleted successfully", id));
+            redirAttr.addFlashAttribute("successMsg", 
+                String.format("Leave Application #%d was cancelled successfully", id));
         } catch (RuntimeException e) {
-            redirAttr.addAttribute("globalError",
+            redirAttr.addFlashAttribute("globalError",
                 "Cancel failed: " + e.getMessage());
         }
         return "redirect:/leaves";
