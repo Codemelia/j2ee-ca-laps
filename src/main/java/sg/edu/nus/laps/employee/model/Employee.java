@@ -17,6 +17,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -84,9 +86,9 @@ public class Employee extends SetCreatedUpdated {
 	private String jobTitle;
 	
 	@Transient //Don't persist in db
-	@NotBlank(message = "Annual Leave Entitlement cannot be blank")
-	@Min(14)
-	@Max(21)
+	@NotNull(message = "Annual Leave Entitlement cannot be blank")
+	@DecimalMin("14.0")
+	@DecimalMax("21.0")
 	private Double annualLeave;
 
 	// ADDED for form binding
