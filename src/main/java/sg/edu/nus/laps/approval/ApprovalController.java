@@ -83,7 +83,7 @@ public class ApprovalController {
         if (subordinate.isEmpty() || !subordinate.get().getManagerId().equals(user.getEmployeeId())) {
             redirAttr.addFlashAttribute("globalError", 
                 "You may only view your team members' leave applications");
-            return "redirect:/approval/team-leave-list";
+            return "redirect:/manager/team-leaves";
         }
         
         // Retrieve complete leave history for the subordinate
@@ -112,14 +112,19 @@ public class ApprovalController {
         Model model, RedirectAttributes redirAttr) {
 
         // Get leave application
-        LeaveApplication la = lService.findLeaveById(leaveId)
-            .orElse(null); // Handle null in thymeleaf
+        Optional<LeaveApplication> optLa = lService.findLeaveById(leaveId);
+        if (optLa.isEmpty()) {
+            model.addAttribute("leaveApp", null); // Null handled in thymeleaf
+            return "leave/leave-details";
+        }
 
-        // Verify the manager owns this leave application (employee is in their team)
+        LeaveApplication la = optLa.get();
+
+        // Verify manager can only view leave applications from their own team
         if (!la.getEmployee().getManagerId().equals(user.getEmployeeId())) {
-            redirAttr.addFlashAttribute("globalError", 
+            redirAttr.addFlashAttribute("globalError",
                 "You may only view your team members' leave applications");
-            return "redirect:/approval/team-leave-list";
+            return "redirect:/manager/team-leaves";
         }
 
         // Get conflicting leave applications from team members during the same period
@@ -129,7 +134,6 @@ public class ApprovalController {
             la.getToDate(), 
             la.getEmployee().getId());
 
-        // Pass data to template
         model.addAttribute("leaveApp", la);
         model.addAttribute("conflicts", conflicts);
         model.addAttribute("isSelf", false);
