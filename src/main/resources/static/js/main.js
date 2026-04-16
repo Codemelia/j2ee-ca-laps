@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     var table = document.getElementById('myLeaveTable');
     if (table && typeof $ !== 'undefined' && $.fn.dataTable) {
-        $('#employeeTable').DataTable({
+        $('#myLeaveTable').DataTable({
             paging: true,
             searching: true,
             ordering: true,
@@ -37,11 +37,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Initialize datatables on employeeTable if it exists
+// Initialize datatables on teamLeaveTable if it exists
 document.addEventListener('DOMContentLoaded', function() {
     var table = document.getElementById('teamLeaveTable');
     if (table && typeof $ !== 'undefined' && $.fn.dataTable) {
-        $('#employeeTable').DataTable({
+        $('#teamLeaveTable').DataTable({
             paging: true,
             searching: true,
             ordering: true,

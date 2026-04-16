@@ -21,6 +21,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import sg.edu.nus.laps.common.util.SetCreatedUpdated;
 import sg.edu.nus.laps.employee.model.Employee;
 
@@ -42,6 +43,7 @@ public class LeaveApplication extends SetCreatedUpdated {
     @Column(name = "to_date", nullable = false)
     private LocalDate toDate;
 
+    @Size(max = 2048, message = "Proof URL cannot exceed 2048 characters")
     @Column(name = "proof", nullable = true)
     private String proof; // For medical proof url (Nullable)
 
@@ -49,12 +51,15 @@ public class LeaveApplication extends SetCreatedUpdated {
     @Column(nullable = false, length = 255)
     private String reason;
 
+    @Size(max = 255, message = "Work dissemination cannot exceed 255 characters")
     @Column(name = "work_dissemination", nullable = true)
     private String workDissemination;
 
+    @Size(max = 255, message = "Contact details cannot exceed 255 characters")
     @Column(name = "contact_details", nullable = true)
     private String contactDetails;
     
+    @Size(max = 255, message = "Manager comment cannot exceed 255 characters")
     @Column(name = "manager_comment", nullable = true)
     private String managerComment;
 
