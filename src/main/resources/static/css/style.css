@@ -621,3 +621,18 @@ footer {
         padding: 10px 0;
     }
 }
+
+/* --- Status Badges ---------------------------------------- */
+.status-badge {
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    display: inline-block;
+}
+
+.status-badge[data-status="DRAFT"] { background-color: #6c757d; color: white; }
+.status-badge[data-status="APPLIED"] { background-color: #0d6efd; color: white; }
+.status-badge[data-status="UPDATED"] { background-color: #0dcaf0; color: white; }
+.status-badge[data-status="APPROVED"] { background-color: #198754; color: white; }
+.status-badge[data-status="REJECTED"] { background-color: #dc3545; color: white; }
+.status-badge[data-status="CANCELLED"] { background-color: #ffc107; color: black; }
+.status-badge[data-status="DELETED"] { background-color: #6c757d; color: white; }

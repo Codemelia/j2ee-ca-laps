@@ -50,7 +50,9 @@
                         <div class="card-header">
                             <h2>Leave Application #<span th:text="*{id}"></span></h2>
                             <p>Applied On <span th:text="*{#temporals.format(createdAt, 'dd MMM yyyy')}"></span></p>
-                            <span class="badge status-badge" th:text="*{status}"></span>
+                            <span class="status-badge" 
+                                th:attr="data-status=*{status.name()}" 
+                                th:text="*{status.name()}"></span>
                         </div>
 
                         <!-- Employee Info -->

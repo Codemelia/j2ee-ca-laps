@@ -60,35 +60,35 @@ public class ApprovalController {
         return "approval/team-leave-list";
     }
 
-        /**
-     * Displays the complete leave history for a specific subordinate.
-     * Shows all leaves for the current calendar year, including approved and rejected ones.
-     * Verifies that the requesting manager actually manages the specified employee.
-     * 
-     * Request: GET /manager/subordinate/history/{empId}
-     * Template: leave/leave-list.html
-     * 
-     * @param empId the subordinate's employee ID
-     * @param user the authenticated manager
-     * @param model the model to pass data to template
-     * @return the subordinate history view, or redirect if unauthorized
-     */
-    @GetMapping("/subordinate/history/{empId}")
-    public String viewSubordinateHistory(@PathVariable Long empId, 
-        @AuthenticationPrincipal AuthUserDetails user, Model model) {
+    //     /**
+    //  * Displays the complete leave history for a specific subordinate.
+    //  * Shows all leaves for the current calendar year, including approved and rejected ones.
+    //  * Verifies that the requesting manager actually manages the specified employee.
+    //  * 
+    //  * Request: GET /manager/subordinate/history/{empId}
+    //  * Template: leave/leave-list.html
+    //  * 
+    //  * @param empId the subordinate's employee ID
+    //  * @param user the authenticated manager
+    //  * @param model the model to pass data to template
+    //  * @return the subordinate history view, or redirect if unauthorized
+    //  */
+    // @GetMapping("/subordinate/history/{empId}")
+    // public String viewSubordinateHistory(@PathVariable Long empId, 
+    //     @AuthenticationPrincipal AuthUserDetails user, Model model) {
         
-        // Verify the manager actually manages this employee
-        Optional<Employee> subordinate = eService.findById(empId);
-        if (subordinate.isEmpty() || !subordinate.get().getManagerId().equals(user.getEmployeeId())) {
-            return "redirect:/manager/team-leaves?error=Unauthorized";
-        }
+    //     // Verify the manager actually manages this employee
+    //     Optional<Employee> subordinate = eService.findById(empId);
+    //     if (subordinate.isEmpty() || !subordinate.get().getManagerId().equals(user.getEmployeeId())) {
+    //         return "redirect:/manager/team-leaves?error=Unauthorized";
+    //     }
         
-        // Retrieve complete leave history for the subordinate
-        model.addAttribute("leaveList", aService.getSubordinateHistory(empId));
-        model.addAttribute("empId", empId);
+    //     // Retrieve complete leave history for the subordinate
+    //     model.addAttribute("leaveList", aService.getSubordinateHistory(empId));
+    //     model.addAttribute("empId", empId);
         
-        return "leave/leave-list";
-    }
+    //     return "leave/leave-list";
+    // }
 
         /**
      * Displays detailed information about a single leave application.

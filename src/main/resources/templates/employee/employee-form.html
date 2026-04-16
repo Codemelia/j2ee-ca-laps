@@ -40,11 +40,6 @@
                                     : @{/admin/employees/create}" 
                     th:object="${employee}" method="post">
 
-                    <div th:if="${#fields.hasGlobalErrors()}" 
-                        class="alert alert-danger"
-                        th:errors="*{error}">
-                    </div>
-
                     <!-- Hidden ID for update -->
                     <div th:if="${employee.id != null}">
                         <input type="hidden" th:field="*{id}">
