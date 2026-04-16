@@ -128,8 +128,6 @@ public class LeaveController {
         List<LeaveType> leaveTypes = ltService.findAllLeaveTypes();
         LeaveApplication leaveApp = optLeaveApp.get();
 
-        System.out.println(String.valueOf(leaveTypes));
-
         model.addAttribute("leaveTypes", leaveTypes);
         model.addAttribute("leaveApp", leaveApp);
         return "leave/leave-form";
