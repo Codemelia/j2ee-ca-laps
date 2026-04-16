@@ -8,73 +8,83 @@
 		<header th:replace="~{fragments/header :: header}"></header>
 	
 		<div class="page-wrapper">
-			
 			<div class="container mt-4">
 			    <div class="d-flex justify-content-between align-items-start mb-4">
 			        
 			        <div>
-			            <h1>Welcome, <span th:if="${employeeFirstName}" th:text="${employeeFirstName} ?: 'Admin User'"></span>!</h1></div>
+			            <h1>Welcome, <span th:if="${employeeFirstName}" th:text="${employeeFirstName} ?: 'Admin User'"></span>!</h1>
+					</div>
 			        <div>
 			            <a th:href="@{/leaves/apply}" class="btn btn-primary">
 			                Apply Leave
 			            </a>
-			        </div>
-			        
+			        </div>     
 			    </div>
 
-			    </div>	
+				<!-- Leave Balance Cards -->
+				<h2>My Leave Balance</h2>
+				<div class="cards-container">
+					<div class="card" th:each="rec : ${leaveRecords}">
+						<h3 th:text="${rec.leaveType.leaveType}">Leave Type</h3>
+						<p>Entitled: <span th:text="${rec.entitledDays}">0</span></p>
+						<p>Consumed: <span th:text="${rec.consumedDays}">0</span></p>
+						<p>Balance: 
+							<span th:text="${rec.entitledDays - rec.consumedDays}">
+							</span>
+						</p>
+					</div>
+					<!-- Fallback if no records -->
+					<p th:if="${#lists.isEmpty(leaveRecords)}">
+						No leave records found.
+					</p>
+				</div>
 
-		    <!-- Leave Balance Cards -->
-		    <h2>My Leave Balance</h2>
-		    <div class="cards-container">
-		        <div class="card" th:each="rec : ${leaveRecords}">
-		            <h3 th:text="${rec.leaveType.leaveType}">Leave Type</h3>
-		            <p>Entitled: <span th:text="${rec.entitledDays}">0</span></p>
-		            <p>Consumed: <span th:text="${rec.consumedDays}">0</span></p>
-		            <p>Balance: 
-		                <span th:text="${rec.entitledDays - rec.consumedDays}">
-		                </span>
-		            </p>
-		        </div>
-		        <!-- Fallback if no records -->
-		        <p th:if="${#lists.isEmpty(leaveRecords)}">
-		            No leave records found.
-		        </p>
-		    </div>
-
-		    <!-- My Recent Leave Requests -->
-		    <h2>My Latest Leave Applications</h2>
-		    <div th:if="${#lists.isEmpty(recentApplications)}">
-		        No leave applications found.
+				<!-- My Recent Leave Requests -->
+				<h2>My Latest Leave Applications</h2>
+				<div th:if="${#lists.isEmpty(recentApplications)}">
+					No leave applications found.
+				</div>
+				<table class="data-table table table-striped table-hover" th:unless="${#lists.isEmpty(recentApplications)}">
+					<thead>
+						<tr>
+							<th>Leave Type</th>
+							<th>Start Date</th>
+							<th>End Date</th>
+							<th>Status</th>
+							<th>Applied</th>
+							<th>Updated</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="leave : ${recentApplications}">
+							<td th:text="${leave.leaveType.leaveType}">-</td>
+							<td th:text="${#temporals.format(leave.fromDate, 'dd MMM yyyy')}">-</td>
+							<td th:text="${#temporals.format(leave.toDate, 'dd MMM yyyy')}">-</td>
+							<td>
+								<span class="badge rounded-pill"
+                                    th:attr="data-status=${leave.status.name()}"
+                                    th:classappend="${
+                                        'APPLIED'.equals(leave.status.name()) ? 'bg-warning text-dark' :
+                                        'UPDATED'.equals(leave.status.name()) ? 'bg-info text-dark' :
+                                        'APPROVED'.equals(leave.status.name()) ? 'bg-success' :
+                                        'REJECTED'.equals(leave.status.name()) ? 'bg-danger' :
+                                        ('CANCELLED'.equals(leave.status.name()) or 'DELETED'.equals(leave.status.name())) ? 'bg-secondary' :
+                                        'bg-primary'}"
+                                    th:text="${leave.status.name()}">
+                                </span>
+							</td>
+							<td th:text="${leave.createdAt != null ? #temporals.format(leave.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
+							<td th:text="${leave.updatedAt != null ? #temporals.format(leave.updatedAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
+							<td>
+							<!--Link to detail page-->
+							<a th:href="@{/leaves/details/{id}(id=${leave.id})}" 
+								class="btn btn-secondary btn-sm">View</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
-		    <table class="data-table" th:unless="${#lists.isEmpty(recentApplications)}">
-		        <thead>
-		            <tr>
-		                <th>Leave Type</th>
-		                <th>Start Date</th>
-		                <th>End Date</th>
-		                <th>Status</th>
-						<th>Applied</th>
-						<th>Updated</th>
-						<th>Actions</th>
-		            </tr>
-		        </thead>
-		        <tbody>
-		            <tr th:each="leave : ${recentApplications}">
-		                <td th:text="${leave.leaveType.leaveType}">-</td>
-		                <td th:text="${#temporals.format(leave.fromDate, 'dd MMM yyyy')}">-</td>
-		                <td th:text="${#temporals.format(leave.toDate, 'dd MMM yyyy')}">-</td>
-		                <td th:text="${leave.status}">-</td>
-						<td th:text="${leave.createdAt != null ? #temporals.format(leave.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
-						<td th:text="${leave.updatedAt != null ? #temporals.format(leave.updatedAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
-						<td>
-						<!--Link to detail page-->
-						<a th:href="@{/leaves/details/{id}(id=${leave.id})}" 
-								class="btn-secondary">View</a>
-						</td>
-		            </tr>
-		        </tbody>
-		    </table>
 		</div>
 
 		<footer th:replace="~{fragments/footer :: footer}"></footer>

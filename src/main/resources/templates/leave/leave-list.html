@@ -16,7 +16,7 @@
 			<div class="container mt-4">
 				<div class="d-flex justify-content-between align-items-start mb-4">
 					<div>
-						<h1 th:text="${empId != null ? 'Subordinate Leave History' : 'My Leave History'}">Leave History</h1></div>
+						<h1 th:text="${empId != null ? (subordinateFullName ?: 'Member') + '''s Leave History' : 'My Leave History'}">Leave History</h1></div>
 					<div>
 						<a th:href="@{/leaves/apply}" class="btn btn-primary">
 							Apply Leave
@@ -39,7 +39,8 @@
 					You have not applied for any leave yet.
 				</p>
 
-				<table th:unless="${#lists.isEmpty(leaveList)}" class="data-table data-table-med" >
+				<table class="data-table table table-striped table-hover" 
+					th:unless="${#lists.isEmpty(leaveList)}">
 					<thead>
 						<tr>
 							<th>Leave Type</th>
@@ -64,25 +65,28 @@
 							<td th:text="${leave.duration}">0.0</td>
 							<td>
 								<span class="badge rounded-pill"
-									th:text="${leave.status}"
-									th:classappend="${
-										leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).APPROVED ? 'bg-success' :
-										leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).REJECTED ? 'bg-danger' :
-										(leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).CANCELLED or leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).DELETED) ? 'bg-secondary' :
-										'bg-info'
-									}">
-								</span>
+                                    th:attr="data-status=${leave.status.name()}"
+                                    th:classappend="${
+                                        'APPLIED'.equals(leave.status.name()) ? 'bg-warning text-dark' :
+                                        'UPDATED'.equals(leave.status.name()) ? 'bg-info text-dark' :
+                                        'APPROVED'.equals(leave.status.name()) ? 'bg-success' :
+                                        'REJECTED'.equals(leave.status.name()) ? 'bg-danger' :
+                                        ('CANCELLED'.equals(leave.status.name()) or 'DELETED'.equals(leave.status.name())) ? 'bg-secondary' :
+                                        'bg-primary'}"
+                                    th:text="${leave.status.name()}">
+                                </span>
 							</td>
 							<td th:text="${leave.createdAt != null ? #temporals.format(leave.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
 							<td th:text="${leave.updatedAt != null ? #temporals.format(leave.updatedAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
 							<td>
 							<!--Link to detail page, based on referer -->
 								<a th:if="${!isSelf}" 
-								th:href="@{/manager/leaves/{id}(id=${leave.id})}" 
-								class="btn-secondary">View</a>
+									th:href="@{/manager/leaves/{id}(id=${leave.id})}" 
+									class="btn btn-secondary btn-sm">View</a>
 								<a th:if="${isSelf}" 
-								th:href="@{/leaves/details/{id}(id=${leave.id})}" 
-								class="btn-secondary">View</a>
+									th:href="@{/leaves/details/{id}(id=${leave.id})}" 
+									class="btn btn-secondary btn-sm">View</a>
+							</td>
 							</td>
 						</tr>
 					</tbody>

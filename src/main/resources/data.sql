@@ -4,19 +4,19 @@
 -- ============================================================
 
 -- ── holidays ────────────────────────────────────────────────────────────────────
--- Using API call to insert
--- INSERT INTO holidays ( name, date, location) VALUES
--- ('New Year Day', '2026-01-01', 'Singapore'),
--- ('Chinese New Year', '2026-02-17', 'Singapore'),
--- ('Chinese New Year', '2026-02-18', 'Singapore'),
--- ('Hari Raya Puasa', '2026-03-21', 'Singapore'),
--- ('Good Friday', '2026-04-03', 'Singapore'),
--- ('Labour Day', '2026-05-01', 'Singapore'),
--- ('Hari Raya Haji', '2026-05-27', 'Singapore'),
--- ('Vesak Day', '2026-05-31', 'Singapore'),
--- ('National Day', '2026-08-09', 'Singapore'),
--- ('Deepavali', '2026-11-08', 'Singapore'),
--- ('Christmas Day', '2026-12-25', 'Singapore');
+-- Fall back in case API fails
+INSERT INTO holidays ( name, date, location) VALUES
+('New Year Day', '2026-01-01', 'Singapore'),
+('Chinese New Year', '2026-02-17', 'Singapore'),
+('Chinese New Year', '2026-02-18', 'Singapore'),
+('Hari Raya Puasa', '2026-03-21', 'Singapore'),
+('Good Friday', '2026-04-03', 'Singapore'),
+('Labour Day', '2026-05-01', 'Singapore'),
+('Hari Raya Haji', '2026-05-27', 'Singapore'),
+('Vesak Day', '2026-05-31', 'Singapore'),
+('National Day', '2026-08-09', 'Singapore'),
+('Deepavali', '2026-11-08', 'Singapore'),
+('Christmas Day', '2026-12-25', 'Singapore');
 
 -- ── roles (OnetoMany → users)────────────────────────────────────────────────────────────────────
 INSERT INTO roles (id, name, description) VALUES
@@ -118,8 +118,13 @@ INSERT INTO leave_applications (
   (28, 3, 1, '2026-06-18 00:00:00', '2026-06-18 23:59:59', NULL, 'Parent-teacher meeting', 'Production checks delegated to Mark Chan', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-09 09:30:00', '2026-04-09 09:30:00'),
   (29, 3, 1, '2026-06-22 00:00:00', '2026-06-22 23:59:59', NULL, 'Moving house', 'Daily deployment checks covered by Amy Lim', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'UPDATED', '2026-04-11 09:30:00', '2026-04-16 09:30:00'),
   (30, 3, 1, '2026-06-25 00:00:00', '2026-06-25 23:59:59', NULL, 'Moving house', 'Production checks delegated to Mark Chan', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-11 09:30:00', '2026-04-11 09:30:00'),
-  (31, 3, 1, '2026-06-29 00:00:00', '2026-06-29 23:59:59', NULL, 'Personal appointment', 'QA support passed to Team 1 roster', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-12 09:30:00', '2026-04-12 09:30:00');
--- ALTER TABLE leave_applications AUTO_INCREMENT = 32;
+  (31, 3, 1, '2026-06-29 00:00:00', '2026-06-29 23:59:59', NULL, 'Personal appointment', 'QA support passed to Team 1 roster', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-12 09:30:00', '2026-04-12 09:30:00'),
+  (32, 2, 1, '2026-07-15 00:00:00', '2026-07-17 23:59:59', NULL, 'Family trip', 'Task handover to Ben White', 'amy.lim@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-05-01 09:00:00', '2026-05-01 09:00:00'),
+  (33, 3, 1, '2026-07-16 00:00:00', '2026-07-18 23:59:59', NULL, 'Personal matters', 'Coverage by Mark Chan', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-05-01 09:10:00', '2026-05-01 09:10:00'),
+  (34, 2, 2, '2026-09-10 00:00:00', '2026-09-11 23:59:59', 'https://med.link/amy-309', 'Medical rest', 'Stand-up covered by Ben White', 'amy.lim@iss.nus.edu.sg', NULL, FALSE, 'UPDATED', '2026-06-05 08:40:00', '2026-06-06 12:00:00'),
+  (35, 3, 3, '2026-09-11 13:00:00', '2026-09-11 17:00:00', NULL, 'Compensation leave PM', 'Pager duty swapped with Amy Lim', 'ben.white@iss.nus.edu.sg', NULL, TRUE, 'APPLIED', '2026-06-05 09:00:00', '2026-06-05 09:00:00');
+
+-- ALTER TABLE leave_applications AUTO_INCREMENT = 36;
 
 -- ── leave_records ( ManytoOne → leave_types, ManytoOne → employees) ───────────────────────────────────────────────────────────────
 INSERT INTO leave_records (id, employee_id, leave_type_id, calendar_year, entitled_days, consumed_days, created_at, updated_at) VALUES
@@ -130,8 +135,4 @@ INSERT INTO leave_records (id, employee_id, leave_type_id, calendar_year, entitl
   (5, 1, 3, 2026, 9.5, 0.5, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
   (6, 2, 3, 2026, 8.0, 0.5, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
   (7, 3, 1, 2026, 14.0, 9.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
-  (8, 3, 2, 2026, 60.0, 1.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
-  (9, 3, 3, 2026, 8.0, 0.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
-  (10, 4, 1, 2026, 18.0, 0.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
-  (11, 4, 2, 2026, 60.0, 0.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
-  (12, 4, 3, 2026, 9.5, 0.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00');
+  (8, 3, 2, 2026, 60.0, 1.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00');

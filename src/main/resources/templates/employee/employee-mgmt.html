@@ -9,153 +9,154 @@
 		<header th:replace="~{fragments/header :: header}"></header>
 		
         <div class="page-wrapper">
-        	<div class="content-container">
-            <!-- Display success or failure messages -->
-			<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-			<div th:if="${failure}" class="alert alert-error" th:text="${failure}"></div>
-			<div>
-				<a href="/admin/employees/create">
-					<button type="button">Add New Employee</button>
-				</a>
-			</div>
-			
-			<h1>Employee Management</h1>
-			
-			
-			
-			<div >
-				<p>Welcome, <span th:text="${userFirstName}">User</span>!</p>
-			</div>	
-			
-			<!-- <div>
-				<div id="empCount">
-					<h3>Employee Count</h3>
-					<p th:text="${empCount}">Employee Count</p>
+        	<div class="container mt-4">
+				<!-- Display success or failure messages -->
+				<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+				<div th:if="${failure}" class="alert alert-error" th:text="${failure}"></div>
+				<div>
+					<a href="/admin/employees/create">
+						<button type="button">Add New Employee</button>
+					</a>
 				</div>
-				<div id="mgrCount">
-					<h3>Manager Count</h3>
-					<p th:text="${mgrCount}">Manager Count</p>
+				
+				<h1>Employee Management</h1>
+				
+				
+				
+				<div >
+					<p>Welcome, <span th:text="${userFirstName}">User</span>!</p>
+				</div>	
+				
+				<!-- <div>
+					<div id="empCount">
+						<h3>Employee Count</h3>
+						<p th:text="${empCount}">Employee Count</p>
+					</div>
+					<div id="mgrCount">
+						<h3>Manager Count</h3>
+						<p th:text="${mgrCount}">Manager Count</p>
+					</div>
+					<div id="adminCount">
+						<h3>Admin Count</h3>
+						<p th:text="${adminCount}">Admin Count</p>
+					</div>
+				</div> -->
+				
+				<div class="cards-container">
+					<div class="count-card" id="empCount">
+						<h3>Employee Count</h3>
+						<p th:text="${empCount}">Employee Count</p>
+					</div>
+					<div class="count-card" id="mgrCount">
+						<h3>Manager Count</h3>
+						<p th:text="${mgrCount}">Manager Count</p>
+					</div>
+					<div class="count-card" id="adminCount">
+						<h3>Admin<br>Count</h3>
+						<p th:text="${adminCount}">Admin Count</p>
+					</div>
 				</div>
-				<div id="adminCount">
-					<h3>Admin Count</h3>
-					<p th:text="${adminCount}">Admin Count</p>
-				</div>
-			</div> -->
-			
-			<div class="cards-container">
-		        <div class="count-card" id="empCount">
-		            <h3>Employee Count</h3>
-					<p th:text="${empCount}">Employee Count</p>
-		        </div>
-		        <div class="count-card" id="mgrCount">
-		            <h3>Manager Count</h3>
-					<p th:text="${mgrCount}">Manager Count</p>
-		        </div>
-		        <div class="count-card" id="adminCount">
-		            <h3>Admin<br>Count</h3>
-					<p th:text="${adminCount}">Admin Count</p>
-		        </div>
-		    </div>
-		    
-			<!-- Employees table -->
-			<!-- All employees table only displays when user role is ADMIN -->
-			<div>	
-			<h2>All Employees</h2>
-				<!-- Deleted <form method="get" th:action="@{/admin/employees}"> -->
-					<div class="table-controls" style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+				
+				<!-- Employees table -->
+				<!-- All employees table only displays when user role is ADMIN -->
+				<div>	
+				<h2>All Employees</h2>
+					<!-- Deleted <form method="get" th:action="@{/admin/employees}"> -->
+						<div class="table-controls" style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
 
-					    <!-- Search -->
-					    <input type="text" id="searchInput" placeholder="Search name/email"
-					           style="padding: 6px; width: 200px;">
+							<!-- Search -->
+							<input type="text" id="searchInput" placeholder="Search name/email"
+								style="padding: 6px; width: 200px;">
 
-					    <!-- Filter -->
-					    <select id="roleFilter" style="padding: 6px;">
-					        <option value="">Filter by Roles</option>
-					        <option value="ADMIN">Admin</option>
-					        <option value="MANAGER">Manager</option>
-					        <option value="EMPLOYEE">Employee</option>
-					    </select>
+							<!-- Filter -->
+							<select id="roleFilter" style="padding: 6px;">
+								<option value="">Filter by Roles</option>
+								<option value="ADMIN">Admin</option>
+								<option value="MANAGER">Manager</option>
+								<option value="EMPLOYEE">Employee</option>
+							</select>
 
-					    <!-- Sort column -->
-					    <select id="sortColumn" style="padding: 6px;">
-					        <option value="0">Sort by ID</option>
-					        <option value="1">Sort by First Name</option>
-					        <option value="10">Sort by Created Date</option>
-					    </select>
+							<!-- Sort column -->
+							<select id="sortColumn" style="padding: 6px;">
+								<option value="0">Sort by ID</option>
+								<option value="1">Sort by First Name</option>
+								<option value="10">Sort by Created Date</option>
+							</select>
 
-					    <!-- Sort direction -->
-					    <select id="sortDirection" style="padding: 6px;">
-					        <option value="asc">Ascending</option>
-					        <option value="desc">Descending</option>
-					    </select>
+							<!-- Sort direction -->
+							<select id="sortDirection" style="padding: 6px;">
+								<option value="asc">Ascending</option>
+								<option value="desc">Descending</option>
+							</select>
 
-					</div>			
-					
-					<!-- DELETED
-							    Search 
-							    <input type="text" name="search" placeholder="Search name/email"
-							           th:value="${search}"/>
-
-							    Filter 
-							    <select name="role">
-							        <option value="">All Roles</option>
-							        <option value="ADMIN">Admin</option>
-							        <option value="MANAGER">Manager</option>
-							        <option value="EMPLOYEE">Employee</option>
-							    </select>
-
-							    Sort
-							    <select name="sortBy">
-							        <option value="id">ID</option>
-							        <option value="firstName">First Name</option>
-							        <option value="createdAt">Created Date</option>
-							    </select>
-
-							    <button type="submit">Apply</button>
-							</form> -->
-				<table class="data-table" th:unless="${allEmployees.isEmpty()}">
-					<thead>
-						<tr>
-							<th>ID</th><th>First Name</th><th>Last Name</th>
-							<th>Email</th><th>Contact Number</th>
-							<th>Manager's ID</th><th>Team Name</th><th>Job Title</th>
-							<th>Rank</th>
-							<th>User Role</th>
-							<th>Created At</th><th>Updated At</th>
-							<th>Actions</th>
-							
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="e : ${allEmployees}">
-							<td th:text="${e.id}">Employee Id</td>
-							<td th:text="${e.firstName}">First Name</td>
-							<td th:text="${e.lastName}">Last Name</td>
-							<td th:text="${e.user.email}">Email</td>
-							<td th:text="${e.contactNumber}">Contact Number</td>
-							<td th:text="${e.managerId}">Manager's ID</td>
-							<td th:text="${e.teamName}">Team Name</td>
-							<td th:text="${e.jobTitle}">Job Title</td>
-							<td th:text="#{'Rank.' + ${e.rank.name()}}">Rank</td>
-							<td th:text="${e.user.role.name}">User Role</td>
-							<td th:text="${#temporals.format(e.createdAt,'dd MMM yyyy HH:mm')}">Created At</td>
-							<td th:text="${#temporals.format(e.updatedAt,'dd MMM yyyy HH:mm')}">Updated At</td>
-							<td>
-							<!-- <a th:href="@{/admin/employees/update/{id}(id=${e.id})}">Update Details</a> -->
-							<form th:action="@{/admin/employees/update/{id}(id=${e.id})}" method="get">
-   							<button type="submit" class="btn btn-danger">Update Details</button>
-							</form>
-							
-							<form th:action="@{/admin/employees/delete/{id}(id=${e.id})}" method="post">
-   							<button type="submit" class="btn btn-danger">Delete Employee</button>
-							</form>
-							</td>
-							
-						</tr>
+						</div>			
 						
-					</tbody>
-				</table>
-			</div>
+						<!-- DELETED
+									Search 
+									<input type="text" name="search" placeholder="Search name/email"
+										th:value="${search}"/>
+
+									Filter 
+									<select name="role">
+										<option value="">All Roles</option>
+										<option value="ADMIN">Admin</option>
+										<option value="MANAGER">Manager</option>
+										<option value="EMPLOYEE">Employee</option>
+									</select>
+
+									Sort
+									<select name="sortBy">
+										<option value="id">ID</option>
+										<option value="firstName">First Name</option>
+										<option value="createdAt">Created Date</option>
+									</select>
+
+									<button type="submit">Apply</button>
+								</form> -->
+					<table class="data-table table table-striped table-hover" 
+						th:unless="${allEmployees.isEmpty()}">
+						<thead>
+							<tr>
+								<th>ID</th><th>First Name</th><th>Last Name</th>
+								<th>Email</th><th>Contact Number</th>
+								<th>Manager's ID</th><th>Team Name</th><th>Job Title</th>
+								<th>Rank</th>
+								<th>User Role</th>
+								<th>Created At</th><th>Updated At</th>
+								<th>Actions</th>
+								
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="e : ${allEmployees}">
+								<td th:text="${e.id}">Employee Id</td>
+								<td th:text="${e.firstName}">First Name</td>
+								<td th:text="${e.lastName}">Last Name</td>
+								<td th:text="${e.user.email}">Email</td>
+								<td th:text="${e.contactNumber}">Contact Number</td>
+								<td th:text="${e.managerId}">Manager's ID</td>
+								<td th:text="${e.teamName}">Team Name</td>
+								<td th:text="${e.jobTitle}">Job Title</td>
+								<td th:text="#{'Rank.' + ${e.rank.name()}}">Rank</td>
+								<td th:text="${e.user.role.name}">User Role</td>
+								<td th:text="${#temporals.format(e.createdAt,'dd MMM yyyy HH:mm')}">Created At</td>
+								<td th:text="${#temporals.format(e.updatedAt,'dd MMM yyyy HH:mm')}">Updated At</td>
+								<td>
+								<!-- <a th:href="@{/admin/employees/update/{id}(id=${e.id})}">Update Details</a> -->
+								<form th:action="@{/admin/employees/update/{id}(id=${e.id})}" method="get">
+								<button type="submit" class="btn btn-danger">Update Details</button>
+								</form>
+								
+								<form th:action="@{/admin/employees/delete/{id}(id=${e.id})}" method="post">
+								<button type="submit" class="btn btn-danger">Delete Employee</button>
+								</form>
+								</td>
+								
+							</tr>
+							
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 

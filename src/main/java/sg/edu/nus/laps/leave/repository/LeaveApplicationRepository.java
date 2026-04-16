@@ -86,7 +86,7 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 		);
 
   	@Query("SELECT l FROM LeaveApplication l WHERE l.employee.managerId = :managerId " +
-       "AND l.status = 'APPROVED' " +
+       "AND l.status in ('APPLIED', 'UPDATED', 'APPROVED')" +
        "AND l.id != :excludeId " +
        "AND l.fromDate <= :toDate AND l.toDate >= :fromDate")
 		List<LeaveApplication> findConflictingLeaves(

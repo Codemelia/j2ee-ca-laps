@@ -4,6 +4,7 @@
 
 	<head th:replace="~{fragments/head ::head('Team Leave History', ~{::extra})}">
         <th:block th:fragment="extra">
+            <!--
             <style>
                 body {
                     background-color: #f5f5f5;
@@ -60,6 +61,7 @@
                     background-color: #f8f9fa;
                 }
             </style>
+            -->
             <script defer>
                 /**
                 * Set the leave ID in the reject modal
@@ -95,7 +97,7 @@
 		<header th:replace="~{fragments/header :: header}"></header>
 	
 		<div class="page-wrapper">
-			<div class="container-custom">
+			<div class="container mt-4">
                 <div class="header-section">
                     <h1 class="mb-0">Team Leave Applications</h1>
                     <p class="text-muted">Review and approve leave requests from your team members</p>
@@ -118,9 +120,9 @@
                 </div>
 
                 <!-- Table of leave applications -->
-                <div th:if="${leaveList != null && !leaveList.isEmpty()}" class="table-responsive">
+                <div th:if="${leaveList != null && !leaveList.isEmpty()}">
                     <table class="data-table table table-striped table-hover">
-                        <thead class="table-dark">
+                        <thead>
                             <tr>
                                 <th>Employee Name</th>
                                 <th>Leave Type</th>
@@ -146,20 +148,20 @@
                                 <td th:text="${#temporals.format(leave.toDate, 'dd-MMM-yyyy')}">To Date</td>
                                 <td th:text="${leave.duration}">Days</td>
                                 <td>
-                                    <span class="status-badge status-applied"
-                                        th:if="${leave.status.name().equals('APPLIED')}">
-                                        Applied
-                                    </span>
-                                    <span class="status-badge status-updated"
-                                        th:if="${leave.status.name().equals('UPDATED')}">
-                                        Updated
+                                    <span class="badge rounded-pill"
+                                        th:attr="data-status=${leave.status.name()}"
+                                        th:classappend="${
+                                            'APPLIED'.equals(leave.status.name()) ? 'bg-warning text-dark' :
+                                            'UPDATED'.equals(leave.status.name()) ? 'bg-info text-dark' :
+                                            'bg-info'}"
+                                        th:text="${leave.status.name()}">
                                     </span>
                                 </td>
                                 <td th:text="${#temporals.format(leave.createdAt, 'dd-MMM-yyyy')}">Applied Date</td>
                                 <td>
                                     <div class="action-buttons">
                                         <a th:href="@{/manager/team-leaves/details/{leaveId}(leaveId=${leave.id})}" 
-                                            class="btn btn-info btn-sm">View</a>
+                                            class="btn btn-secondary btn-sm">View</a>
                                     </div>
                                 </td>
                             </tr>

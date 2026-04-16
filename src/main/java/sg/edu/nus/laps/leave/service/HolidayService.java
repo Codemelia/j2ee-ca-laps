@@ -1,8 +1,8 @@
 package sg.edu.nus.laps.leave.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
+// import org.springframework.boot.context.event.ApplicationReadyEvent;
+// import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +41,7 @@ public class HolidayService {
 	 * 		of the new year. Does not include unscheduled public holidays such as Polling Day. 
 	 */
 	@Transactional
-	@EventListener(ApplicationReadyEvent.class) // Run once every time app starts (seeding)
+	// @EventListener(ApplicationReadyEvent.class) // Run once every time app starts (seeding)
 	@Scheduled(cron = "0 0 0 1 1 ?")
 	public void fetchAndSyncHolidays() {
 		try {

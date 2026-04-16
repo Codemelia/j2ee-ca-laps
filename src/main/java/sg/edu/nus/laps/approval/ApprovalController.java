@@ -79,14 +79,19 @@ public class ApprovalController {
         RedirectAttributes redirAttr) {
         
         // Verify the manager actually manages this employee
-        Optional<Employee> subordinate = eService.findById(empId);
-        if (subordinate.isEmpty() || !subordinate.get().getManagerId().equals(user.getEmployeeId())) {
+        Optional<Employee> optSubordinate = eService.findById(empId);
+        if (optSubordinate.isEmpty() || !optSubordinate.get().getManagerId().equals(user.getEmployeeId())) {
             redirAttr.addFlashAttribute("globalError", 
                 "You may only view your team members' leave applications");
             return "redirect:/manager/team-leaves";
         }
+
+        // Retrieve subordinate
+        Employee subordinate = optSubordinate.get();
         
         // Retrieve complete leave history for the subordinate
+        model.addAttribute("subordinateFullName", 
+            subordinate.getFirstName() + " " + subordinate.getLastName());
         model.addAttribute("leaveList", aService.getSubordinateHistory(empId));
         model.addAttribute("isSelf", false);
         return "leave/leave-list";
