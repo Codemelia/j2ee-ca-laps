@@ -36,12 +36,12 @@
             <div th:if="${employee}">
                 
                 <form th:action="${employee.id} != null 
-                                    ? @{/admin/employees/update/{id}(id=${employee.id})} 
-                                    : @{/admin/employees/create}" 
+                    ? @{/admin/employees/update/{id}(id=${employee.id})} 
+                    : @{/admin/employees/create}" 
                     th:object="${employee}" method="post">
 
                     <!-- Hidden ID for update -->
-                    <div th:if="${employee.id != null}">
+                    <div th:if="*{id != null}">
                         <input type="hidden" th:field="*{id}">
                     </div>
 
