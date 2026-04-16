@@ -3,8 +3,7 @@ package sg.edu.nus.laps.leave;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -96,14 +95,10 @@ public class LeaveController {
     
     // View personal leave history
     @GetMapping
-    public String viewLeaveHistory(@AuthenticationPrincipal AuthUserDetails user, @PageableDefault(size = 5) Pageable pageable, 
-    	    Model model) {
-        Page<LeaveApplication> page = lService.getEmployeeLeaveHistory(user.getEmployeeId(), pageable);
-        model.addAttribute("leaveList", page.getContent());
-        model.addAttribute("currentPage", page.getNumber());
-        model.addAttribute("totalPages", page.getTotalPages());
-        model.addAttribute("page", page);
-        return "leave/leave-list"; // The Thymeleaf template
+    public String viewLeaveHistory(@AuthenticationPrincipal AuthUserDetails user,Model model) {
+        List <LeaveApplication> history  = lService.getEmployeeLeaveHistory(user.getEmployeeId());
+        model.addAttribute("leaveList", history);
+        return "leave/leave-list";
     }
 
     // View new Leave Application form
