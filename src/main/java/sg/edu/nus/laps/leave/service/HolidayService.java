@@ -1,12 +1,13 @@
 package sg.edu.nus.laps.leave.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import jakarta.annotation.PostConstruct;
 import sg.edu.nus.laps.leave.dto.DataGovResponse;
 import sg.edu.nus.laps.leave.model.Holiday;
 import sg.edu.nus.laps.leave.repository.HolidayRepository;
@@ -27,19 +28,20 @@ public class HolidayService {
 	
 	private final RestTemplate restTemplate = new RestTemplate();
 	
-	// 2. Validate if Holiday DB is Empty, otherwise Fetch Data via API
-	@PostConstruct
-	public void init() {
-		if (holidayRepo.count() == 0) {
-			fetchAndSyncHolidays();
-		}
-	}
+	// // 2. Validate if Holiday DB is Empty, otherwise Fetch Data via API
+	// @PostConstruct
+	// public void init() {
+	// 	if (holidayRepo.count() == 0) {
+	// 		fetchAndSyncHolidays();
+	// 	}
+	// }
 	
 	/*
 	 * 3. @Scheduled Annotation --> Attempt to mimic system-like behaviour of annually refresh Holiday DB at the beginning 
 	 * 		of the new year. Does not include unscheduled public holidays such as Polling Day. 
 	 */
 	@Transactional
+	@EventListener(ApplicationReadyEvent.class) // Run once every time app starts (seeding)
 	@Scheduled(cron = "0 0 0 1 1 ?")
 	public void fetchAndSyncHolidays() {
 		try {

@@ -73,14 +73,14 @@
 									}">
 								</span>
 							</td>
-							<td th:text="${leave.toDate != null ? #temporals.format(leave.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
-								<td th:text="${leave.toDate != null ? #temporals.format(leave.updatedAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
-														<td>
-							<!--Link to detail page, passing leave id in the URL -->
-								<a th:if="${empId != null}" 
+							<td th:text="${leave.createdAt != null ? #temporals.format(leave.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
+							<td th:text="${leave.updatedAt != null ? #temporals.format(leave.updatedAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
+							<td>
+							<!--Link to detail page, based on referer -->
+								<a th:if="${!isSelf}" 
 								th:href="@{/manager/leaves/{id}(id=${leave.id})}" 
 								class="btn-secondary">View</a>
-								<a th:unless="${empId != null}" 
+								<a th:if="${isSelf}" 
 								th:href="@{/leaves/details/{id}(id=${leave.id})}" 
 								class="btn-secondary">View</a>
 							</td>

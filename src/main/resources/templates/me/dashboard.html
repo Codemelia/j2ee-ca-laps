@@ -44,7 +44,10 @@
 
 		    <!-- My Recent Leave Requests -->
 		    <h2>My Latest Leave Applications</h2>
-		    <table class="data-table">
+		    <div th:if="${#lists.isEmpty(recentApplications)}">
+		        No leave applications found.
+			</div>
+		    <table class="data-table" th:unless="${#lists.isEmpty(recentApplications)}">
 		        <thead>
 		            <tr>
 		                <th>Leave Type</th>
@@ -53,19 +56,22 @@
 		                <th>Status</th>
 						<th>Applied</th>
 						<th>Updated</th>
+						<th>Actions</th>
 		            </tr>
 		        </thead>
 		        <tbody>
-		            <tr th:each="app : ${recentApplications}">
-		                <td th:text="${app.leaveType.leaveType}">-</td>
-		                <td th:text="${#temporals.format(app.fromDate, 'dd MMM yyyy')}">-</td>
-		                <td th:text="${#temporals.format(app.toDate, 'dd MMM yyyy')}">-</td>
-		                <td th:text="${app.status}">-</td>
-						<td th:text="${app.createdAt != null ? #temporals.format(app.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
-						<td th:text="${app.updatedAt != null ? #temporals.format(app.updatedAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
-		            </tr>
-		            <tr th:if="${#lists.isEmpty(recentApplications)}">
-		                <td colspan="6">No leave applications found.</td>
+		            <tr th:each="leave : ${recentApplications}">
+		                <td th:text="${leave.leaveType.leaveType}">-</td>
+		                <td th:text="${#temporals.format(leave.fromDate, 'dd MMM yyyy')}">-</td>
+		                <td th:text="${#temporals.format(leave.toDate, 'dd MMM yyyy')}">-</td>
+		                <td th:text="${leave.status}">-</td>
+						<td th:text="${leave.createdAt != null ? #temporals.format(leave.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
+						<td th:text="${leave.updatedAt != null ? #temporals.format(leave.updatedAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
+						<td>
+						<!--Link to detail page-->
+						<a th:href="@{/leaves/details/{id}(id=${leave.id})}" 
+								class="btn-secondary">View</a>
+						</td>
 		            </tr>
 		        </tbody>
 		    </table>
