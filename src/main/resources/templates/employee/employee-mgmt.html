@@ -61,14 +61,14 @@
 			<!-- All employees table only displays when user role is ADMIN -->
 			<div>	
 			<h2>All Employees</h2>
-				<!-- Deleted <form method="get" th:action="@{/admin/employees}"> -->
+				<!-- Deleted <form method="get" th:action="@{/admin/employees}"> 
 					<div class="table-controls" style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
 
-					    <!-- Search -->
+					    Search 
 					    <input type="text" id="searchInput" placeholder="Search name/email"
 					           style="padding: 6px; width: 200px;">
 
-					    <!-- Filter -->
+					    Filter 
 					    <select id="roleFilter" style="padding: 6px;">
 					        <option value="">Filter by Roles</option>
 					        <option value="ADMIN">Admin</option>
@@ -76,20 +76,20 @@
 					        <option value="EMPLOYEE">Employee</option>
 					    </select>
 
-					    <!-- Sort column -->
+					    Sort column
 					    <select id="sortColumn" style="padding: 6px;">
 					        <option value="0">Sort by ID</option>
 					        <option value="1">Sort by First Name</option>
 					        <option value="10">Sort by Created Date</option>
 					    </select>
 
-					    <!-- Sort direction -->
+					    Sort direction
 					    <select id="sortDirection" style="padding: 6px;">
 					        <option value="asc">Ascending</option>
 					        <option value="desc">Descending</option>
 					    </select>
 
-					</div>			
+					</div> -->	
 					
 					<!-- DELETED
 							    Search 
@@ -142,13 +142,14 @@
 							<td th:text="${#temporals.format(e.updatedAt,'dd MMM yyyy HH:mm')}">Updated At</td>
 							<td>
 							<!-- <a th:href="@{/admin/employees/update/{id}(id=${e.id})}">Update Details</a> -->
+							<!--deleted
 							<form th:action="@{/admin/employees/update/{id}(id=${e.id})}" method="get">
    							<button type="submit" class="btn btn-danger">Update Details</button>
 							</form>
 							
 							<form th:action="@{/admin/employees/delete/{id}(id=${e.id})}" method="post">
    							<button type="submit" class="btn btn-danger">Delete Employee</button>
-							</form>
+							</form>-->
 							</td>
 							
 						</tr>
