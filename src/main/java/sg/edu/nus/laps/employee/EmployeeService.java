@@ -5,8 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -82,12 +80,12 @@ public class EmployeeService {
 		return eRepo.findAll();
 	}
 	
-	@Transactional(readOnly = true)
-	public Page <Employee> findAll(Pageable pageable) {
-		Page<Employee> allEmployees = eRepo.findAll(pageable);
+	// @Transactional(readOnly = true)
+	// public Page <Employee> findAll(Pageable pageable) {
+	// 	Page<Employee> allEmployees = eRepo.findAll(pageable);
 		
-		return allEmployees;
-	}
+	// 	return allEmployees;
+	// }
 	
 	@Transactional(readOnly = true)
 	public List<Employee> findByRank(EmployeeRank rank) {

@@ -130,8 +130,12 @@ public class LeaveController {
         
         // Set leave type from existing leave application
         if (leaveApp.getLeaveType() != null) {
-            leaveApp.setLeaveTypeId(leaveApp.getLeaveType().getId());
+            Long leaveTypeId = leaveApp.getLeaveType().getId();
+            leaveApp.setLeaveTypeId(leaveTypeId);
+            model.addAttribute("leaveTypeId", leaveTypeId); // Map to form field
         }
+
+        System.out.println("LeaveApp: " + leaveApp);
 
         model.addAttribute("leaveTypes", leaveTypes);
         model.addAttribute("leaveApp", leaveApp);

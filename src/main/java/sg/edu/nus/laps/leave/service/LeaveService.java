@@ -170,8 +170,10 @@ public class LeaveService {
 		
 		verifySelfIdentity(empId, leave);
 
-		if (leave.getStatus() != LeaveStatus.APPLIED && leave.getStatus() != LeaveStatus.UPDATED) {
-			throw new RuntimeException("Only Leave Application in 'APPLIED' or'UPDATED' state can be DELETED. "
+		if (leave.getStatus() != LeaveStatus.APPLIED 
+			&& leave.getStatus() != LeaveStatus.UPDATED
+			&& leave.getStatus() != LeaveStatus.DRAFT) {
+			throw new RuntimeException("Only Leave Application in 'DRAFT', 'APPLIED' or'UPDATED' state can be DELETED. "
 				+ "Current Status : " + leave.getStatus());
 		}
 		

@@ -21,29 +21,7 @@
 			
 			<h1>Employee Management</h1>
 			
-			<form method="get" th:action="@{/admin/employees}">
-			    
-			    <!-- Search -->
-			    <input type="text" name="search" placeholder="Search name/email"
-			           th:value="${search}"/>
-
-			    <!-- Filter -->
-			    <select name="role">
-			        <option value="">All Roles</option>
-			        <option value="ADMIN">Admin</option>
-			        <option value="MANAGER">Manager</option>
-			        <option value="EMPLOYEE">Employee</option>
-			    </select>
-
-			    <!-- Sort -->
-			    <select name="sortBy">
-			        <option value="id">ID</option>
-			        <option value="firstName">First Name</option>
-			        <option value="createdAt">Created Date</option>
-			    </select>
-
-			    <button type="submit">Apply</button>
-			</form>
+			
 			
 			<div >
 				<p>Welcome, <span th:text="${userFirstName}">User</span>!</p>
@@ -82,7 +60,59 @@
 			<!-- Employees table -->
 			<!-- All employees table only displays when user role is ADMIN -->
 			<div>	
-				<p><h2>All Employees</h2></p>
+			<h2>All Employees</h2>
+				<!-- Deleted <form method="get" th:action="@{/admin/employees}"> -->
+					<div class="table-controls" style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+
+					    <!-- Search -->
+					    <input type="text" id="searchInput" placeholder="Search name/email"
+					           style="padding: 6px; width: 200px;">
+
+					    <!-- Filter -->
+					    <select id="roleFilter" style="padding: 6px;">
+					        <option value="">Filter by Roles</option>
+					        <option value="ADMIN">Admin</option>
+					        <option value="MANAGER">Manager</option>
+					        <option value="EMPLOYEE">Employee</option>
+					    </select>
+
+					    <!-- Sort column -->
+					    <select id="sortColumn" style="padding: 6px;">
+					        <option value="0">Sort by ID</option>
+					        <option value="1">Sort by First Name</option>
+					        <option value="10">Sort by Created Date</option>
+					    </select>
+
+					    <!-- Sort direction -->
+					    <select id="sortDirection" style="padding: 6px;">
+					        <option value="asc">Ascending</option>
+					        <option value="desc">Descending</option>
+					    </select>
+
+					</div>			
+					
+					<!-- DELETED
+							    Search 
+							    <input type="text" name="search" placeholder="Search name/email"
+							           th:value="${search}"/>
+
+							    Filter 
+							    <select name="role">
+							        <option value="">All Roles</option>
+							        <option value="ADMIN">Admin</option>
+							        <option value="MANAGER">Manager</option>
+							        <option value="EMPLOYEE">Employee</option>
+							    </select>
+
+							    Sort
+							    <select name="sortBy">
+							        <option value="id">ID</option>
+							        <option value="firstName">First Name</option>
+							        <option value="createdAt">Created Date</option>
+							    </select>
+
+							    <button type="submit">Apply</button>
+							</form> -->
 				<table id="employeeTable" th:unless="${allEmployees.isEmpty()}">
 					<thead>
 						<tr>
