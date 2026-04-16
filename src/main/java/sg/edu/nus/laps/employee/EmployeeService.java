@@ -254,7 +254,7 @@ public class EmployeeService {
 
 	// Check if employee exists for new save
 	private void checkEmployeeExistsForNew(Long employeeId) {
-		if (employeeId != null) {
+		if (employeeId != null && eRepo.existsById(employeeId)) {
 			throw new InvalidEmployeeException("Employee already has an existing profile");
 		}
 	}

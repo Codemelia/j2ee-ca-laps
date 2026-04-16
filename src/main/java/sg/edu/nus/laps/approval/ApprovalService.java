@@ -1,10 +1,14 @@
 package sg.edu.nus.laps.approval;
 
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
 import sg.edu.nus.laps.leave.repository.LeaveApplicationRepository;
 
+@Service
 public class ApprovalService {
 
     private final LeaveApplicationRepository laRepo;
