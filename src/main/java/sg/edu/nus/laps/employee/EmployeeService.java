@@ -88,26 +88,6 @@ public class EmployeeService {
 		
 		return allEmployees;
 	}
-	@Transactional(readOnly = true)
-	public Page<Employee> getEmployees(String search, String role, String sortBy, Pageable pageable) {
-
-	    // Fix empty values
-	    if (search != null && search.isBlank()) {
-	        search = null;
-	    }
-	    if (role != null && role.isBlank()) {
-	        role = null;
-	    }
-
-	    // Apply sorting
-	    Pageable sortedPageable = org.springframework.data.domain.PageRequest.of(
-	        pageable.getPageNumber(),
-	        pageable.getPageSize(),
-	        org.springframework.data.domain.Sort.by(sortBy)
-	    );
-
-	    return eRepo.searchAndFilter(search, role, sortedPageable);
-	}
 	
 	@Transactional(readOnly = true)
 	public List<Employee> findByRank(EmployeeRank rank) {

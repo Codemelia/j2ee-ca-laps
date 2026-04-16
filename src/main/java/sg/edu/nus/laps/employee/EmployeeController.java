@@ -1,4 +1,4 @@
- package sg.edu.nus.laps.employee;
+package sg.edu.nus.laps.employee;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import jakarta.validation.Valid;
 import sg.edu.nus.laps.auth.model.Role;
 import sg.edu.nus.laps.auth.service.RoleService;
@@ -82,16 +82,8 @@ public class EmployeeController {
 		}
 	}
 	
-	
 	@GetMapping
-	public String showEmployees(
-	    @AuthenticationPrincipal AuthUserDetails user,
-	    @RequestParam(required = false) String search,
-	    @RequestParam(required = false) String role,
-	    @RequestParam(defaultValue = "id") String sortBy,
-	    Model model,RedirectAttributes redirectAttrs,
-	    @PageableDefault(size = 10) Pageable pageable) {
-	
+	public String showEmployees(@AuthenticationPrincipal AuthUserDetails user, Model model) {
 		// if (!isLoggedIn(session)) {
         //     redirectAttrs.addFlashAttribute("errorMessage",
         //             "Please log in to view employees.");
@@ -100,21 +92,18 @@ public class EmployeeController {
 		
 		Integer empCount = eService.countEmployeesByRoleIdEmployee();
 		model.addAttribute("empCount", empCount);
-		 
+		
 		Integer mgrCount = eService.countEmployeesByRoleIdManager();
 		model.addAttribute("mgrCount", mgrCount);
 		
 		Integer adminCount = eService.countEmployeesByRoleIdAdmin();
 		model.addAttribute("adminCount", adminCount);
 		
-//		List<Employee> allEmployees = eService.findAll();
-//		model.addAttribute("allEmployees", allEmployees);
-		Page<Employee> page = eService.getEmployees(search, role, sortBy, pageable);
-
-        model.addAttribute("allEmployees", page.getContent());
-        model.addAttribute("currentPage", page.getNumber());
-        model.addAttribute("totalPages", page.getTotalPages());
-        model.addAttribute("page", page);
+        // List<Employee> allEmployees = eService.findAll();
+        // model.addAttribute("allEmployees", allEmployees);
+		
+	    List<Employee> allEmployees = eService.findAll();
+	    model.addAttribute("allEmployees", allEmployees);
 
 		// Retrieve user email from session
 		// String userEmail = (String) session.getAttribute("userEmail");
