@@ -13,19 +13,37 @@
             <!-- Display success or failure messages -->
 			<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 			<div th:if="${failure}" class="alert alert-danger" th:text="${failure}"></div>
-			<div>
-				<a href="/admin/employees/create">
-					<button type="button">Add New Employee</button>
-				</a>
+			
+			<div class="container-fluid mt-4">
+			    <div class="d-flex justify-content-between align-items-start mb-4">
+			        
+			<div class="user-greeting">
+			     <!-- <h1>Welcome, <span th:if="${employeeFirstName}" th:text="${employeeFirstName} ?: 'Admin User'"></span>!</h1> -->
+			     <h1>Welcome, <span th:text="${userFirstName}">User</span>!</h1>
 			</div>
+			</div>
+			       
 			
-			<h1>Employee Management</h1>
+			        
+			        <div class="d-flex justify-content-between align-items-start mb-4">
+			        <div>
+			            <h1>Employee Management</h1>
+			        </div>
+			        <div>
+						
+						<a th:href="@{/admin/employees/create}" class="btn btn-primary">
+					        Add New Employee
+				        </a>
+				
+					</div>
+			    </div>			
+			
+			    
 			
 			
 			
-			<div >
-				<p>Welcome, <span th:text="${userFirstName}">User</span>!</p>
-			</div>	
+			
+			
 			
 			<!-- <div>
 				<div id="empCount">
@@ -42,7 +60,7 @@
 				</div>
 			</div> -->
 			
-			<div class="cards-container">
+			<div class="cards-container justify-content-center">
 		        <div class="count-card" id="empCount">
 		            <h3>Employee Count</h3>
 					<p th:text="${empCount}">Employee Count</p>
@@ -62,33 +80,40 @@
 			<div>	
 			<h2>All Employees</h2>
 				<!-- Deleted <form method="get" th:action="@{/admin/employees}"> -->
-					<div class="table-controls" style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+					<div class="table-controls d-flex" style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
 
 					    <!-- Search -->
+					    <div class="flex-grow-1">
 					    <input type="text" id="searchInput" placeholder="Search name/email"
-					           style="padding: 6px; width: 200px;">
-
+					           style="padding: 6px; width: 700px;">
+						</div>
+					    
 					    <!-- Filter -->
+					    <div>
 					    <select id="roleFilter" style="padding: 6px;">
 					        <option value="">Filter by Roles</option>
 					        <option value="ADMIN">Admin</option>
 					        <option value="MANAGER">Manager</option>
 					        <option value="EMPLOYEE">Employee</option>
 					    </select>
-
+						</div>
+						
 					    <!-- Sort column -->
+					    <div>
 					    <select id="sortColumn" style="padding: 6px;">
 					        <option value="0">Sort by ID</option>
 					        <option value="1">Sort by First Name</option>
 					        <option value="10">Sort by Created Date</option>
 					    </select>
-
+						</div>
+						
 					    <!-- Sort direction -->
+					    <div>
 					    <select id="sortDirection" style="padding: 6px;">
 					        <option value="asc">Ascending</option>
 					        <option value="desc">Descending</option>
 					    </select>
-
+						</div>
 					</div>			
 					
 					<!-- DELETED
@@ -113,7 +138,8 @@
 
 							    <button type="submit">Apply</button>
 							</form> -->
-				<table id="employeeTable" th:unless="${allEmployees.isEmpty()}">
+				<div>
+				<table class="data-table-med" th:unless="${allEmployees.isEmpty()}">
 					<thead>
 						<tr>
 							<th>ID</th><th>First Name</th><th>Last Name</th>
@@ -142,21 +168,38 @@
 							<td th:text="${#temporals.format(e.updatedAt,'dd MMM yyyy HH:mm')}">Updated At</td>
 							<td>
 							<!-- <a th:href="@{/admin/employees/update/{id}(id=${e.id})}">Update Details</a> -->
-							<form th:action="@{/admin/employees/update/{id}(id=${e.id})}" method="get">
-   							<button type="submit" class="btn btn-danger">Update Details</button>
-							</form>
+							<div class="container mt-4">
+							    <div class="d-flex justify-content-between align-items-start mb-4">
+							        
+							        <div>
+							            <form th:action="@{/admin/employees/update/{id}(id=${e.id})}" method="get">
+			   							<button type="submit" class="btn btn-primary" style="width: 117px; height: 68px;">Update Details</button>
+										</form>
+							        </div>
+							        <span>&nbsp&nbsp</span>
+							        <div>
+										
+										<form th:action="@{/admin/employees/delete/{id}(id=${e.id})}" method="post">
+   										<button type="submit" class="btn btn-danger" style="width: 117px; height: 68px;">Delete Employee</button>
+										</form>
+								
+									</div>
+							    </div>			
+							</div>
 							
-							<form th:action="@{/admin/employees/delete/{id}(id=${e.id})}" method="post">
-   							<button type="submit" class="btn btn-danger">Delete Employee</button>
-							</form>
+							
+							<br>
+							
 							</td>
 							
 						</tr>
 						
 					</tbody>
 				</table>
+				</div>
 			</div>
 			</div>
+		</div>
 		</div>
 
         <footer th:replace="~{fragments/footer :: footer}"></footer>
