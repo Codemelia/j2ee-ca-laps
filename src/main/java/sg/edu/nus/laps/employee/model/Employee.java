@@ -83,7 +83,7 @@ public class Employee extends SetCreatedUpdated {
 	@Size(max = 50, message = "Job title must be 50 characters and below")
 	private String jobTitle;
 	
-	@Column(nullable=false)
+	@Transient //Don't persist in db
 	@NotBlank(message = "Annual Leave Entitlement cannot be blank")
 	@Min(14)
 	@Max(21)

@@ -12,7 +12,7 @@
 	<body>
 		<header th:replace="~{fragments/header :: header}"></header>
 		<div class="container py-4">
-			<a th:href="${empId != null ? @{/manager/team-leaves} : @{/}}" class="text-decoration-none">
+			<a onclick="history.back()" class="text-decoration-none" style="cursor: pointer;">
 				<i class="bi bi-arrow-left"></i> ← Back
 			</a>
 		</div>
@@ -71,8 +71,12 @@
 						<td th:text="${leave.toDate != null ? #temporals.format(leave.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
 						<td>
 						<!--Link to detail page, passing leave id in the URL -->
-							<a th:href="${empId != null ? @{/manager/leaves/{id}(id=${leave.id})} : @{/leaves/{id}(id=${leave.id})}}" 
-							class=".btn-secondary">View details</a>
+							<a th:if="${empId != null}" 
+							   th:href="@{/manager/leaves/{id}(id=${leave.id})}" 
+							   class="btn-secondary">View details</a>
+							<a th:unless="${empId != null}" 
+							   th:href="@{/leaves/details/{id}(id=${leave.id})}" 
+							   class="btn-secondary">View details</a>
 						</td>
 					</tr>
 				</tbody>

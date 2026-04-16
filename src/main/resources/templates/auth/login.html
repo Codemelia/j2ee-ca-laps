@@ -25,11 +25,11 @@
                         or param.employee != null}">
                     <div th:if="${param.error != null}">Invalid email or password. Please try again.</div>
                     <div th:if="${param.expired != null}">Your session has expired. Please log in.</div>
-                    <div th:if="${param.unauthorised != null}">Please login via the Employee Portal.</div>
+                    <div th:if="${param.unauthorised != null}">Please login to access G3LAPS.</div>
                     <div th:if="${entryPoint == 'employee' and param.employee != null}">
                         Please login via the Admin Portal.</div>
                     <div th:if="${entryPoint == 'admin' and param.admin != null}">
-                        Please login to access G3LAPS.</div>
+                        Please login via the Employee Portal.</div>
                 </div>
 
                 <!-- Global error -->
@@ -39,17 +39,16 @@
 
                 <!-- Success from Spring Security -->
                 <div class="alert alert-info" 
-                    th:if="${param.logout == true}">
+                    th:if="${param.logout != null}">
                     You have been logged out successfully.
                 </div>
 
                 <!-- Login is posted based on emp/admin login entry point-->
                 <form th:action="@{${entryPoint == 'admin' 
-                    ? '/auth/admin/login-validate' 
-                    : '/auth/employee/login-validate'}}" 
-                    method="POST"
-                    th:object="${user}">
-                    <div class="form-group">
+                    ? '/auth/admin/login' 
+                    : '/auth/employee/login'}}" 
+                    method="POST">
+                    <!-- <div class="form-group">
                         <label class="form-label">Email</label>
                         <input type="email" class="form-control" 
                             th:field="*{email}"
@@ -71,6 +70,23 @@
                         <div class="invalid-feedback" 
                             th:if="${#fields.hasErrors('password')}" 
                             th:errors="*{password}"></div>
+                    </div> -->
+
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" 
+                            name="email"
+                            placeholder="Enter email" 
+                            th:value="${param.email != null ? param.email : ''}"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" 
+                            name="password"
+                            placeholder="Enter password" 
+                            required>
                     </div>
 
                     <input type="hidden" th:name="${_csrf.parameterName}"

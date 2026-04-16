@@ -89,7 +89,7 @@ public class LeaveController {
         model.addAttribute("managerName", managerName);
 
         model.addAttribute("isSelf", isSelf);
-        model.addAttribute("leaveApplication", leaveApp);
+        model.addAttribute("leaveApp", leaveApp);
 
         return "leave/leave-details";
     }
@@ -128,9 +128,6 @@ public class LeaveController {
         List<LeaveType> leaveTypes = ltService.findAllLeaveTypes();
         LeaveApplication leaveApp = optLeaveApp.get();
 
-        // Set flags for buttons
-        String status = leaveApp.getStatus().getDisplayLeaveStatus();
-        model.addAttribute("status", status); // Flag for button UI
         model.addAttribute("leaveTypes", leaveTypes);
         model.addAttribute("leaveApp", leaveApp);
         return "leave/leave-form";
@@ -158,9 +155,9 @@ public class LeaveController {
                 String.format("Leave Application #%d was saved successfully", leaveApp.getId()));
             return "redirect:/leaves";
         } catch (RuntimeException ex) {
-            String status = leaveApp.getStatus().getDisplayLeaveStatus();
-            model.addAttribute("status", status); // Flag for button UI
-            model.addAttribute("globalError", "An error occurred: " + ex.getMessage());
+            model.addAttribute("globalError", 
+                "Error: " + ex.getMessage() + ", Status: " + leaveApp.getStatus()
+                .getDisplayLeaveStatus());
             model.addAttribute("leaveApp", leaveApp);
             model.addAttribute("leaveTypes", leaveTypes);
             return "leave/leave-form";
@@ -189,9 +186,9 @@ public class LeaveController {
                 String.format("Leave Application #%d was submitted successfully", leaveApp.getId()));
             return "redirect:/leaves";
         } catch (RuntimeException ex) {
-            String status = leaveApp.getStatus().getDisplayLeaveStatus();
-            model.addAttribute("status", status); // Flag for button UI
-            model.addAttribute("globalError", "An error occurred: " + ex.getMessage());
+            model.addAttribute("globalError", 
+                "Error: " + ex.getMessage() + ", Status: " + leaveApp.getStatus()
+                .getDisplayLeaveStatus());
             model.addAttribute("leaveApp", leaveApp);
             model.addAttribute("leaveTypes", leaveTypes);
             return "leave/leave-form";
@@ -220,9 +217,9 @@ public class LeaveController {
                 String.format("Leave Application #%d was updated successfully", leaveApp.getId()));
             return "redirect:/leaves";
         } catch (RuntimeException ex) {
-            String status = leaveApp.getStatus().getDisplayLeaveStatus();
-            model.addAttribute("status", status); // Flag for button UI
-            model.addAttribute("globalError", "An error occurred: " + ex.getMessage());
+            model.addAttribute("globalError", 
+                "Error: " + ex.getMessage() + ", Status: " + leaveApp.getStatus()
+                .getDisplayLeaveStatus());
             model.addAttribute("leaveApp", leaveApp);
             model.addAttribute("leaveTypes", leaveTypes);
             return "leave/leave-form";

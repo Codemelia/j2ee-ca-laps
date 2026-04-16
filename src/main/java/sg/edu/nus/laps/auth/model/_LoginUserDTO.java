@@ -2,7 +2,7 @@ package sg.edu.nus.laps.auth.model;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class LoginUserDTO {
+public class _LoginUserDTO {
 
 	// Basic validation here for form intake
 
@@ -23,14 +23,14 @@ public class LoginUserDTO {
 
     // CONSTRUCTORS
 
-    public LoginUserDTO(String email, String password) {
+    public _LoginUserDTO(String email, String password) {
         this.email = email;
         this.password = password;
     }
-	public LoginUserDTO(String email) {
+	public _LoginUserDTO(String email) {
 		this.email = email;
 	}
-    public LoginUserDTO() {}
+    public _LoginUserDTO() {}
 
     // TO STRING
 

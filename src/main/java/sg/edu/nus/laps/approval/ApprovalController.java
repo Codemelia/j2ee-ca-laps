@@ -115,7 +115,7 @@ public class ApprovalController {
 
         // Verify the manager owns this leave application (employee is in their team)
         if (!la.getEmployee().getManagerId().equals(user.getEmployeeId())) {
-            return "redirect:/manager/team-leaves?error=Unauthorized";
+            return "redirect:/manager/team-leaves?error=unauthorized";
         }
 
         // Get conflicting leave applications from team members during the same period

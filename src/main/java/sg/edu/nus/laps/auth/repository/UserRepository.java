@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByEmailAndEnabledTrue(String email);
 
     // Find user by email and enabled
-    public Optional<User> findByEmailAndEnabledTrue(String email);
+    Optional<User> findByEmailAndEnabledTrue(String email);
 
     // Find list of active users ordered by latest update
     List<User> findByEnabledOrderByUpdatedAtDesc(boolean enabled);
@@ -30,5 +30,4 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query("select count(u) from User u where u.role.id = :roleId")
     Integer countByRoleId(String roleId);
     
-
 }

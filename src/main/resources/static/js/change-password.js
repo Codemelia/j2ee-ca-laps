@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Listen to submit event (button click)
     form.addEventListener("submit", async function (event) {
 
-        event.preventDefault; // Handle it ourselves
+        event.preventDefault(); // Handle it ourselves
 
         // Map form data
         const formData = {
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Handle anyother errors
+        // Handle any other errors
         document.getElementById("globalError")
             .innerText = result.message;
 

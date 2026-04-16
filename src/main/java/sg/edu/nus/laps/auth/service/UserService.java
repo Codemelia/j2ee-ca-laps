@@ -101,9 +101,19 @@ public class UserService {
 
     // Check if new password matches confirm password
     // More of UI Validation, no Transaction
-    public boolean passwordsMatch(PasswordDTO passwordDTO) {
+    public boolean newPasswordsMatch(PasswordDTO passwordDTO) {
         return passwordDTO.getNewRawPassword()
             .equals(passwordDTO.getConfirmPassword());
+    }
+
+    // Check if old password matches DB
+    public boolean currentPasswordValid(String email, PasswordDTO passwordDTO) {
+        Optional<User> optUser = userRepo.findByEmailAndEnabledTrue(email);
+        if (optUser.isPresent()) {
+            return encoder.matches(passwordDTO.getOldRawPassword(), 
+                optUser.get().getPasswordHash());
+        }
+        return false;
     }
 
     // REPLACE WITH SPRING SECURITY

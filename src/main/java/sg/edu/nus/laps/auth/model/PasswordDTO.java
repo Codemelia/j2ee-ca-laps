@@ -11,18 +11,18 @@ public class PasswordDTO {
 	// ATTRIBUTES
 
     // Content not validated - checked in Service + DB
-	@NotBlank(message = "Old password cannot be null or blank")
+	@NotBlank(message = "Current password cannot be null or blank")
 	private String oldRawPassword;
 
 	@NotBlank(message = "New password cannot be null or blank")
 	@Size(min = 12, max = 16, message ="New password must be between 12 and 16 characters")
 	@Pattern(
 		regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).{12,16}$",
-		message = "Password must contain 12 to 16 characters, including uppercase, lowercase, number, and special characters"
+		message = "New password must contain 12 to 16 characters, including uppercase, lowercase, number, and special characters"
 	)
 	private String newRawPassword;
 
-	@NotBlank
+	@NotBlank(message = "Confirm password cannot be null or blank")
     private String confirmPassword;
 
 	// GETTERS SETTERS

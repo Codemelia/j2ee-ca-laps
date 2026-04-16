@@ -30,8 +30,10 @@
       <div class="alert alert-error"
           th:if="${globalError}"
           th:text="${globalError}"></div>
-        <form
-          th:action="@{/leaves/apply}" th:object="${leaveApp}"
+          <!-- If ID exist, save draft; Else submit -->
+        <form 
+          th:action="@{/leaves/save}"
+          th:object="${leaveApp}"
           method="post">
           <div class="form-group">
             <label for="leaveType">Leave Type</label>
@@ -77,20 +79,25 @@
             th:value="${_csrf.token}">
           <input type="hidden" name="viewName" value="leave/leave-form">
           <div class="nav-links">
-            <button
-              type="submit"
-              name="action"
-              value="save"
-              class="btn btn-secondary">
-              SAVE
-            </button>
-            <button
-              type="submit"
-              name="action"
-              value="submit"
-              class="btn btn-primary">
-              SUBMIT
-            </button>
+            <div th:if="${leaveApp.id == null 
+              || leaveApp.status.name() == 'DRAFT'}">
+              <button type="submit" class="btn btn-secondary" 
+                th:formaction="@{/leaves/save}">
+                Save
+              </button>
+              <button type="submit" class="btn btn-primary"
+                th:formaction="@{/leaves/submit}">
+                Submit
+              </button>
+            </div>
+            <div th:if="${leaveApp.id != null 
+              && (leaveApp.status.name() == 'APPLIED'
+              || leave.status.name == 'UPDATED')}">
+              <button type="submit" class="btn btn-secondary" 
+                th:formaction="@{/leaves/update}">
+                Update
+              </button>
+            </div>
           </div>
         </form>
       </div>
