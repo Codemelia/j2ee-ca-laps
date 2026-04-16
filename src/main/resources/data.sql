@@ -4,18 +4,19 @@
 -- ============================================================
 
 -- ── holidays ────────────────────────────────────────────────────────────────────
-INSERT INTO holidays ( name, date, location) VALUES
-('New Year Day', '2026-01-01', 'Singapore'),
-('Chinese New Year', '2026-02-17', 'Singapore'),
-('Chinese New Year', '2026-02-18', 'Singapore'),
-('Hari Raya Puasa', '2026-03-21', 'Singapore'),
-('Good Friday', '2026-04-03', 'Singapore'),
-('Labour Day', '2026-05-01', 'Singapore'),
-('Hari Raya Haji', '2026-05-27', 'Singapore'),
-('Vesak Day', '2026-05-31', 'Singapore'),
-('National Day', '2026-08-09', 'Singapore'),
-('Deepavali', '2026-11-08', 'Singapore'),
-('Christmas Day', '2026-12-25', 'Singapore');
+-- Using API call to insert - evaluate count must be 0
+-- INSERT INTO holidays ( name, date, location) VALUES
+-- ('New Year Day', '2026-01-01', 'Singapore'),
+-- ('Chinese New Year', '2026-02-17', 'Singapore'),
+-- ('Chinese New Year', '2026-02-18', 'Singapore'),
+-- ('Hari Raya Puasa', '2026-03-21', 'Singapore'),
+-- ('Good Friday', '2026-04-03', 'Singapore'),
+-- ('Labour Day', '2026-05-01', 'Singapore'),
+-- ('Hari Raya Haji', '2026-05-27', 'Singapore'),
+-- ('Vesak Day', '2026-05-31', 'Singapore'),
+-- ('National Day', '2026-08-09', 'Singapore'),
+-- ('Deepavali', '2026-11-08', 'Singapore'),
+-- ('Christmas Day', '2026-12-25', 'Singapore');
 
 -- ── roles (OnetoMany → users)────────────────────────────────────────────────────────────────────
 INSERT INTO roles (id, name, description) VALUES

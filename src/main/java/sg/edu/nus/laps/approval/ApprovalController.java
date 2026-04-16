@@ -106,14 +106,14 @@ public class ApprovalController {
      * @param model the model to pass data to template
      * @return the leave detail view, or redirect if unauthorized
      */
-    @GetMapping("/team-leaves/details/{leaveId]}")
+    @GetMapping("/team-leaves/details/{leaveId}")
     public String viewLeaveDetails(@PathVariable Long leaveId, 
         @AuthenticationPrincipal AuthUserDetails user, 
         Model model, RedirectAttributes redirAttr) {
 
         // Get leave application
         LeaveApplication la = lService.findLeaveById(leaveId)
-            .orElseThrow(() -> new RuntimeException("Leave application not found"));
+            .orElse(null); // Handle null in thymeleaf
 
         // Verify the manager owns this leave application (employee is in their team)
         if (!la.getEmployee().getManagerId().equals(user.getEmployeeId())) {
