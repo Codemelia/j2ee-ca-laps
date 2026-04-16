@@ -5,7 +5,6 @@
 	<head th:replace="~{fragments/head ::head('Leave Details', ~{::extra})}">
         <!-- For scripts -->
 		<th:block th:fragment="extra">
-			<script th:src="@{/js/main.js}" defer></script>
 			<script defer>
 				/**
 				* Form validation before submitting reject
@@ -134,13 +133,13 @@
 
                             <div class="table-responsive" th:if="${conflicts != null
                                 && !#lists.isEmpty(conflicts)}">
-                                <table class="table table-sm table-striped">
+                                <table class="data-table table table-sm table-striped">
                                     <thead>
                                         <tr>
                                             <th>Employee</th>
                                             <th>Leave Type</th>
-                                            <th>From</th>
-                                            <th>To</th>
+                                            <th>Start Date</th>
+                                            <th>End Date</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
@@ -179,8 +178,8 @@
                         th:text="${successMsg}"></div>
 
                     <div class="card-footer" th:if="${leaveApp != null}">
-                        <!-- Goes back to previous page
-                        <button class="btn" type="button" onclick="history.back()">Back</button> -->
+                        <!-- Goes back to previous page -->
+                        <button class="btn" type="button" onclick="history.back()">Back</button>
 
                         <!-- Employee (self view) buttons -->
                         <div th:if="${isSelf}">
