@@ -73,7 +73,7 @@ public class GlobalModelAttributes {
             if (optEmp.isPresent()) {
                 Employee emp = optEmp.get();
                 model.addAttribute("employeeFullName", 
-                    emp.getFirstName() + emp.getLastName());
+                    emp.getFirstName() + " " + emp.getLastName());
                 model.addAttribute("employeeTeam",
                     emp.getTeamName());
                 model.addAttribute("employeeTitle",

@@ -13,85 +13,81 @@
 			</a>
 		</div>
         <div class="page-wrapper">
-			<h1 th:text="${empId != null ? 'Subordinate Leave History' : 'My Leave History'}">Leave History</h1>
+			<div class="container mt-4">
+				<div class="d-flex justify-content-between align-items-start mb-4">
+					<div>
+						<h1 th:text="${empId != null ? 'Subordinate Leave History' : 'My Leave History'}">Leave History</h1></div>
+					<div>
+						<a th:href="@{/leaves/apply}" class="btn btn-primary">
+							Apply Leave
+						</a>
+					</div>
+				</div>
+				<!-- Global error -->
+				<div class="alert alert-error"
+					th:if="${globalError}"
+					th:text="${globalError}"></div>
 
-			<!-- Global error -->
-			<div class="alert alert-error"
-				th:if="${globalError}"
-				th:text="${globalError}"></div>
-
-			<!-- Success -->
-			<div class="alert alert-info"
-				th:if="${successMsg}"
-				th:text="${successMsg}"></div>
+				<!-- Success -->
+				<div class="alert alert-info"
+					th:if="${successMsg}"
+					th:text="${successMsg}"></div>
 	
-            <!-- th:if checks whether the list is empty -->
-	
-			<p th:if="${#lists.isEmpty(leaveList)} ">
-				You have not applied for any leave yet.
-			</p>
+				<!-- th:if checks whether the list is empty -->
+		
+				<p th:if="${#lists.isEmpty(leaveList)} ">
+					You have not applied for any leave yet.
+				</p>
 
-			<table id="myLeaveTable" th:unless="${#lists.isEmpty(leaveList)}" class="data-table-med" >
-				<thead>
-					<tr>
-						<th>Leave Type</th>
-						<th>Start Date</th>
-						<th>End Date</th>
-						<th>Days</th>
-						<th>Status</th>
-						<th>Submitted</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				
-				
-				<tbody>
-					<!-- th:each loops over the "leaveApplication" list from the Model -->
-					<tr th:each="leave : ${leaveList} ">
+				<table th:unless="${#lists.isEmpty(leaveList)}" class="data-table data-table-med" >
+					<thead>
+						<tr>
+							<th>Leave Type</th>
+							<th>Start Date</th>
+							<th>End Date</th>
+							<th>Days</th>
+							<th>Status</th>
+							<th>Applied</th>
+							<th>Updated</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
 					
-						<td th:text="${leave.leaveType?.leaveType}">Annual</td>
-						<td th:text="${leave.fromDate != null ? #temporals.format(leave.fromDate, 'dd MMM yyyy') : 'N/A'}">01 Jan 2026</td>
-						<td th:text="${leave.toDate != null ? #temporals.format(leave.toDate, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
-						<td th:text="${leave.duration}">0.0</td>
-						<td>
-						    <span class="badge rounded-pill"
-						          th:text="${leave.status}"
-						          th:classappend="${
-						            leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).APPROVED ? 'bg-success' :
-						            leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).REJECTED ? 'bg-danger' :
-						            (leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).CANCELLED or leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).DELETED) ? 'bg-secondary' :
-						            'bg-info'
-						          }">
-						    </span>
-						</td>
-						<td th:text="${leave.toDate != null ? #temporals.format(leave.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
-						<td>
-						<!--Link to detail page, passing leave id in the URL -->
-							<a th:if="${empId != null}" 
-							   th:href="@{/manager/leaves/{id}(id=${leave.id})}" 
-							   class="btn-secondary">View details</a>
-							<a th:unless="${empId != null}" 
-							   th:href="@{/leaves/details/{id}(id=${leave.id})}" 
-							   class="btn-secondary">View details</a>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		<div class="mt-3" th:if="${page != null}">
-			    <nav aria-label="Page navigation">
-			        <ul class="pagination">
-			            <li class="page-item" th:classappend="${page.first} ? 'disabled'">
-			                <a class="page-link" th:href="@{/leaves(page=${page.number - 1})}">Previous</a>
-			            </li>
-			            <li class="page-item disabled">
-			                <span class="page-link">Page [[${page.number + 1}]] of [[${page.totalPages}]]</span>
-			            </li>
-			            <li class="page-item" th:classappend="${page.last} ? 'disabled'">
-			                <a class="page-link" th:href="@{/leaves(page=${page.number + 1})}">Next</a>
-			            </li>
-			        </ul>
-			    </nav>  </div>		
-			<br>	
+					
+					<tbody>
+						<!-- th:each loops over the "leaveApplication" list from the Model -->
+						<tr th:each="leave : ${leaveList} ">
+						
+							<td th:text="${leave.leaveType?.leaveType}">Annual</td>
+							<td th:text="${leave.fromDate != null ? #temporals.format(leave.fromDate, 'dd MMM yyyy') : 'N/A'}">01 Jan 2026</td>
+							<td th:text="${leave.toDate != null ? #temporals.format(leave.toDate, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
+							<td th:text="${leave.duration}">0.0</td>
+							<td>
+								<span class="badge rounded-pill"
+									th:text="${leave.status}"
+									th:classappend="${
+										leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).APPROVED ? 'bg-success' :
+										leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).REJECTED ? 'bg-danger' :
+										(leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).CANCELLED or leave.status == T(sg.edu.nus.laps.leave.model.LeaveStatus).DELETED) ? 'bg-secondary' :
+										'bg-info'
+									}">
+								</span>
+							</td>
+							<td th:text="${leave.createdAt != null ? #temporals.format(leave.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
+							<td th:text="${leave.updatedAt != null ? #temporals.format(leave.updatedAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
+							<td>
+							<!--Link to detail page, based on referer -->
+								<a th:if="${!isSelf}" 
+								th:href="@{/manager/leaves/{id}(id=${leave.id})}" 
+								class="btn-secondary">View</a>
+								<a th:if="${isSelf}" 
+								th:href="@{/leaves/details/{id}(id=${leave.id})}" 
+								class="btn-secondary">View</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>	
 		</div>
 
         <footer th:replace="~{fragments/footer :: footer}"></footer>

@@ -1,45 +1,45 @@
-package sg.edu.nus.laps.auth.model;
+// package sg.edu.nus.laps.auth.model;
 
-import jakarta.validation.constraints.NotBlank;
+// import jakarta.validation.constraints.NotBlank;
 
-public class _LoginUserDTO {
+// public class _LoginUserDTO {
 
-	// Basic validation here for form intake
+// 	// Basic validation here for form intake
 
-    // ATTRIBUTES
+//     // ATTRIBUTES
 
-	@NotBlank(message = "User email is required")
-	private String email;
+// 	@NotBlank(message = "User email is required")
+// 	private String email;
 
-	@NotBlank(message = "Password is required")
-	private String password;
+// 	@NotBlank(message = "Password is required")
+// 	private String password;
 
-    // GETTERS SETTERS
+//     // GETTERS SETTERS
 
-    public String getEmail() { return this.email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getPassword() { return this.password; }
-    public void setPassword(String password) { this.password = password; }
+//     public String getEmail() { return this.email; }
+//     public void setEmail(String email) { this.email = email; }
+//     public String getPassword() { return this.password; }
+//     public void setPassword(String password) { this.password = password; }
 
-    // CONSTRUCTORS
+//     // CONSTRUCTORS
 
-    public _LoginUserDTO(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-	public _LoginUserDTO(String email) {
-		this.email = email;
-	}
-    public _LoginUserDTO() {}
+//     public _LoginUserDTO(String email, String password) {
+//         this.email = email;
+//         this.password = password;
+//     }
+// 	public _LoginUserDTO(String email) {
+// 		this.email = email;
+// 	}
+//     public _LoginUserDTO() {}
 
-    // TO STRING
+//     // TO STRING
 
-    @Override
-    public String toString() {
-        return "{" +
-            " email='" + getEmail() + "'" +
-            ", password='" + getPassword() + "'" +
-            "}";
-    }
+//     @Override
+//     public String toString() {
+//         return "{" +
+//             " email='" + getEmail() + "'" +
+//             ", password='" + getPassword() + "'" +
+//             "}";
+//     }
 
-}
+// }

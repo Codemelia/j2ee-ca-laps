@@ -6,7 +6,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,9 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
 import sg.edu.nus.laps.employee.repository.EmployeeRepository;
-
-import org.springframework.data.domain.Pageable;
-
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveRecord;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
@@ -581,7 +578,8 @@ public class LeaveService {
 	// 1. Gets Recent Leave Applications
 	@Transactional(readOnly=true)
 	public List<LeaveApplication> getRecentLeaveApplications(Long employeeId) {
-		return laRepo.findTop5ByEmployeeIdOrderByFromDateDesc(employeeId);
+		
+		return laRepo.findTop5ByEmployeeIdOrderByUpdatedAtDesc(employeeId);
 	}
 	
 	// 2. Retrieve Leave Applications by employee ID
@@ -606,13 +604,13 @@ public class LeaveService {
 	
 	// 5. The Retrieval Logic (Sharing the count into the entity)
 	@Transactional(readOnly = true)
-	public Page <LeaveApplication> getEmployeeLeaveHistory(Long employeeId , Pageable pageable) {
+	public List  <LeaveApplication> getEmployeeLeaveHistory(Long employeeId ) {
 		// 1. Get current year 
 	    int currentYear = LocalDate.now().getYear();
-		Page<LeaveApplication> history = laRepo.findByEmployeeIdAndYear(employeeId, currentYear, pageable);
+		List<LeaveApplication> history = laRepo.findByEmployeeIdAndYear(employeeId, currentYear);
 		// List<LocalDate> holidays = holRepo.findAllHolidayDates();
 
-		for (LeaveApplication leave : history.getContent()) {
+		for (LeaveApplication leave : history) {
 			// Calculate the count
 			double days = calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
 

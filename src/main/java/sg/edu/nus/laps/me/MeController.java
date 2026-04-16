@@ -53,17 +53,14 @@ public class MeController {
         Model model) {
 
         model.addAttribute("userEmail", user.getEmail());
+        model.addAttribute("userRole", user.getRoleName());
 
-        String userRole = user.getRoleName();
-        model.addAttribute("userRole", userRole);
-
-        // Get Employee ID
-        Long empId = user.getEmployeeId();
-        
+        // Get Employee ID        
         // Only add model attributes for internal employees
+        Long empId = user.getEmployeeId();
         if (empId != null) {
             Employee emp = empSvc
-                .findById(user.getEmployeeId())
+                .findById(empId)
                 .get(); // Employee is not empty
             
             // Bind employee first name

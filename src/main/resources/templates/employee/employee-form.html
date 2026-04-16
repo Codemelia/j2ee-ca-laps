@@ -4,7 +4,7 @@
 
 	<head th:replace="~{fragments/head ::head('Employee Form', ~{::extra})}">
         <th:block th:fragment="extra">
-		<style>
+		<!-- <style>
 			label {
 				display: inline-block;
 				width: 250px; /* Specify your desired width here */
@@ -14,7 +14,7 @@
 			input {
 				width: 200px;
 			}
-		</style>
+		</style> -->
         <!-- For scripts -->
 		<script th:src="@{/js/main.js}" defer></script>
 	</th:block>
@@ -36,17 +36,12 @@
             <div th:if="${employee}">
                 
                 <form th:action="${employee.id} != null 
-                                    ? @{/admin/employees/update/{id}(id=${employee.id})} 
-                                    : @{/admin/employees/create}" 
+                    ? @{/admin/employees/update/{id}(id=${employee.id})} 
+                    : @{/admin/employees/create}" 
                     th:object="${employee}" method="post">
 
-                    <div th:if="${#fields.hasGlobalErrors()}" 
-                        class="alert alert-danger"
-                        th:errors="*{error}">
-                    </div>
-
                     <!-- Hidden ID for update -->
-                    <div th:if="${employee.id != null}">
+                    <div th:if="*{id != null}">
                         <input type="hidden" th:field="*{id}">
                     </div>
 
@@ -132,12 +127,25 @@
 
                     <input type="hidden" name="viewName" value="employee/employee-form">
                     
-                    <button type="button" onclick="history.back()">Back</button>
+                    <div class="container mt-4">
+					    <div class="d-flex justify-content-between align-items-start mb-4">
+					        
+					        <div>
+					            <button class="btn btn-primary" type="button" onclick="history.back()">Back</button>
+					        </div>
+					        <div>
+								
+								<button class="btn btn-primary" type="submit"
+                            		th:text="${employee.id} != null ? 'Update Employee' : 'Create Employee'">
+                    			</button>
+						
+							</div>
+					    </div>			
+					</div>
+                    
 
                     <!-- Dynamic Button -->
-                    <button type="submit"
-                            th:text="${employee.id} != null ? 'Update Employee' : 'Create Employee'">
-                    </button>
+                    
                 </form>
             </div>
 
