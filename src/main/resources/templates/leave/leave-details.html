@@ -36,7 +36,7 @@
 		    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 		</div>
 
-		<div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+		<div th:if="${error}" class="alert alert-error alert-dismissible fade show" role="alert">
 		    <i class="bi bi-exclamation-triangle-fill"></i>
 		    <span th:text="${error}"></span>
 		    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -44,7 +44,10 @@
         <div class="page-wrapper">
             <div class="card leave-details">
                 <div class="card-body">
-                    <div th:if="${leaveApp}" th:object="${leaveApp}">
+                    <div th:if="${leaveApp == null}">
+                        No such leave application exists.
+                    </div>
+                    <div th:if="${leaveApp != null}" th:object="${leaveApp}">
 
                         <!-- Leave ID & Status -->
                         <div class="card-header">
@@ -171,13 +174,13 @@
                         th:text="${globalError}"></div>
 
                     <!-- Success -->
-                    <div class="alert alert-info"
+                    <div class="alert alert-success"
                         th:if="${successMsg}"
                         th:text="${successMsg}"></div>
 
-                    <div class="card-footer">
-                        <!-- Goes back to previous page -->
-                        <button class="btn" type="button" onclick="history.back()">Back</button>
+                    <div class="card-footer" th:if="${leaveApp != null}">
+                        <!-- Goes back to previous page
+                        <button class="btn" type="button" onclick="history.back()">Back</button> -->
 
                         <!-- Employee (self view) buttons -->
                         <div th:if="${isSelf}">
@@ -227,7 +230,8 @@
 		</div>
 
         <!-- Reject Modal -->
-        <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+        <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true"
+            th:if="${leaveApp != null}">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
