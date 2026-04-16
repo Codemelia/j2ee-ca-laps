@@ -100,6 +100,7 @@ public class LeaveController {
     	    Model model) {
         Page<LeaveApplication> page = lService.getEmployeeLeaveHistory(user.getEmployeeId(), pageable);
         model.addAttribute("leaveList", page.getContent());
+        model.addAttribute("isSelf", true);
         model.addAttribute("currentPage", page.getNumber());
         model.addAttribute("totalPages", page.getTotalPages());
         model.addAttribute("page", page);

@@ -115,12 +115,61 @@
                                 <dd th:text="*{#temporals.format(updatedAt, 'dd MMM yyyy')}"></dd>
                             </dl>
                         </section>
+
+                        <!-- Team's conflicts on manager view -->
+                        <section sec:authorize="hasRole('ROLE_MANAGER')" 
+                            th:if="${!isSelf}">
+                            <h3>Team Leave Conflicts</h3>
+
+                            <p th:if="${conflicts == null || #lists.isEmpty(conflicts)}">
+                                No overlapping team leave applications during this period.
+                            </p>
+
+                            <div class="table-responsive" th:if="${conflicts != null
+                                && !#lists.isEmpty(conflicts)}">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Leave Type</th>
+                                            <th>From</th>
+                                            <th>To</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="conflict : ${conflicts}">
+                                            <td th:text="${conflict.employee.firstName + ' ' + conflict.employee.lastName}">
+                                                UNAVAILABLE
+                                            </td>
+                                            <td th:text="${conflict.leaveType.leaveType}">
+                                                UNAVAILABLE
+                                            </td>
+                                            <td th:text="${#temporals.format(conflict.fromDate, 'dd MMM yyyy')}">
+                                                DD MMM YYYY
+                                            </td>
+                                            <td th:text="${#temporals.format(conflict.toDate, 'dd MMM yyyy')}">
+                                                DD MMM YYYY
+                                            </td>
+                                            <td th:text="${conflict.status}">
+                                                UNAVAILABLE
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
                     </div>
 
                     <!-- Global error -->
                     <div class="alert alert-error"
                         th:if="${globalError}"
                         th:text="${globalError}"></div>
+
+                    <!-- Success -->
+                    <div class="alert alert-info"
+                        th:if="${successMsg}"
+                        th:text="${successMsg}"></div>
 
                     <div class="card-footer">
                         <!-- Goes back to previous page -->

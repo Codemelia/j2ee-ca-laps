@@ -13,7 +13,8 @@
 			</a>
 		</div>
         <div class="page-wrapper">
-			<h1 th:text="${empId != null ? 'Subordinate Leave History' : 'My Leave History'}">Leave History</h1>
+			<h1 sec:authorize="hasRole('ROLE_MANAGER')" th:if="${!isSelf}">Member Leave History</h1>
+			<h1 th:unless="${!isSelf}" >My Leave History</h1>
 
 			<!-- Global error -->
 			<div class="alert alert-error"
@@ -67,10 +68,10 @@
 						<td th:text="${leave.toDate != null ? #temporals.format(leave.createdAt, 'dd MMM yyyy') : 'N/A'}">02 Jan 2026</td>
 						<td>
 						<!--Link to detail page, passing leave id in the URL -->
-							<a th:if="${empId != null}" 
+							<a sec:authorize="hasRole('ROLE_MANAGER')" th:if="${!isSelf}"
 							   th:href="@{/manager/leaves/{id}(id=${leave.id})}" 
 							   class="btn-secondary">View details</a>
-							<a th:unless="${empId != null}" 
+							<a th:unless="${!isSelf}"
 							   th:href="@{/leaves/details/{id}(id=${leave.id})}" 
 							   class="btn-secondary">View details</a>
 						</td>
