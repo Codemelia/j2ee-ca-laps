@@ -12,21 +12,28 @@
 			<div class="container mt-4">
 			    <div class="d-flex justify-content-between align-items-start mb-4">
 			        
-			        <div>
-			            <h1>Welcome, <span th:if="${employeeFirstName}" th:text="${employeeFirstName} ?: 'Admin User'"></span>!</h1></div>
-			        <div>
-			            <a th:href="@{/leave/apply}" class="btn btn-primary">
-			                Apply Leave
-			            </a>
-			        </div>
+			        <div class="user-greeting">
+			            <h1>Welcome, <span th:if="${employeeFirstName}" th:text="${employeeFirstName} ?: 'Admin User'"></span>!</h1>
+			            </div>
+			        
 			        
 			    </div>
 
-			    </div>	
+			    
 
 		    <!-- Leave Balance Cards -->
+		    <div >
+		    <div class="d-flex justify-content-between align-items-start mb-4">
+		    <div>
 		    <h2>My Leave Balance</h2>
-		    <div class="cards-container">
+		    </div>
+		    <div>
+			    <a th:href="@{/leave/apply}" class="btn btn-primary">
+			         Apply Leave
+			    </a>
+			</div>
+			</div>
+		    <div class="cards-container justify-content-center mb-4">
 		        <div class="card" th:each="rec : ${leaveRecords}">
 		            <h3 th:text="${rec.leaveType.leaveType}">Leave Type</h3>
 		            <p>Entitled: <span th:text="${rec.entitledDays}">0</span></p>
@@ -37,14 +44,25 @@
 		            </p>
 		        </div>
 		        <!-- Fallback if no records -->
+		        <div>
 		        <p th:if="${#lists.isEmpty(leaveRecords)}">
 		            No leave records found.
 		        </p>
+		        </div>
+		    </div>
 		    </div>
 
 		    <!-- My Recent Leave Requests -->
+		    <div>
+		    <div class="d-flex justify-content-between align-items-center mb-4">
+		    <div>
 		    <h2>My Latest Leave Applications</h2>
-		    <table class="table">
+		    </div>
+		    
+			</div>
+		    <div >
+		    <div>
+		    <table class="data-table-med">
 		        <thead>
 		            <tr>
 		                <th>Leave Type</th>
@@ -65,7 +83,11 @@
 		            </tr>
 		        </tbody>
 		    </table>
+		    </div>
+		    </div>
+		    </div>
 		</div>
+	    </div>	
 
 		<footer th:replace="~{fragments/footer :: footer}"></footer>
 
