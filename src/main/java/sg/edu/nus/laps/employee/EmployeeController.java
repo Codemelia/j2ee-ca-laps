@@ -25,7 +25,9 @@ import sg.edu.nus.laps.leave.service.LeaveRecordService;
 import sg.edu.nus.laps.leave.service.LeaveTypeService;
 import sg.edu.nus.laps.security.AuthUserDetails;
 
-
+/**
+ * EmployeeController handles CRUD operations for managing employees as admin
+ */
 @RequestMapping("/admin/employees")
 @Controller
 public class EmployeeController {
@@ -62,12 +64,7 @@ public class EmployeeController {
 			return "redirect:/admin/employees";
 		}
 	}
-	
-	// Original - Deleted 
-	// @GetMapping public String showEmployees(@AuthenticationPrincipal AuthUserDetails user,
-    //Model model, RedirectAttributes redirectAttrs, @PageableDefault(size = 10) Pageable pageable) { 
-	
-	// UPDATED
+
 	@GetMapping
 	public String showEmployees(@AuthenticationPrincipal AuthUserDetails user, Model model) {
 	
@@ -78,30 +75,25 @@ public class EmployeeController {
 		Integer adminCount = eService.countEmployeesByRoleIdAdmin();
 		model.addAttribute("adminCount", adminCount);
 
-		// UPDATED 
 	    List<Employee> allEmployees = eService.findAll();
 	    model.addAttribute("allEmployees", allEmployees);
-	    //End of update
 
 		// Retrieve user email from session
-		// String userEmail = (String) session.getAttribute("userEmail");
 		String userEmail = user.getEmail();
 		Optional<Employee> loggedInUser = eService.findByEmail(userEmail);
 		
 		// Base first name: "Admin" - accommodate outsourced admins
-		String userFirstName = "admin";
+		String userFirstName = "Admin";
 		if (loggedInUser.isPresent()) {
 			userFirstName = loggedInUser.get().getFirstName();
 		}
 		
 		model.addAttribute("userFirstName", userFirstName);
-		
 		return "employee/employee-mgmt";
 	}
 	
 	@GetMapping("/create")
 	public String showCreateEmployeeForm(Model model) {
-
 		// New employee for binding, set role name empty
 		Employee employee = new Employee();
 		employee.setRoleName("");
@@ -147,11 +139,8 @@ public class EmployeeController {
 			
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
-
-			model.addAttribute("globalError", 
-				"Save failed: " + ex.getMessage());
+			model.addAttribute("globalError", "Save failed: " + ex.getMessage());
 			model.addAttribute("roleList", rService.findAllRoles());
-			// Add enum values for rank
 			model.addAttribute("rankList", EmployeeRank.values());
 			model.addAttribute("employee", employee);
 			return "employee/employee-form";
@@ -177,7 +166,8 @@ public class EmployeeController {
 			Long annualLeaveTypeId = ltService.findByLeaveType("Annual").get().getId();
 			Integer currentYear = LocalDate.now().getYear();
 			
-			Optional<LeaveRecord> empAnnualRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(id, annualLeaveTypeId, currentYear);
+			Optional<LeaveRecord> empAnnualRecord = lrService
+				.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(id, annualLeaveTypeId, currentYear);
 			if(empAnnualRecord.isPresent()) {
 				empToUpdate.setAnnualLeave(empAnnualRecord.get().getEntitledDays());
 			} 
@@ -236,9 +226,9 @@ public class EmployeeController {
 	}
 	
 	@PostMapping("/delete/{id}")
-	public String deleteEmployee(@PathVariable Long id, RedirectAttributes redirectAttrs) {
+	public String deleteEmployee(@PathVariable Long id, 
+		RedirectAttributes redirectAttrs) {
 		Optional<Employee> empOpt = eService.findById(id);
-		
 		if (empOpt.isEmpty()) {
 			redirectAttrs.addFlashAttribute("globalError", 
 				"Employee does not exist.");

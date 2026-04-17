@@ -9,7 +9,7 @@ public enum LeaveStatus {
 	/* 
 	 * 1. Setting Up the Possible State of a Leave Application
 	 * Note: SUBMITTED has been dropped as it is a transient state.
-	 * Once a LA is submitted, it will immediately be in the PENDING review state.
+	 * Once a LA is submitted, it will immediately be in the APPLIED review state.
 	*/
 	DRAFT("Your leave request has been created, but not yet submitted."),
 	APPLIED("Your leave request is awaiting review from your reporting manager."),

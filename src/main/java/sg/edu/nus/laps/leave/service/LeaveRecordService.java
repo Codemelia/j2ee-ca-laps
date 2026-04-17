@@ -7,29 +7,28 @@ import org.springframework.stereotype.Service;
 
 import sg.edu.nus.laps.leave.model.LeaveRecord;
 import sg.edu.nus.laps.leave.repository.LeaveRecordRepository;
+/**
+ * LeaveRecordService provides methods to 
+ * retrieve leave records for employees from repository.
+ */
 
 @Service
 public class LeaveRecordService {
 
     private final LeaveRecordRepository lrRepo;
+    public LeaveRecordService(LeaveRecordRepository lrRepo) { this.lrRepo = lrRepo; }
 
-    public LeaveRecordService(LeaveRecordRepository lrRepo) {
-        this.lrRepo = lrRepo;
-    }
-
-    // Gets leave balances (all leave types for this employee)
+    // Gets leave balances for this employee
     public List<LeaveRecord> getLeaveRecords(Long employeeId) {
         return lrRepo.findByEmployeeId(employeeId);
     }
     
-    public Optional<LeaveRecord> findByEmployeeIdAndLeaveTypeIdAndCalendarYear(Long employeeId, Long leaveTypeId, Integer calendarYear) {
-    	Optional<LeaveRecord> leaveRecordOpt = lrRepo.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employeeId, leaveTypeId, calendarYear);
-    	
-    	if(leaveRecordOpt.isPresent()) {
-    		return leaveRecordOpt;
-    	}
+    public Optional<LeaveRecord> findByEmployeeIdAndLeaveTypeIdAndCalendarYear(
+        Long employeeId, Long leaveTypeId, Integer calendarYear) {
+    	Optional<LeaveRecord> leaveRecordOpt = lrRepo
+            .findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employeeId, leaveTypeId, calendarYear);
+    	if(leaveRecordOpt.isPresent()) { return leaveRecordOpt; }
     	return Optional.empty();
-    
     }
     
 }

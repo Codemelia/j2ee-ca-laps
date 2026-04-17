@@ -13,10 +13,10 @@ import sg.edu.nus.laps.leave.repository.LeaveApplicationRepository;
 
 /**
  *  ApprovalService provides methods for 
- *      1. Managing leave approval processes
- *      2. Including retrieving pending requests
- *      3. Subordinate leave history
- *      4. Conflicting leave applications for manager's team
+*      1. Managing leave approval processes
+*      2. Including retrieving pending requests
+*      3. Subordinate leave history
+*      4. Conflicting leave applications for manager's team
  */
 @Service
 public class ApprovalService {

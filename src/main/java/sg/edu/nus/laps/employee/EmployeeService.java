@@ -26,26 +26,11 @@ import sg.edu.nus.laps.leave.model.LeaveType;
 import sg.edu.nus.laps.leave.repository.LeaveRecordRepository;
 import sg.edu.nus.laps.leave.repository.LeaveTypeRepository;
 
-/*
-    EmployeeService handles all employee CRUD operations (Admin-only)
-
-                    SERVICE SCOPE
-    ------------------------------------------------
-    -- READ --
-    findAll()          - Retrieve list of all employees
-    findByEmail(email) - Retrieve employee by email
-    findById(id)       - Retrieve employee by ID
-    
-    countEmployees()   - Retrieve count of all employees
-    countManagers()    - Retrieve count of all managers
-    countAdmin()       - Retrieve count of all admin
-
-    -- CREATE / UPDATE --
-    save(employee)     - Create or update employee record (JPA maps by ID)
-
-    -- DELETE --
-    delete(employee)   - Delete employee record
-*/
+/**
+ * EmployeeService provides methods for: 
+ * 1. CRUD operations on employee data and
+ * 2. Functionalities for updating, saving, and deleting employee records.
+ */
 @Service
 public class EmployeeService {
 	

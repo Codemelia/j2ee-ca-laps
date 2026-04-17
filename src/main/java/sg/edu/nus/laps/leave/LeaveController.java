@@ -226,7 +226,6 @@ public class LeaveController {
     @PostMapping("/delete/{id}")
     public String deleteLeave(@AuthenticationPrincipal AuthUserDetails user, 
         @PathVariable Long id, RedirectAttributes redirAttr) {
-     // 3. Perform delete action  
         try {
             lService.deleteLeave(id, user.getEmployeeId());
             redirAttr.addFlashAttribute("successMsg", 

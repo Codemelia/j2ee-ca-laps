@@ -27,8 +27,8 @@ import sg.edu.nus.laps.employee.model.Employee;
 
 @Entity
 @Table(name = "leave_applications")
-
 public class LeaveApplication extends SetCreatedUpdated {
+
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -73,9 +73,6 @@ public class LeaveApplication extends SetCreatedUpdated {
     @Transient // This tells JPA not to create a column in MySQL
     private double duration;
 
-    // Set via common/util/SetCreatedUpdated.java
-    // @Column(name = "created_at")
-    // private LocalDateTime createdAt;
 
     public double getDuration() { return duration;	}
 	public void setDuration(double duration) {this.duration = duration;}
@@ -91,13 +88,6 @@ public class LeaveApplication extends SetCreatedUpdated {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
-    // @PrePersist
-    // protected void onCreate() {
-    //    this.createdAt = LocalDateTime.now();
-    //    if (this.status == null) this.status = LeaveStatus.DRAFT;
-    // }
-
-
     public LeaveApplication() {}
 
     public LeaveApplication(LocalDate fromDate, LocalDate toDate, String reason, LeaveType type, Employee emp) {
@@ -107,8 +97,6 @@ public class LeaveApplication extends SetCreatedUpdated {
         this.leaveType = type;
         this.employee = emp;
     }
-
-    
 
     public Long getId() 										{ return id; }
     public void setId(Long id) 									{ this.id = id; }

@@ -24,19 +24,9 @@ import sg.edu.nus.laps.leave.repository.LeaveRecordRepository;
 import sg.edu.nus.laps.leave.repository.LeaveTypeRepository;
 
 /*
-    LeaveService handles all leave CRUD operations (Employee)
-
-                    SERVICE SCOPE
-    ------------------------------------------------
-    -- READ --
-    findAllByEmployeeId(employeeId) - Retrieve list of all leaves by Employee ID
-    findByLeaveId(id)               - Retrieve leave application by Leave ID
-
-    -- CREATE / UPDATE --
-    save(leaveApplication)          - Create or update a leave application (JPA maps by ID)
-
-    -- CANCEL --
-    cancel(id)                      - Cancel a leave application
+    LeaveService handles all leave CRUD operations
+	as well as complex computation methods that are
+	shared between features involving leaves
 */
 @Service
 public class LeaveService {
@@ -556,24 +546,6 @@ public class LeaveService {
 		lrRepo.save(lr);
 	}
 
-	/*
-	// 1. The Calculation Logic
-	public int calculateActualLeaveDays(LocalDate start, LocalDate end, List<LocalDate> holidays) {
-		int count = 0;
-		LocalDate curr = start;
-		while (!curr.isAfter(end)) {
-			DayOfWeek day = curr.getDayOfWeek();
-			boolean isWeekend = (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY);
-			boolean isHoliday = holidays.contains(curr);
-			if (!isWeekend && !isHoliday) {
-				count++;
-			}
-			curr = curr.plusDays(1);
-		}
-		return count;
-	}
-	 */
-
 	// --- Dash-Board Builder Methods ---
 	// 1. Gets Recent Leave Applications
 	@Transactional(readOnly=true)
@@ -591,8 +563,6 @@ public class LeaveService {
 	// 3. Retrieve Leave Application by Leave Application ID
 	@Transactional(readOnly = true)
 	public Optional<LeaveApplication> findLeaveById(Long id) {
-	// .findById() is built into JpaRepository by default
-	// .orElse(null) handles the case where the ID doesn't exist in the DB
 		return laRepo.findById(id);
 	}
 

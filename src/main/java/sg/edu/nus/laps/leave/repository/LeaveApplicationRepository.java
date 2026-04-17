@@ -59,44 +59,31 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 	// 9. Read-Method: Find Leave Application by Employee ID
 	List<LeaveApplication> findAllByEmployeeId(Long employeeId);
 	
-	// 10. Read-Method: Find Leave Application by Employee, Sorted by From Date in DESC
-	//List<LeaveApplication> findByEmployeeIdOrderByFromDateDesc(Long employeeId);
-	
-	// 11. For Dashboard: Limit leave applications to top 5
+	// 10. For Dashboard: Limit leave applications to top 5
 	List<LeaveApplication> findTop5ByEmployeeIdOrderByUpdatedAtDesc(Long employeeId);
 
-	/*
-	// Remove, SET of Status should be Managed in the Service Layer
-	// 11. Update-Method: Cancel a Leave Application
-	@Modifying
-	@Transactional
-	@Query("UPDATE LeaveApplication l SET l.status = 'CANCELLED' WHERE l.id = :id")
-	void cancelLeave(@Param("id") Long id);
-	*/
-	// display leave history (fromDate or toDate) containing current year
+	// 11. Display leave history (fromDate or toDate) containing current year
 	List<LeaveApplication> findByEmployeeIdOrderByFromDateDesc(Long employeeId);
 	@Query("SELECT l FROM LeaveApplication l WHERE l.employee.id = :empId " +
-		       "AND (FUNCTION('YEAR', l.fromDate) = :year OR FUNCTION('YEAR', l.toDate) = :year) " +
-		       "AND l.status <> 'DELETED' " +
-		       "ORDER BY l.fromDate DESC")
-		List<LeaveApplication> findByEmployeeIdAndYear(
-		    @Param("empId") Long empId, 
-		    @Param("year") int year
-		    //Pageable pageable
-		);
+		"AND (FUNCTION('YEAR', l.fromDate) = :year OR FUNCTION('YEAR', l.toDate) = :year) " +
+		"AND l.status <> 'DELETED' " +
+		"ORDER BY l.fromDate DESC")
+	List<LeaveApplication> findByEmployeeIdAndYear(
+		@Param("empId") Long empId, 
+		@Param("year") int year
+		/* Pageable pageable */
+	);
 
   	@Query("SELECT l FROM LeaveApplication l WHERE l.employee.managerId = :managerId " +
-       "AND l.status in ('APPLIED', 'UPDATED', 'APPROVED')" +
-       "AND l.id != :excludeId " +
-       "AND l.fromDate <= :toDate AND l.toDate >= :fromDate")
-		List<LeaveApplication> findConflictingLeaves(
+		"AND l.status in ('APPLIED', 'UPDATED', 'APPROVED')" +
+		"AND l.id != :excludeId " +
+		"AND l.fromDate <= :toDate AND l.toDate >= :fromDate")
+	List<LeaveApplication> findConflictingLeaves(
 		@Param("managerId") Long managerId,
 		@Param("fromDate") LocalDate fromDate,
 		@Param("toDate") LocalDate toDate,
 		@Param("excludeId") Long excludeId);
     
-    /**
-     * Find leave applications by employee and status
-     */
+    // Find leave applications by employee and status
     List<LeaveApplication> findByEmployeeIdAndStatus(Long employeeId, LeaveStatus status);
 }

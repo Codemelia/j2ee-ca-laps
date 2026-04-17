@@ -1,6 +1,5 @@
 package sg.edu.nus.laps.leave.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.boot.context.event.ApplicationReadyEvent;
 // import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -12,11 +11,15 @@ import sg.edu.nus.laps.leave.dto.DataGovResponse;
 import sg.edu.nus.laps.leave.model.Holiday;
 import sg.edu.nus.laps.leave.repository.HolidayRepository;
 
+/**
+ * HolidayService fetches public holiday data from an open-source API and syncs it
+ * with a database, ensuring the database is updated annually at the beginning of the new year.
+ */
 @Service
 public class HolidayService {
 	
-	@Autowired
 	private HolidayRepository holidayRepo;
+	public HolidayService(HolidayRepository holidayRepo) { this.holidayRepo = holidayRepo; }
 	
 	/* 
 	 * 1. API URL Link --> Open-source API via data.gov.sg.

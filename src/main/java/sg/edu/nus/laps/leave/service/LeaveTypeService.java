@@ -11,15 +11,11 @@ import sg.edu.nus.laps.leave.repository.LeaveTypeRepository;
 
 @Service
 public class LeaveTypeService {
-
     private final LeaveTypeRepository ltRepo;
-    public LeaveTypeService(LeaveTypeRepository ltRepo) {
-        this.ltRepo = ltRepo;
-    }
+    public LeaveTypeService(LeaveTypeRepository ltRepo) { this.ltRepo = ltRepo; }
 
     public List<LeaveType> findAllLeaveTypes() {
         List<LeaveType> types = ltRepo.findAll();
-        
         return types != null ? types : new ArrayList<>();
     }
 

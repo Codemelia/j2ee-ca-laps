@@ -26,11 +26,7 @@ public class Holiday {
 	@Column(name = "location", nullable = false)
 	private String location;
 
-	// Default Constructor
-	public Holiday() {
-	}
-
-	// Parameterized Constructor
+	public Holiday() {}
 	public Holiday(String name, LocalDate date, String location) {
 		this.name = name;
 		this.date = date;

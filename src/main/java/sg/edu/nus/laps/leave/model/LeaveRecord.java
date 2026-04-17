@@ -42,7 +42,6 @@ public class LeaveRecord extends SetCreatedUpdated {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	// 1. Setting the Attributes
 	@Column(name = "calendar_year", nullable = false)
 	@NotNull(message = "Calendar Year is Mandatory")
 	@Min(2025) 
@@ -59,7 +58,6 @@ public class LeaveRecord extends SetCreatedUpdated {
 	@PositiveOrZero(message = "Consumed Days must be Positive")
 	private Double consumedDays;
 	
-	// 2. Setting the Associations
 	// @ManyToOne 	-> Employee	(Multiple Leave Records belong to One Employee)
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "employee_id", nullable = false)
@@ -72,12 +70,7 @@ public class LeaveRecord extends SetCreatedUpdated {
 	@NotNull(message = "Leave Type is Mandatory")
 	private LeaveType leaveType;
 	
-	// 3. Setting the Constructors
-	public LeaveRecord() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
+	public LeaveRecord() {}
 	public LeaveRecord(Integer calendarYear, Double entitledDays, Double consumedDays, Employee employee, LeaveType leaveType) {
 		this.calendarYear = calendarYear;
 		this.entitledDays = entitledDays;
@@ -86,30 +79,27 @@ public class LeaveRecord extends SetCreatedUpdated {
 		this.leaveType = leaveType;
 	}
 	
-	// 4. Setting Setters & Getters
 	public Long getId() 								{ return id; }
 	public Integer getCalendarYear() 					{ return calendarYear; }
 	public Double getEntitledDays() 					{ return entitledDays; }
 	public Double getConsumedDays() 					{ return consumedDays; }
 	public Employee getEmployee() 						{ return employee; }
 	public LeaveType getLeaveType() 					{ return leaveType; }
-
 	public void setCalendarYear(Integer calendarYear)	{ this.calendarYear = calendarYear; }
 	public void setEntitledDays(Double entitledDays) 	{ this.entitledDays = entitledDays; }
 	public void setConsumedDays(Double consumedDays) 	{ this.consumedDays = consumedDays; }
 	public void setEmployee(Employee employee) 			{ this.employee = employee; }
 	public void setLeaveType(LeaveType leaveType) 		{ this.leaveType = leaveType; }
 	
-	// 5. Override ToString Method
 	@Override
 	public String toString() {
 		return "LeaveRecord ["
-				+ "id = " + id 
-				+ ", calendarYear = " + calendarYear
-				+ ", entitledDays = " + entitledDays 
-				+ ", consumedDays = " + consumedDays
-				+ ", employee = " + (employee != null ? employee.getId() : "null") 
-				+ ", leaveType = " + (leaveType != null ? leaveType.getId() : "null") 
-				+ "]";
+			+ "id = " + id 
+			+ ", calendarYear = " + calendarYear
+			+ ", entitledDays = " + entitledDays 
+			+ ", consumedDays = " + consumedDays
+			+ ", employee = " + (employee != null ? employee.getId() : "null") 
+			+ ", leaveType = " + (leaveType != null ? leaveType.getId() : "null") 
+			+ "]";
 	}	
 }

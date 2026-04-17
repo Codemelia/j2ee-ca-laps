@@ -19,6 +19,7 @@ import sg.edu.nus.laps.common.util.SetCreatedUpdated;
 @Entity
 @Table(name = "leave_types")
 public class LeaveType extends SetCreatedUpdated {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -49,6 +50,7 @@ public class LeaveType extends SetCreatedUpdated {
 	public List<LeaveApplication> getLeaveApplication() 						{ return leaveApplication; }
 	public void setLeaveApplication(List<LeaveApplication> leaveApplication) 	{ this.leaveApplication = leaveApplication; }
 
+	public LeaveType() {}
 	public LeaveType(Long id,
 		@NotNull(message = "Leave type is mandatory") @Size(max = 20, message = "Leave type cannot exceed 20 characters") String leaveType,
 		@Size(max = 200, message = "Description cannot exceed 200 characters") String leaveDescription,
@@ -59,10 +61,6 @@ public class LeaveType extends SetCreatedUpdated {
 		this.leaveDescription = leaveDescription;
 		this.leaveRecords = leaveRecords;
 		this.leaveApplication = leaveApplication;
-	}
-
-	public LeaveType() {
-		super();
 	}
 
 	@Override
