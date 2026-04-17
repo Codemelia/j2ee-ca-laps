@@ -70,9 +70,9 @@ INSERT INTO leave_applications (
   created_at,
   updated_at
 ) VALUES
-  (1, 1, 1, '2026-04-30 00:00:00', '2026-05-01 00:00:00', 'https://proofurl.com/MCBen20260428', 'Family matters', 'Handover to Amy Lim', 'mark.chan@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
-  (2, 1, 2, '2026-04-05 00:00:00', '2026-04-05 12:00:00', 'https://proofurl.com/MCBen20260428', 'Clinic appointment', 'Stand-up covered by Ben White', 'mark.chan@iss.nus.edu.sg', NULL, TRUE, 'APPLIED', '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
-  (3, 2, 3, '2026-04-08 00:00:00', '2026-04-09 00:00:00', 'https://proofurl.com/MCBen20260428', 'Compensation claim for overtime', 'Bug triage reassigned to Mark Chan', 'amy.lim@iss.nus.edu.sg', 'Approved for release deployment support', TRUE, 'APPROVED', '2026-04-01 00:00:00', '2026-04-02 09:30:00');
+  (1, 1, 1, '2026-04-30 00:00:00', '2026-05-01 23:59:59', 'https://proofurl.com/MCBen20260428', 'Family matters', 'Handover to Amy Lim', 'mark.chan@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
+  (2, 1, 2, '2026-04-07 00:00:00', '2026-04-07 23:59:59', 'https://proofurl.com/MCBen20260428', 'Clinic appointment', 'Stand-up covered by Ben White', 'mark.chan@iss.nus.edu.sg', NULL, TRUE, 'APPLIED', '2026-04-07 00:00:00', '2026-04-07 00:00:00'),
+  (3, 2, 3, '2026-04-08 00:00:00', '2026-04-09 23:59:59', 'https://proofurl.com/MCBen20260428', 'Compensation claim for overtime', 'Bug triage reassigned to Mark Chan', 'amy.lim@iss.nus.edu.sg', 'Approved for release deployment support', TRUE, 'APPROVED', '2026-04-01 00:00:00', '2026-04-02 09:30:00');
 
 -- Additional randomized leave application samples (new columns)
 INSERT INTO leave_applications (
@@ -135,4 +135,6 @@ INSERT INTO leave_records (id, employee_id, leave_type_id, calendar_year, entitl
   (5, 1, 3, 2026, 9.5, 0.5, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
   (6, 2, 3, 2026, 8.0, 0.5, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
   (7, 3, 1, 2026, 14.0, 9.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
-  (8, 3, 2, 2026, 60.0, 1.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00');
+  (8, 3, 2, 2026, 60.0, 1.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
+  (9, 4, 1, 2026, 14.0, 0.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
+  (10,4, 2, 2026, 60.0, 0.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00')  ;
