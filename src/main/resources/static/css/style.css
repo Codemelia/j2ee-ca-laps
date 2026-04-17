@@ -479,10 +479,11 @@ textarea {
     border-radius: var(--radius);
     cursor: pointer;
     transition: background-color 0.15s;
+    background-color: 494949;
 }
 
 .btn-danger {
-    background-color: var(--text);
+    background-color: #184372;
     color: #ffffff;
 	border: 1px solid var(--text);
 }
