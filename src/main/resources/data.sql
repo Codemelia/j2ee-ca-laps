@@ -70,9 +70,9 @@ INSERT INTO leave_applications (
   created_at,
   updated_at
 ) VALUES
-  (1, 1, 1, '2026-04-30 00:00:00', '2026-05-04 23:59:59', 'NULL', 'Overseas trip', 'Handover to Amy Lim', 'mark.chan@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
-  (2, 1, 2, '2026-04-07 00:00:00', '2026-04-07 23:59:59', 'https://proofurl.com/MCBen20260428', 'Clinic appointment', 'Stand-up covered by Ben White', 'mark.chan@iss.nus.edu.sg', NULL, TRUE, 'APPLIED', '2026-04-07 00:00:00', '2026-04-07 00:00:00'),
-  (3, 2, 3, '2026-04-08 00:00:00', '2026-04-09 23:59:59', 'NULL', 'Compensation claim for overtime', 'Bug triage reassigned to Mark Chan', 'amy.lim@iss.nus.edu.sg', 'Approved for release deployment support', TRUE, 'APPROVED', '2026-04-01 00:00:00', '2026-04-02 09:30:00');
+  (1, 1, 1, '2026-04-30 00:00:00', '2026-05-04 23:59:59', NULL, 'Overseas trip', 'Handover to Amy Lim', 'mark.chan@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
+  (2, 1, 2, '2026-04-07 00:00:00', '2026-04-07 23:59:59', 'https://placehold.co/350x200/000000/FFFFFF.png', 'Clinic appointment', 'Stand-up covered by Ben White', 'mark.chan@iss.nus.edu.sg', NULL, TRUE, 'APPLIED', '2026-04-07 00:00:00', '2026-04-07 00:00:00'),
+  (3, 2, 3, '2026-04-08 00:00:00', '2026-04-09 23:59:59', NULL, 'Compensation claim for overtime', 'Bug triage reassigned to Mark Chan', 'amy.lim@iss.nus.edu.sg', 'Approved for release deployment support', TRUE, 'APPROVED', '2026-04-01 00:00:00', '2026-04-02 09:30:00');
 
 -- Additional randomized leave application samples (new columns)
 INSERT INTO leave_applications (
@@ -92,15 +92,15 @@ INSERT INTO leave_applications (
   updated_at
 ) VALUES
   (4, 1, 1, '2026-01-05 00:00:00', '2026-01-06 23:59:59', NULL, 'Settle child in new school', 'Backlog shared with Amy Lim', 'mark.chan@iss.nus.edu.sg', NULL, FALSE, 'APPROVED', '2025-12-15 09:00:00', '2025-12-20 12:00:00'),
-  (5, 1, 2, '2026-01-20 00:00:00', '2026-01-20 23:59:59', 'https://med.link/mark-002', 'Migraine and consultation', 'Ops handover to Ben White', 'mark.chan@iss.nus.edu.sg', NULL, FALSE, 'APPROVED', '2026-01-20 08:00:00', '2026-01-21 09:00:00'),
+  (5, 1, 2, '2026-01-20 00:00:00', '2026-01-20 23:59:59', 'https://placehold.co/350x200/000000/FFFFFF.png', 'Migraine and consultation', 'Ops handover to Ben White', 'mark.chan@iss.nus.edu.sg', NULL, FALSE, 'APPROVED', '2026-01-20 08:00:00', '2026-01-21 09:00:00'),
   (6, 1, 3, '2026-02-27 13:00:00', '2026-02-27 17:00:00', NULL, 'Comp off after weekend deployment', 'Escalations routed to Amy Lim', 'mark.chan@iss.nus.edu.sg', 'Approved due to overtime log #OT-884', TRUE, 'APPROVED', '2026-02-20 10:00:00', '2026-02-21 10:00:00'),
   (7, 2, 1, '2026-01-12 00:00:00', '2026-01-13 23:59:59', NULL, 'Moving house', 'Feature branch ownership moved to Ben White', 'amy.lim@iss.nus.edu.sg', NULL, FALSE, 'APPROVED', '2026-01-01 10:20:00', '2026-01-05 11:00:00'),
-  (8, 2, 2, '2026-02-05 00:00:00', '2026-02-06 23:59:59', 'https://med.link/amy-201', 'Fever and rest', 'Daily stand-up delegated to Mark Chan', 'amy.lim@iss.nus.edu.sg', NULL, FALSE, 'APPROVED', '2026-02-05 07:10:00', '2026-02-07 18:30:00'),
+  (8, 2, 2, '2026-02-05 00:00:00', '2026-02-06 23:59:59', 'https://placehold.co/350x200/000000/FFFFFF.png', 'Fever and rest', 'Daily stand-up delegated to Mark Chan', 'amy.lim@iss.nus.edu.sg', NULL, FALSE, 'APPROVED', '2026-02-05 07:10:00', '2026-02-07 18:30:00'),
   (9, 2, 1, '2026-03-02 00:00:00', '2026-03-02 23:59:59', NULL, 'Personal errand', 'Customer calls assigned to Mark Chan', 'amy.lim@iss.nus.edu.sg', 'Rejected due to sprint release freeze', FALSE, 'REJECTED', '2026-02-25 15:00:00', '2026-02-26 09:00:00'),
   (10, 2, 3, '2026-05-29 13:00:00', '2026-05-29 17:00:00', NULL, 'Compensation leave PM', 'Pager duty switched with Ben White', 'amy.lim@iss.nus.edu.sg', NULL, TRUE, 'APPLIED', '2026-04-01 09:30:00', '2026-04-01 09:30:00'),
   (11, 2, 1, '2026-05-11 00:00:00', '2026-05-14 23:59:59', NULL, 'Family holiday', 'QA support passed to Team 1 roster', 'amy.lim@iss.nus.edu.sg', NULL, FALSE, 'UPDATED', '2026-04-01 16:30:00', '2026-04-15 12:00:00'),
   (12, 3, 1, '2025-12-30 00:00:00', '2025-12-30 23:59:59', NULL, 'New year leave', 'Code review queue assigned to Amy Lim', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'APPROVED', '2025-12-10 12:00:00', '2025-12-20 14:00:00'),
-  (13, 3, 2, '2026-01-05 00:00:00', '2026-01-05 23:59:59', 'https://med.link/ben-501', 'Flu symptoms', 'Incident monitoring handled by Mark Chan', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'APPROVED', '2026-01-07 08:15:00', '2026-01-10 08:15:00'),
+  (13, 3, 2, '2026-01-05 00:00:00', '2026-01-05 23:59:59', 'https://placehold.co/350x200/000000/FFFFFF.png', 'Flu symptoms', 'Incident monitoring handled by Mark Chan', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'APPROVED', '2026-01-07 08:15:00', '2026-01-10 08:15:00'),
   (14, 3, 1, '2026-01-16 00:00:00', '2026-01-16 23:59:59', NULL, 'Personal appointment', 'Support mailbox shared with Amy Lim', 'ben.white@iss.nus.edu.sg', 'Rejected due to overlapping team leave', FALSE, 'REJECTED', '2026-01-15 09:00:00', '2026-01-16 09:00:00'),
   (15, 3, 3, '2026-02-16 13:00:00', '2026-02-16 17:00:00', NULL, 'Compensation leave PM', 'Production checks delegated to Mark Chan', 'ben.white@iss.nus.edu.sg', NULL, TRUE, 'APPLIED', '2026-01-30 08:45:00', '2026-01-30 08:45:00'),
   (16, 3, 1, '2026-03-20 00:00:00', '2026-03-20 23:59:59', NULL, 'Family matters', 'Ticket triage reassigned to Team 1 backup', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'CANCELLED', '2026-02-03 13:30:00', '2026-02-05 10:00:00'),
@@ -121,7 +121,7 @@ INSERT INTO leave_applications (
   (31, 3, 1, '2026-06-29 00:00:00', '2026-06-29 23:59:59', NULL, 'Personal appointment', 'QA support passed to Team 1 roster', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-12 09:30:00', '2026-04-12 09:30:00'),
   (32, 2, 1, '2026-07-15 00:00:00', '2026-07-17 23:59:59', NULL, 'Family trip', 'Task handover to Ben White', 'amy.lim@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-17 09:00:00', '2026-04-17 09:00:00'),
   (33, 3, 3, '2026-06-16 00:00:00', '2026-06-16 23:59:59', NULL, 'Personal matters', 'Coverage by Mark Chan', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-17 09:10:00', '2026-04-17 09:10:00'),
-  (34, 2, 2, '2026-04-14 00:00:00', '2026-04-16 23:59:59', 'https://med.link/amy-309', 'Medical rest', 'Stand-up covered by Ben White', 'amy.lim@iss.nus.edu.sg', NULL, FALSE, 'UPDATED', '2026-04-14 08:40:00', '2026-04-14 12:00:00'),
+  (34, 2, 2, '2026-04-14 00:00:00', '2026-04-16 23:59:59', 'https://placehold.co/350x200/000000/FFFFFF.png', 'Medical rest', 'Stand-up covered by Ben White', 'amy.lim@iss.nus.edu.sg', NULL, FALSE, 'UPDATED', '2026-04-14 08:40:00', '2026-04-14 12:00:00'),
   (35, 3, 3, '2026-05-11 13:00:00', '2026-05-11 17:00:00', NULL, 'Compensation leave PM', 'Pager duty swapped with Amy Lim', 'ben.white@iss.nus.edu.sg', NULL, TRUE, 'APPLIED', '2026-04-18 09:00:00', '2026-04-18 09:00:00');
 
 -- ALTER TABLE leave_applications AUTO_INCREMENT = 36;

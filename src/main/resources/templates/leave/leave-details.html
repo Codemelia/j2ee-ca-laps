@@ -101,8 +101,15 @@
                                     <dd th:text="*{reason} ?: 'No Reason Provided'"></dd>
 
                                     <dt><b>Proof</b></dt>
-                                    <dd th:text="*{proof} ?: 'No Proof Provided'"></dd>
-                                    
+                                    <dd th:if="*{proof}">
+                                        <a th:href="*{proof}" target="_blank">
+                                            View Proof Document
+                                        </a>
+                                    </dd>
+                                    <dd th:unless="*{proof}">
+                                        No Proof Provided
+                                    </dd>
+                
                                     <dt><b>Contact Details</b></dt>
                                     <dd th:text="*{contactDetails} ?: 'No Contact Details Provided'"></dd>
 

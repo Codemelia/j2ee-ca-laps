@@ -1,5 +1,6 @@
 package sg.edu.nus.laps.auth.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,5 +28,8 @@ public interface UserRepository extends JpaRepository<User, String> {
     // Count user role by role ID
     @Query("select count(u) from User u where u.role.id = :roleId")
     Integer countByRoleId(String roleId);
+
+    // Find latest update date for user
+    boolean existsByEmailAndUpdatedAtAfter(String email, LocalDateTime time);
     
 }

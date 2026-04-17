@@ -54,6 +54,8 @@ public class UserService {
         isolation = Isolation.READ_COMMITTED)
     public User changePassword(String email, PasswordDTO passwordDTO) {
 
+        // If user has changed password 
+
         // Retrieve user by email
         Optional<User> optUser = userRepo.findByEmailAndEnabledTrue(email);
 

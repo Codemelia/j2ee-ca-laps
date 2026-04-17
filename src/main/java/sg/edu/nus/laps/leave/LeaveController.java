@@ -35,7 +35,6 @@ public class LeaveController {
 	private final LeaveService lService;
     private final EmployeeService empService;
     private final LeaveTypeService ltService;
-
     public LeaveController(
         LeaveService lService,
         EmployeeService empService,
@@ -119,7 +118,7 @@ public class LeaveController {
     @PostMapping("/save")
     public String saveLeaveApplication(@AuthenticationPrincipal AuthUserDetails user, 
         @Valid @ModelAttribute("leaveApp") LeaveApplication leaveApp, 
-        BindingResult result, Model model,
+        BindingResult result, Model model,  
         RedirectAttributes redirAttr) {
         List<LeaveType> leaveTypes = ltService.findAllLeaveTypes();
 

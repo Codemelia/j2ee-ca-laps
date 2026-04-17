@@ -83,7 +83,10 @@ public class LeaveService {
 		validateMedicalLeave(leave);
 		
 		List<LeaveApplication> overlaps = laRepo.findOverlappingApplication(
-				List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED),
+				List.of(LeaveStatus.DRAFT, 
+					LeaveStatus.REJECTED, 
+					LeaveStatus.CANCELLED, 
+					LeaveStatus.DELETED),
 				leave.getEmployee(), 
 				leave.getFromDate(), 
 				leave.getToDate());

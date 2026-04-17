@@ -4,6 +4,7 @@ package sg.edu.nus.laps.leave.model;
 import java.time.LocalDate;
 // import java.time.LocalDateTime;
 
+import org.hibernate.validator.constraints.URL;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.Column;
@@ -43,6 +44,7 @@ public class LeaveApplication extends SetCreatedUpdated {
     @Column(name = "to_date", nullable = false)
     private LocalDate toDate;
 
+    @URL(message="Proof URL must be in a valid URL format")
     @Size(max = 2048, message = "Proof URL cannot exceed 2048 characters")
     @Column(name = "proof", nullable = true)
     private String proof; // For medical proof url (Nullable)

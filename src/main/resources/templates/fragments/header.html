@@ -2,9 +2,16 @@
     <div class="topbar">
 
         <!-- Logo -->
-        <a class="site-title"
-            th:href="${#authorization.expression('hasAuthority(''AUTH_INTERNAL_ADMIN'')')} ? @{/admin/employees} : @{/}"
-            th:text="${appName} ?: 'G3LAPS'"></a>
+        <th:block sec:authorize="hasAuthority('AUTH_EXTERNAL_ADMIN')">
+            <a class="site-title"
+                th:href="@{/admin/employees}"
+                th:text="${appName} ?: 'G3LAPS'"></a>
+        </th:block>
+        <th:block sec:authorize="!hasAuthority('AUTH_EXTERNAL_ADMIN')">
+            <a class="site-title"
+                th:href="@{/}"
+                th:text="${appName} ?: 'G3LAPS'"></a>
+        </th:block>
 
         <!-- Spring Security user role auth -->
         <!-- Only if is not login page -->
