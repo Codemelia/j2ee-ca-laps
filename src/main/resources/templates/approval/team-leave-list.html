@@ -131,11 +131,11 @@
                             <tr>
                                 <th>Employee Name</th>
                                 <th>Leave Type</th>
-                                <th>From Date</th>
-                                <th>To Date</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
                                 <th>Days</th>
                                 <th>Status</th>
-                                <th>Applied Date</th>
+                                <th>Applied</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -149,9 +149,9 @@
                                     </a>
                                 </td>
                                 <td th:text="${leave.leaveType.leaveType}">Leave Type</td>
-                                <td th:text="${#temporals.format(leave.fromDate, 'dd-MMM-yyyy')}">From Date</td>
-                                <td th:text="${#temporals.format(leave.toDate, 'dd-MMM-yyyy')}">To Date</td>
-                                <td th:text="${leave.duration}">Days</td>
+                                <td th:attr="data-order=${leave.fromDate}" th:text="${#temporals.format(leave.fromDate, 'dd MMM yyyy')}">From Date</td>
+                                <td th:attr="data-order=${leave.toDate}"  th:text="${#temporals.format(leave.toDate, 'dd MMM yyyy')}">To Date</td>
+                                <td th:text="${leave.duration}">0.0</td>
                                 <td>
                                     <span class="badge rounded-pill"
                                         th:attr="data-status=${leave.status.name()}"
@@ -162,7 +162,7 @@
                                         th:text="${leave.status.name()}">
                                     </span>
                                 </td>
-                                <td th:text="${#temporals.format(leave.createdAt, 'dd-MMM-yyyy')}">Applied Date</td>
+                                <td th:attr="data-order=${leave.createdAt}" th:text="${#temporals.format(leave.createdAt, 'dd MMM yyyy')}">Applied Date</td>
                                 <td>
                                     <div class="action-buttons">
                                         <a th:href="@{/manager/team-leaves/details/{leaveId}(leaveId=${leave.id})}" 
