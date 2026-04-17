@@ -24,7 +24,8 @@
 	<body>
         <header th:replace="~{fragments/header :: header}"></header>
         
-        <div class="page-wrapper">
+        <div class="page-wrapper d-flex ">
+        <div class="container mt-4 justify-content-center">
             
             <h1 th:text="${employee.id} != null ? 'Update Employee Details' : 'Create New Employee'"></h1>
 
@@ -34,11 +35,12 @@
                 th:text="${globalError}"></div>
 
             <div th:if="${employee}">
+            
                 
                 <form th:action="${employee.id} != null 
                     ? @{/admin/employees/update/{id}(id=${employee.id})} 
                     : @{/admin/employees/create}" 
-                    th:object="${employee}" method="post">
+                    th:object="${employee}" method="post" class="">
 
                     <!-- Hidden ID for update -->
                     <div th:if="*{id != null}">
@@ -115,7 +117,7 @@
                             th:errors="*{jobTitle}"></span>
                     </div>
                     
-                    <div>    
+                    <div class="mb-4">    
                         <label for="annualLeave">Annual Leave Entitlement:</label>
                         <input type="text" th:field="*{annualLeave}"><br>
                         <span class="error" th:if="${#fields.hasErrors('annualLeave')}"
@@ -127,7 +129,7 @@
 
                     <input type="hidden" name="viewName" value="employee/employee-form">
                     
-                    <div class="container mt-4">
+                    
 					    <div class="d-flex justify-content-between align-items-start mb-4">
 					        
 					        <div>
@@ -140,13 +142,14 @@
                     			</button>
 						
 							</div>
-					    </div>			
+					    </div>	
+					    </form>		
 					</div>
                     
 
                     <!-- Dynamic Button -->
                     
-                </form>
+                
             </div>
 
             <div th:unless="${employee}">

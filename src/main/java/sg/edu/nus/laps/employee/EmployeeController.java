@@ -144,12 +144,9 @@ public class EmployeeController {
 		Employee employee = new Employee();
 		employee.setRoleName("");
 
-		// Pull list of roles
-		List<Role> roleList = rService.findAllRoles();
-
+		// Add roleList and rankList to model
 		// Add to model
-		model.addAttribute("roleList", roleList);
-		model.addAttribute("employee", employee); // Use the same instance for binding
+		model.addAttribute("roleList", rService.findAllRoles());
 		// Add enum values for rank
 		model.addAttribute("rankList", EmployeeRank.values());
 		
@@ -173,11 +170,9 @@ public class EmployeeController {
 			
 		
 		if (bindingResult.hasErrors()) {
-			// Pull list of roles
-			List<Role> roleList = rService.findAllRoles();
-
+			// Add roleList and rankList to model
 			// Add to model
-			model.addAttribute("roleList", roleList);
+			model.addAttribute("roleList", rService.findAllRoles());
 			// Add enum values for rank
 			model.addAttribute("rankList", EmployeeRank.values());
 			return "employee/employee-form";
@@ -207,6 +202,11 @@ public class EmployeeController {
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
 			bindingResult.reject("error", "Save failed: " + ex.getMessage());
+			// Add roleList and rankList to model
+			// Add to model
+			model.addAttribute("roleList", rService.findAllRoles());
+			// Add enum values for rank
+			model.addAttribute("rankList", EmployeeRank.values());
 			return "employee/employee-form";
 		}
 		
@@ -220,10 +220,10 @@ public class EmployeeController {
         //     return "redirect:/auth/admin/login";
         // }
 		
-		List<Role> roleList = rService.findAllRoles();
-
+		// Add roleList and rankList to model
 		// Add to model
-		model.addAttribute("roleList", roleList);
+		model.addAttribute("roleList", rService.findAllRoles());
+		// Add enum values for rank
 		model.addAttribute("rankList", EmployeeRank.values());
 		
 		Optional<Employee> empOpt = eService.findById(id);
@@ -271,11 +271,10 @@ public class EmployeeController {
 		}
 		
 		if (bindingResult.hasErrors()) {
-			// Pull list of roles
-			List<Role> roleList = rService.findAllRoles();
-
+			
+			// Add roleList and rankList to model
 			// Add to model
-			model.addAttribute("roleList", roleList);
+			model.addAttribute("roleList", rService.findAllRoles());
 			// Add enum values for rank
 			model.addAttribute("rankList", EmployeeRank.values());
 			return "employee/employee-form";
@@ -330,5 +329,6 @@ public class EmployeeController {
 		}
 		return "redirect:/admin/employees";
 	}
+	
 
 }
