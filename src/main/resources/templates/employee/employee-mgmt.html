@@ -91,16 +91,16 @@
 								<td th:text="${e.jobTitle}">Job Title</td>
 								<td th:text="#{'Rank.' + ${e.rank.name()}}">Rank</td>
 								<td th:text="${e.user.role.name}">User Role</td>
-								<td th:text="${#temporals.format(e.createdAt,'dd MMM yyyy HH:mm')}">Created At</td>
-								<td th:text="${#temporals.format(e.updatedAt,'dd MMM yyyy HH:mm')}">Updated At</td>
+								<td th:text="${#temporals.format(e.createdAt,'dd MMM yyyy')}">Created At</td>
+								<td th:text="${#temporals.format(e.updatedAt,'dd MMM yyyy')}">Updated At</td>
 								<td>
 								<!-- <a th:href="@{/admin/employees/update/{id}(id=${e.id})}">Update Details</a> -->
 								<form th:action="@{/admin/employees/update/{id}(id=${e.id})}" method="get">
-								<button type="submit" class="btn btn-primary">Update Details</button>
+								<button type="submit" class="btn btn-primary">Update</button>
 								</form>
 								<p></p>
 								<form th:action="@{/admin/employees/delete/{id}(id=${e.id})}" method="post">
-								<button type="submit" class="btn btn-primary">Delete Employee</button>
+								<button type="submit" class="btn btn-primary">Delete</button>
 								</form>
 								</td>
 								
