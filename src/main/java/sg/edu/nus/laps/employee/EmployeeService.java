@@ -1,5 +1,6 @@
 package sg.edu.nus.laps.employee;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,6 +21,10 @@ import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
 import sg.edu.nus.laps.employee.model.NewEmployeeRecord;
 import sg.edu.nus.laps.employee.repository.EmployeeRepository;
+import sg.edu.nus.laps.leave.model.LeaveRecord;
+import sg.edu.nus.laps.leave.model.LeaveType;
+import sg.edu.nus.laps.leave.repository.LeaveRecordRepository;
+import sg.edu.nus.laps.leave.repository.LeaveTypeRepository;
 
 /*
     EmployeeService handles all employee CRUD operations (Admin-only)
@@ -47,6 +52,8 @@ public class EmployeeService {
 	private final EmployeeRepository eRepo;
 	private final UserRepository uRepo;
 	private final RoleRepository rRepo;
+	private final LeaveTypeRepository ltRepo;
+	private final LeaveRecordRepository lrRepo;
 	private final String EMAIL_DOMAIN;
 	private final PasswordEncoder encoder;
 
@@ -54,12 +61,16 @@ public class EmployeeService {
 		EmployeeRepository eRepo,
 		UserRepository uRepo,
 		RoleRepository rRepo,
+		LeaveTypeRepository ltRepo,
+		LeaveRecordRepository lrRepo,
 		PasswordEncoder encoder,
 		@Value("${app.email.domain}") String EMAIL_DOMAIN) {
 		super();
 		this.eRepo = eRepo;
 		this.uRepo = uRepo;
 		this.rRepo = rRepo;
+		this.ltRepo = ltRepo;
+		this.lrRepo = lrRepo;
 		this.EMAIL_DOMAIN = EMAIL_DOMAIN;
 		this.encoder = encoder;
 	}
@@ -130,6 +141,7 @@ public class EmployeeService {
 		return adminCount;
 	}
 	
+	
 	// Partially update existing employee
 	// Propagation.REQUIRED: Keep user and employee saves in same transaction
 	// Isolation.READ_COMMITTED: Prevent dirty reads
@@ -159,7 +171,21 @@ public class EmployeeService {
 				existUser.setRole(newRole); // JPA will update users automatically
 			}
 		}
+		// Update employee's AL leave record entitled days
+		Long annualLeaveTypeId;
+		Integer currentYear = LocalDate.now().getYear();
 
+		Optional<LeaveType> annualLeaveType = ltRepo.findByLeaveType("Annual");
+
+		if(annualLeaveType.isPresent()) {
+			annualLeaveTypeId = annualLeaveType.get().getId();
+
+			Optional<LeaveRecord> empAnnualRecord = lrRepo.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(existEmployee.getId(), annualLeaveTypeId, currentYear);
+
+			if(empAnnualRecord.isPresent()) {
+				empAnnualRecord.get().setEntitledDays(existEmployee.getAnnualLeave());
+			}
+		}
 		// Update employee - updates user in DB too
 		eRepo.save(existEmployee);
 	}
@@ -216,7 +242,19 @@ public class EmployeeService {
 		// Create and save new user with enabled account and assigned role
 		// Fields: email, passwordHash, enabled, role
 		User user = new User(email, passwordHash, true, newRole);
-
+		
+		// Create new LeaveRecords for new employee
+		Long annualLeaveTypeId;
+		Integer currentYear = LocalDate.now().getYear();
+		
+		Optional<LeaveType> annualLeaveType = ltRepo.findByLeaveType("Annual");
+		Optional<LeaveType> medicalLeaveType = ltRepo.findByLeaveType("Medical");
+		Optional<LeaveType> compLeaveType = ltRepo.findByLeaveType("Compensation");
+		
+		LeaveRecord annualLeaveRec = new LeaveRecord(currentYear, employee.getAnnualLeave(), 0.0, employee, annualLeaveType.get());
+		LeaveRecord medicalLeaveRec = new LeaveRecord(currentYear, 60.0, 0.0, employee, medicalLeaveType.get());
+		LeaveRecord compLeaveRec = new LeaveRecord(currentYear, 0.0, 0.0, employee, compLeaveType.get());
+		
 		// Set employee's user account and save
 		employee.setUser(user); // JPA maps to User and saves
 		eRepo.save(employee);
