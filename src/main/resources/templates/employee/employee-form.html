@@ -136,7 +136,7 @@
 					            <button class="btn btn-primary" type="button" onclick="history.back()">Back</button>
 					        </div>
 					        <div>
-								
+								 <!-- Dynamic Button -->
 								<button class="btn btn-primary" type="submit"
                             		th:text="${employee.id} != null ? 'Update Employee' : 'Create Employee'">
                     			</button>
@@ -147,14 +147,14 @@
 					</div>
                     
 
-                    <!-- Dynamic Button -->
+                   
                     
                 
             </div>
 
-            <div th:unless="${employee}">
+            <!-- <div th:unless="${employee}">
                 Employee does not exist.
-            </div>
+            </div> -->
         </div>
 
         <footer th:replace="~{fragments/footer :: footer}"></footer>
