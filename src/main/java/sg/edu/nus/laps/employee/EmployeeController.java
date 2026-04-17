@@ -255,18 +255,18 @@ public class EmployeeController {
 	public String deleteEmployee(@PathVariable Long id, RedirectAttributes redirectAttrs) {
 		Optional<Employee> empOpt = eService.findById(id);
 		
-		if (empOpt.isPresent()) {
-			try {
-				eService.delete(empOpt.get());
-				redirectAttrs.addFlashAttribute("successMsg", 
-					"Employee #" + id + " has been deleted.");
-			} catch (Exception ex) { // Catches SQL + Custom exceptions
-				redirectAttrs.addFlashAttribute("globalError", 
-					"Delete failed: " + ex.getMessage());
-			}
-		} else {
+		if (empOpt.isEmpty()) {
 			redirectAttrs.addFlashAttribute("globalError", 
 				"Employee does not exist.");
+		}
+
+		try {
+			eService.delete(empOpt.get());
+			redirectAttrs.addFlashAttribute("successMsg", 
+				"Employee #" + id + " has been deleted.");
+		} catch (Exception ex) { // Catches SQL + Custom exceptions
+			redirectAttrs.addFlashAttribute("globalError", 
+				"Delete failed: " + ex.getMessage());
 		}
 		return "redirect:/admin/employees";
 	}
