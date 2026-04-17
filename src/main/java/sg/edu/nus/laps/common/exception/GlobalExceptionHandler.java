@@ -23,8 +23,7 @@ public class GlobalExceptionHandler {
         .getLogger(GlobalExceptionHandler.class.getName());
 
     // EXCEPTION HANDLERS
-    // CATCH GLOBAL EXCEPTIONS
-
+    
     // Handle null user exception
     // Redirect to login page with param unauthorised
     @ExceptionHandler(UnauthorisedUserException.class)

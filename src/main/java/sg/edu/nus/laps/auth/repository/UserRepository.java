@@ -12,9 +12,6 @@ import sg.edu.nus.laps.auth.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
 
-    // READ
-    // ID = email, but coding queries by email for readability/reusability
-
     // CHeck if user exists by email and enabled
     boolean existsByEmailAndEnabledTrue(String email);
 
@@ -27,6 +24,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     // Find list of users by role ordered by latest update
     List<User> findByRole_IdOrderByUpdatedAtDesc(Long roleId);
     
+    // Count user role by role ID
     @Query("select count(u) from User u where u.role.id = :roleId")
     Integer countByRoleId(String roleId);
     

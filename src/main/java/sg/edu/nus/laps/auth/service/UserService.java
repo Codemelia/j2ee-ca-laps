@@ -14,21 +14,12 @@ import sg.edu.nus.laps.auth.model.PasswordDTO;
 import sg.edu.nus.laps.auth.model.User;
 import sg.edu.nus.laps.auth.repository.UserRepository;
 
-/*
-    UserService handles all user data operations
-
-                    SERVICE SCOPE
-    ------------------------------------------------
-    -- READ --
-    findByUserEmail(email) - Retrieve user by User Email
-    findByUserId(id)       - Retrieve user by User ID
-
-    -- CREATE / UPDATE --
-    save(user)             - Create or update user account (JPA maps by ID)
-
-    -- DELETE --
-    delete(user)           - Delete user account
-*/
+/**
+ * UserService provides methods:
+ * 1. Saving users with encoded passwords
+ * 2. Changing user passwords
+ * 3. Validating password inputs
+ */
 @Service
 public class UserService {
 
@@ -39,13 +30,10 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
-    // Save user to repo
-    // If user already exists in DB, throw exception
-    // Else, encode user password and save in DB
+    // Save user to repo - unimplemented, but assuming there is a super admin role
     @Transactional(
         propagation = Propagation.REQUIRED,
-        isolation = Isolation.READ_COMMITTED
-    )
+        isolation = Isolation.READ_COMMITTED)
     public User saveUser(User user) {
             
         // Check if user already exists in DB
@@ -63,10 +51,8 @@ public class UserService {
     // New + old password from User input
     @Transactional(
         propagation = Propagation.REQUIRED,
-        isolation = Isolation.READ_COMMITTED
-    )
-    public User changePassword(
-        String email, PasswordDTO passwordDTO) {
+        isolation = Isolation.READ_COMMITTED)
+    public User changePassword(String email, PasswordDTO passwordDTO) {
 
         // Retrieve user by email
         Optional<User> optUser = userRepo.findByEmailAndEnabledTrue(email);
@@ -75,21 +61,15 @@ public class UserService {
         if (optUser.isEmpty()) { 
             throw new InvalidUserException("User does not have a valid account");
         }
+
+        User user = optUser.get();
         
         // Old and new raw passwords
         String oldRawPassword = passwordDTO.getOldRawPassword();
-        String newRawPassword = passwordDTO.getNewRawPassword();
+        String newRawPassword = passwordDTO.getNewRawPassword();        
 
-        // Retrieve old hashed password from DB
-        User user = optUser.get();
-
-        String oldPasswordHash = user.getPasswordHash();
-
-        // use encoder to match old passwords
-        boolean match = encoder.matches(oldRawPassword, oldPasswordHash);
-
-        // If no match, throw exception
-        if (!match) {
+        // Use encoder to match old password to hashed password
+        if (!encoder.matches(oldRawPassword, user.getPasswordHash())) {
             throw new InvalidPasswordException("Current password is invalid");
         }
 
@@ -100,7 +80,6 @@ public class UserService {
     }
 
     // Check if new password matches confirm password
-    // More of UI Validation, no Transaction
     public boolean newPasswordsMatch(PasswordDTO passwordDTO) {
         return passwordDTO.getNewRawPassword()
             .equals(passwordDTO.getConfirmPassword());
@@ -116,13 +95,4 @@ public class UserService {
         return false;
     }
 
-    // REPLACE WITH SPRING SECURITY
-    // Authenticate email and password
-    // public boolean authenticate(String email, String password) {
-    //     Optional<User> optUser = userRepo.findByEmailAndEnabledTrue(email); // Find active account
-    //     if (optUser.isEmpty()) return false; // If Optional<User> is empty, return false
-    //     User savedUser = optUser.get(); // Else, get User object
-    //     return encoder.matches(password, savedUser.getPasswordHash()); // Check password against saved password (encoded)
-    // }
-        
 }

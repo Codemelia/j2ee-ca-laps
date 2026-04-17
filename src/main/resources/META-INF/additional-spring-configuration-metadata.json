@@ -1,10 +1,5 @@
 {"properties": [
   {
-    "name": "my.application.domain",
-    "type": "java.lang.String",
-    "description": "A description for 'my.application.domain'"
-  },
-  {
     "name": "app.base.url",
     "type": "java.lang.String",
     "description": "A description for 'app.base.url'"

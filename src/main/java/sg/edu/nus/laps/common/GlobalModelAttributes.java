@@ -17,26 +17,17 @@ import sg.edu.nus.laps.security.AuthUserDetails;
 @ControllerAdvice
 public class GlobalModelAttributes {
 
-    // MODEL ATTRIBUTES
-    // RUN LOGIC BEFORE CONTROLLER METHODS
-
+    // For global use of app name
     @Value("${spring.application.name}")
     private String appName;
 
-    // For global use of app name
     @ModelAttribute("appName")
-    public String appName() {
-        return appName;
-    }
+    public String appName() { return appName; }
 
     private final EmployeeService eSvc;
+    public GlobalModelAttributes(EmployeeService eSvc) { this.eSvc = eSvc; }
 
-    public GlobalModelAttributes(EmployeeService eSvc) {
-        this.eSvc = eSvc;
-    }
-
-    // Run NULL User check before every Controller method
-    // Redirect to login if user is not authenticated
+    // Run NULL User check before every Controller method - safety net
     @ModelAttribute
     public void checkUserAuthentication(@AuthenticationPrincipal AuthUserDetails user,
         HttpServletRequest request) {
@@ -59,12 +50,11 @@ public class GlobalModelAttributes {
         }
     }
 
-    // Retrieve display employee details before every Controller method
+    // Retrieve display employee details for all pages
     @ModelAttribute
     public void getEmployeeDetails(
         @AuthenticationPrincipal AuthUserDetails user, Model model) {
         if (user != null && user.getEmployeeId() != null) {
-
             // Retrieve employee from user
             Long empId = user.getEmployeeId();
             Optional<Employee> optEmp = eSvc.findById(empId);
@@ -74,10 +64,8 @@ public class GlobalModelAttributes {
                 Employee emp = optEmp.get();
                 model.addAttribute("employeeFullName", 
                     emp.getFirstName() + " " + emp.getLastName());
-                model.addAttribute("employeeTeam",
-                    emp.getTeamName());
-                model.addAttribute("employeeTitle",
-                    emp.getJobTitle());
+                model.addAttribute("employeeTeam", emp.getTeamName());
+                model.addAttribute("employeeTitle", emp.getJobTitle());
             }
         }
     }

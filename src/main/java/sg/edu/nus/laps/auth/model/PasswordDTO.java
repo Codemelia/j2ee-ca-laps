@@ -4,15 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+// DTO for taking in password change requests
 public class PasswordDTO {
-
-    // Validation for Password change
-
-	// ATTRIBUTES
-
-    // Content not validated - checked in Service + DB
-	@NotBlank(message = "Current password cannot be null or blank")
-	private String oldRawPassword;
 
 	@NotBlank(message = "New password cannot be null or blank")
 	@Size(min = 12, max = 16, message ="New password must be between 12 and 16 characters")
@@ -22,10 +15,12 @@ public class PasswordDTO {
 	)
 	private String newRawPassword;
 
+	// NON-VALIDATED ATTRIBUTES - checked in Service + DB
+	@NotBlank(message = "Current password cannot be null or blank")
+	private String oldRawPassword;
+
 	@NotBlank(message = "Confirm password cannot be null or blank")
     private String confirmPassword;
-
-	// GETTERS SETTERS
 
 	public String getOldRawPassword() { return this.oldRawPassword; }
 	public void setOldRawPassword(String oldRawPassword) { this.oldRawPassword = oldRawPassword; }
@@ -34,16 +29,12 @@ public class PasswordDTO {
 	public String getConfirmPassword() { return this.confirmPassword; }
 	public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
     
-	// CONSTRUCTORS
-
 	public PasswordDTO() {}
 	public PasswordDTO(String oldRawPassword, String newRawPassword, String confirmPassword) {
 		this.oldRawPassword = oldRawPassword;
 		this.newRawPassword = newRawPassword;
 		this.confirmPassword = confirmPassword;
 	}
-
-	// TO STRING
 
 	@Override
 	public String toString() {

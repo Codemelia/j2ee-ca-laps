@@ -56,25 +56,24 @@ Please view the respective Controller/Service classes for top-level functions.
 
 ### Skeleton Repository:
 ```
-LAPS
+j2ee-ca-laps
 ├── src/main/java/sg/edu/nus/laps
-│   ├── approval [MANAGER: APPROVE TEAM LEAVES]
+│   ├── approval [APPROVE/REJECT TEAM LEAVES]
 │   │     ├── ApprovalController.java
 │   │     └── ApprovalService.java
 │
-│   ├── auth [USER AND AUTHENTICATION]
-│   │     ├── security [AUTH: SPRING SECURITY]
-│   │     |     ├── AuthUserDetails.java
-│   │     |     └── AuthUserDetailsService.java
-│   │     ├── user [USER DATA]
-│   │     |     ├── model
-│   │     |     |     ├── Role.java
-│   │     |     |     └── User.java
-│   │     |     ├── repository
-│   │     |     |     ├── RoleRepository.java
-│   │     |     |     └── UserRepository.java
+│   ├── auth [USER DATA]
+│   │     ├── model
+│   │     |     ├── PasswordDTO.java
+│   │     |     ├── Role.java
+│   │     |     └── User.java
+│   │     ├── repository
+│   │     |     ├── RoleRepository.java
+│   │     |     └── UserRepository.java
+│   │     ├── service
+│   │     |     ├── RoleService.java
 │   │     |     └── UserService.java
-│   │     └── AuthController.java [AUTH: LOGIN/LOGOUT]
+│   │     └── AuthController.java
 |
 │   ├── common [COMMON FILES USED ACROSS PACKAGES]
 │   │     ├── exception

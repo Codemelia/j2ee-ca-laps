@@ -5,12 +5,7 @@ public enum EmployeeRank {
 	PROFESSIONAL("Professional");
 	
 	private final String displayName;
-	
-	EmployeeRank(String displayName) {
-		this.displayName = displayName;
-	}
-	
-	public String getDisplayName() {
-		return displayName;
-	}
+
+	EmployeeRank(String displayName) { this.displayName = displayName; }
+	public String getDisplayName() { return displayName; }
 }

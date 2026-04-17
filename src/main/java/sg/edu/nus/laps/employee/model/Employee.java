@@ -19,8 +19,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -39,42 +37,35 @@ public class Employee extends SetCreatedUpdated {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	// Remove bc this should be FK
-	// @Column(nullable = false, unique = true, length = 256) // JPA - MySQL constraints
-//	 @NotBlank(message = "Company email is required")
-//	 @Email(message = "Please enter a valid email address") // check invalid email
-//	 @Size(min = 10, max = 256, message = "Email must be between 10 to 256 characters")
-//	 private String email;
-
-	@Column(name = "first_name", nullable = false, length = 50) // JPA - MySQL constraints
+	@Column(name = "first_name", nullable = false, length = 50)
 	@NotBlank(message = "First name is required")
 	@Size(min = 2, max = 50, message = "First name must be between 2 to 50 characters")
 	@Pattern(regexp = "^[A-Za-z '-]+$", message = "First name contains invalid characters") // Only allow letters, space, ', -
 	private String firstName;
 
-	@Column(name = "last_name", nullable = false, length = 50) // JPA - MySQL constraints
+	@Column(name = "last_name", nullable = false, length = 50)
 	@NotBlank(message = "Last name is required")
 	@Size(min = 2, max = 50, message = "Last name must be between 2 to 50 characters")
 	@Pattern(regexp = "^[A-Za-z '-]+$", message = "Last name contains invalid characters")
 	private String lastName;
 
-	@Column(name = "contact_number", nullable = false, length = 15) // JPA - MySQL constraints
+	@Column(name = "contact_number", nullable = false, length = 15)
 	@NotBlank(message = "Contact number is required")
 	@Size(min = 8, max = 15, message = "Contact number must be between 8 to 15 characters")
 	@Pattern(regexp = "^\\+?\\d{8,15}$", message = "Enter a valid phone number") // Validate phone number regexp - \\s () \\d . not allowed for now
 	private String contactNumber;
 
 	@Enumerated(EnumType.STRING) // JPA store ENUM as String in DB
-	@Column(name = "`rank`", nullable = false, length = 30) // JPA - MySQL constraints
+	@Column(name = "`rank`", nullable = false, length = 30)
 	@NotNull(message = "Please select employee's rank")
 	private EmployeeRank rank;
 	
 	// Admin will need to key in manager's id directly
-	@Column(name = "manager_id", nullable = true) // JPA - MySQL constraints
+	@Column(name = "manager_id", nullable = true)
 	@Positive(message = "Manager's id must be a positive number") // Validate admin input
 	private Long managerId;
 
-	// ADDED for Dashboard Display
+	// ADDED for display
 	@Column(nullable=false)
 	@NotBlank(message = "Please state employee's team name")
 	@Size(max = 50, message = "Team name must be 50 characters and below")
@@ -85,28 +76,17 @@ public class Employee extends SetCreatedUpdated {
 	@Size(max = 50, message = "Job title must be 50 characters and below")
 	private String jobTitle;
 	
+	// ADDED for form binding
 	@Transient //Don't persist in db
 	@NotNull(message = "Annual Leave Entitlement cannot be blank")
 	@DecimalMin(value="14.0", inclusive=true, message="")
 	@DecimalMax(value="21.0", inclusive=true, message="")
 	private Double annualLeave;
 
-	// ADDED for form binding
-	// Will not persist to DB
 	@Transient
 	@NotBlank(message = "Role must not be blank")
 	private String roleName;
 
-	// Set by /common/util/SetCreatedUpdated.java
-	// @Column(name = "created_at", nullable = false, updatable = false) // JPA - MySQL constraints
-	// private LocalDateTime createdAt;
-	// @CreationTimestamp
-	// private LocalDateTime createdAt;
-	// // @Column(name = "updated_at", nullable = false) // JPA - MySQL constraints
-	// // private LocalDateTime updatedAt;
-	// @UpdateTimestamp
-	// private LocalDateTime updatedAt;
-	
 	// Employee to User: One to One
 	// Employee as Owning Side bc User may not be Employee, but Employee must be User
 	// CascadeType.REMOVE - On delete employee, delete associated user
@@ -124,35 +104,21 @@ public class Employee extends SetCreatedUpdated {
 	// Employee to LeaveApplication: One to Many
 	// orphanRemoval - detach leaveApplication to allow delete
 	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY,
-		orphanRemoval = true
-	)
+		orphanRemoval = true)
 	private List<LeaveApplication> leaveApplications = new ArrayList<>();
 	
 	// Employee to LeaveRecord: One to Many
 	// CascadeType.PERSIST, CascadeType.MERGE - Allow Employee modification to update leave records
-	// orphanRemoval - detach leaveApplication to allow delete
+	// orphanRemoval - detach leaveRecord to allow delete
 	@OneToMany(mappedBy= "employee", fetch = FetchType.LAZY, 
 		cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-		orphanRemoval = true
-	)
+		orphanRemoval = true)
 	private List<LeaveRecord> leaveRecords = new ArrayList<>();
 	
-	public Employee() {
-		super();
-	}
-
-	public Employee(Long id,
-			@NotBlank(message = "First name is required") @Size(min = 2, max = 50, message = "First name must be between 2 to 50 characters") @Pattern(regexp = "^[A-Za-z '-]+$", message = "First name contains invalid characters") String firstName,
-			@NotBlank(message = "Last name is required") @Size(min = 2, max = 50, message = "Last name must be between 2 to 50 characters") @Pattern(regexp = "^[A-Za-z '-]+$", message = "Last name contains invalid characters") String lastName,
-			@NotBlank(message = "Contact number is required") @Size(min = 8, max = 15, message = "Contact number must be between 8 to 15 characters") @Pattern(regexp = "^\\+?\\d{8,15}$", message = "Enter a valid phone number") String contactNumber,
-			@NotNull(message = "Please select employee's rank") EmployeeRank rank,
-			@Positive(message = "Manager's id must be a positive number") Long managerId,
-			@NotBlank(message = "Please state employee's team name") @Size(max = 50, message = "Team name must be 50 characters and below") String teamName,
-			@NotBlank(message = "Please state employee's job title") @Size(max = 50, message = "Job title must be 50 characters and below") String jobTitle,
-			@NotBlank(message = "Annual Leave Entitlement cannot be blank") @Min(14) @Max(21) Double annualLeave,
-			@NotBlank(message = "Role must not be blank") String roleName, User user,
-			List<LeaveApplication> leaveApplications, List<LeaveRecord> leaveRecords) {
-		super();
+	public Employee() {}
+	public Employee(Long id, String firstName, String lastName, String contactNumber,
+		EmployeeRank rank, Long managerId, String teamName, String jobTitle, Double annualLeave,
+		String roleName, User user, List<LeaveApplication> leaveApplications, List<LeaveRecord> leaveRecords) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -168,124 +134,32 @@ public class Employee extends SetCreatedUpdated {
 		this.leaveRecords = leaveRecords;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	// public String getEmail() {
-	// 	return email;
-	// }
-
-	// public void setEmail(String email) {
-	// 	this.email = email;
-	// }
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public String getContactNumber() {
-		return contactNumber;
-	}
-
-	public void setContactNumber(String contactNumber) {
-		this.contactNumber = contactNumber;
-	}
-
-	public EmployeeRank getRank() {
-		return rank;
-	}
-
-	public void setRank(EmployeeRank rank) {
-		this.rank = rank;
-	}
-
-	public Long getManagerId() {
-		return managerId;
-	}
-
-	public void setManagerId(Long managerId) {
-		this.managerId = managerId;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-
-	public String getTeamName() {
-		return this.teamName;
-	}
-
-	public void setTeamName(String teamName) {
-		this.teamName = teamName;
-	}
-
-	public String getJobTitle() {
-		return this.jobTitle;
-	}
-
-	public void setJobTitle(String jobTitle) {
-		this.jobTitle = jobTitle;
-	}
-	
-
-	public List<LeaveApplication> getLeaveApplications() {
-		return this.leaveApplications;
-	}
-
-	public void setLeaveApplications(List<LeaveApplication> leaveApplications) {
-		this.leaveApplications = leaveApplications;
-	}
-
-	public List<LeaveRecord> getLeaveRecords() {
-		return this.leaveRecords;
-	}
-
-	public void setLeaveRecords(List<LeaveRecord> leaveRecords) {
-		this.leaveRecords = leaveRecords;
-	}
-
-	public String getRoleName() {
-		return this.roleName;
-	}
-
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
-	}
-
-	public Double getAnnualLeave() {
-		return annualLeave;
-	}
-
-	public void setAnnualLeave(Double annualLeave) {
-		this.annualLeave = annualLeave;
-	}
-
-	public void addLeaveRecord(LeaveRecord leaveRecord) {
-		this.leaveRecords.add(leaveRecord);
-		setLeaveRecords(leaveRecords);
-	}
+	public Long getId() { return id; }
+	public void setId(Long id) { this.id = id; }
+	public String getFirstName() { return firstName; }
+	public void setFirstName(String firstName) { this.firstName = firstName; }
+	public String getLastName() { return lastName; }
+	public void setLastName(String lastName) { this.lastName = lastName; }
+	public String getContactNumber() { return contactNumber; }
+	public void setContactNumber(String contactNumber) { this.contactNumber = contactNumber; }
+	public EmployeeRank getRank() { return rank; }
+	public void setRank(EmployeeRank rank) { this.rank = rank; }
+	public Long getManagerId() { return managerId; }
+	public void setManagerId(Long managerId) { this.managerId = managerId; }
+	public User getUser() { return user; }
+	public void setUser(User user) { this.user = user; }
+	public String getTeamName() { return this.teamName; }
+	public void setTeamName(String teamName) { this.teamName = teamName; }
+	public String getJobTitle() { return this.jobTitle; }
+	public void setJobTitle(String jobTitle) { this.jobTitle = jobTitle; }
+	public List<LeaveApplication> getLeaveApplications() { return this.leaveApplications; }
+	public void setLeaveApplications(List<LeaveApplication> leaveApplications) { this.leaveApplications = leaveApplications; }
+	public List<LeaveRecord> getLeaveRecords() { return this.leaveRecords; }
+	public void setLeaveRecords(List<LeaveRecord> leaveRecords) { this.leaveRecords = leaveRecords; }
+	public String getRoleName() { return this.roleName; }
+	public void setRoleName(String roleName) { this.roleName = roleName; }
+	public Double getAnnualLeave() { return annualLeave; }
+	public void setAnnualLeave(Double annualLeave) { this.annualLeave = annualLeave; }
 
 	@Override
 	public String toString() {

@@ -11,21 +11,17 @@ import jakarta.validation.constraints.NotBlank;
 @Entity
 @Table(name = "roles")
 public class Role {
-
-	// ATTRIBUTES
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false, unique = true, length = 10) // JPA - MySQL constraints
+	@Column(nullable = false, unique = true, length = 10)
 	@NotBlank(message = "User role cannot be null or blank")
 	private String name;
 
 	@Column(length = 100)
 	private String description;
-
-	// CONSTRUCTORS
 
 	public Role() {}
 	public Role(String name, String description) {
@@ -33,16 +29,12 @@ public class Role {
 		this.description = description;
 	}
 
-	// GETTERS SETTERS
-
 	public Long getId() { return this.id; }
 	public void setId(Long id) { this.id = id; }
 	public String getName() { return this.name; }
 	public void setName(String name) { this.name = name; }
 	public String getDescription() { return this.description; }
 	public void setDescription(String description) { this.description = description; }
-
-	// TO STRING
 	
 	@Override
 	public String toString() {

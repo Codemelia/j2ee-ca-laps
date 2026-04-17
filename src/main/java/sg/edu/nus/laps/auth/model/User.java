@@ -17,19 +17,17 @@ import sg.edu.nus.laps.employee.model.Employee;
 @Entity
 @Table(name = "users")
 public class User extends SetCreatedUpdated {
-	
-	// ATTRIBUTES
 
 	@Id
-	@Column(nullable = false, unique = true, length = 256) // JPA - MySQL constraints
+	@Column(nullable = false, unique = true, length = 256)
 	@NotBlank(message = "User email is required")
-	@Email(message = "User email is invalid") // Check invalid email
+	@Email(message = "User email is invalid")
 	@Size(min = 10, max = 256, message = "User email must be between 10 to 256 characters")
 	private String email;
 
 	// No raw password validation bc this is hashed password
 	// Set length at 255 for flexibility in case of hash algorithm change
-	@Column(name = "password_hash", nullable = false, length = 255) // JPA - MySQL constraints
+	@Column(name = "password_hash", nullable = false, length = 255)
 	@NotBlank(message = "Password hash is required")
 	@Size(max = 255, message = "Password hash must not be longer than 255 characters")
 	private String passwordHash;
@@ -37,8 +35,6 @@ public class User extends SetCreatedUpdated {
 	// default to true - Avoid accidental pending state
 	@Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
 	private boolean enabled = true;
-
-	// ASSOCIATIONS
 
 	// User to Role: Many to One
 	// User as Owning Side, stores FK role_id
@@ -51,8 +47,6 @@ public class User extends SetCreatedUpdated {
 	@OneToOne(optional = true, mappedBy = "user", fetch = FetchType.LAZY)
 	private Employee employee;
 
-	// CONSTRUCTORS
-
 	public User() {}
 	public User(String email, String passwordHash, boolean enabled, Role role) {
 		this.email = email;
@@ -61,14 +55,8 @@ public class User extends SetCreatedUpdated {
 		this.role = role;
 	}
 	
-	// GETTERS SETTERS
-
-	// Restrictions:
-	// Only admin can access setEmail() / setRole() / isEnabled() - enforced in service layer
-	// NO setCreatedAt() / setUpdatedAt() to prevent corrupting timestamps
-
+	// setEmail() is not generated as it is system-generated ID
 	public String getEmail() { return this.email; }
-	public void setEmail(String email) { this.email = email; }
 	public String getPasswordHash() { return this.passwordHash; }
 	public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 	public boolean isEnabled() { return this.enabled; }
@@ -77,8 +65,6 @@ public class User extends SetCreatedUpdated {
 	public void setRole(Role role) { this.role = role; }
 	public Employee getEmployee() { return this.employee; }
 	public void setEmployee(Employee employee) { this.employee = employee; }
-
-	// TO STRING
 
 	@Override
 	public String toString() {

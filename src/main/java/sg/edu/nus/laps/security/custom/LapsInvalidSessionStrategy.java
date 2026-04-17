@@ -8,22 +8,16 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+// SET REDIRECT TO ADMIN / EMPLOYEE LOGIN BASED ON URI BASE
 public class LapsInvalidSessionStrategy implements InvalidSessionStrategy {
-
-    // SET CUSTOM INVALID SESSION URLS
     @Override
     public void onInvalidSessionDetected(HttpServletRequest request, 
         HttpServletResponse response) throws IOException, ServletException {
-        
         String uri = request.getRequestURI();
 
-        // SET REDIRECT TO ADMIN / EMPLOYEE LOGIN BASED ON URI BASE
-        if (uri.startsWith("/admin")) {
-            response.sendRedirect("/auth/admin/login?invalid=true");
-        } else {
-            response.sendRedirect("/auth/employee/login?invalid=true");
-        }
-
+        if (uri.startsWith("/admin")) { response
+            .sendRedirect("/auth/admin/login?invalid=true"); } 
+        else { response
+            .sendRedirect("/auth/employee/login?invalid=true"); }
     }
-    
 }

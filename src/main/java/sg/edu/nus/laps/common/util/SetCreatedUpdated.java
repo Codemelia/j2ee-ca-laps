@@ -7,7 +7,9 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 
-@MappedSuperclass // Declare as non-entity, mappings will be inherited by child classes
+// Audit tracking
+// Mappings will be inherited by child classes
+@MappedSuperclass
 public abstract class SetCreatedUpdated {
 
 	@Column(name = "created_at", nullable = false, updatable = false)

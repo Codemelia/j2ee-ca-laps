@@ -97,7 +97,7 @@ public class ApprovalController {
         return "leave/leave-list";
     }
 
-        /**
+    /**
      * Displays detailed information about a single leave application.
      * Also shows conflicting/overlapping leave requests from other team members
      * to help the manager make an informed decision.

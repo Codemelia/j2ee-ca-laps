@@ -20,8 +20,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	@Query("select count(e.Id) from Employee e")
 	Integer countId();
 	
-	// Page<Employee> findAll(Pageable pageable);
-	
 	List<Employee> findByRank(EmployeeRank rank);
 	
 }

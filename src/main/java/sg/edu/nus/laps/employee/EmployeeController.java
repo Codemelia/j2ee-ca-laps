@@ -25,18 +25,7 @@ import sg.edu.nus.laps.leave.service.LeaveRecordService;
 import sg.edu.nus.laps.leave.service.LeaveTypeService;
 import sg.edu.nus.laps.security.AuthUserDetails;
 
-/*
-    EmployeeController handles employee CRUD operations (Admin only)
 
-                    CONTROLLER SCOPE
-    ------------------------------------------------
-	BASE: /admin/employees
-	GET  /admin/employees/new         - Display create employee form
-	POST /admin/employees             - Process employee create request
-	GET  /admin/employees/{id}/edit   - Display update employee form
-	POST /admin/employees/{id}        - Process employee update request
-	POST /admin/employees/{id}/delete - Delete employee by ID
-*/
 @RequestMapping("/admin/employees")
 @Controller
 public class EmployeeController {
@@ -46,13 +35,13 @@ public class EmployeeController {
 	private final HolidayService hService;
 	private final LeaveRecordService lrService;
 	private final LeaveTypeService ltService;
-	// private LocalDate date;
 	
-	public EmployeeController(EmployeeService eService,
-		RoleService rService, HolidayService hService, LeaveRecordService lrService,
+	public EmployeeController(
+		EmployeeService eService,
+		RoleService rService, 
+		HolidayService hService, 
+		LeaveRecordService lrService,
 		LeaveTypeService ltService) {
-		
-		super();
 		this.eService = eService;
 		this.rService = rService;
 		this.hService = hService;
@@ -60,13 +49,8 @@ public class EmployeeController {
 		this.ltService = ltService;
 	}
 	
-	// private boolean isLoggedIn(HttpSession session) {
-    //     return session.getAttribute("user") != null;
-    // }
-	
 	@GetMapping("/update-holidays")
 	public String updateHolidays(Model model, RedirectAttributes redirectAttrs) {
-		
 		try { 
 			hService.fetchAndSyncHolidays();
 			redirectAttrs.addFlashAttribute("successMsg", 
