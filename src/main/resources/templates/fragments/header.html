@@ -2,12 +2,8 @@
     <div class="topbar">
 
         <!-- Logo -->
-        <a th:href="@{/}" class="site-title" 
-            sec:authorize="!hasAuthority('AUTH_INTERNAL_ADMIN')"
-            th:text="${appName} ?: 'G3LAPS'"></a>
-
-        <a th:href="@{/admin/employees}" class="site-title" 
-            sec:authorize="hasAuthority('AUTH_INTERNAL_ADMIN')"
+        <a class="site-title"
+            th:href="${#authorization.expression('hasAuthority(\'AUTH_INTERNAL_ADMIN\')')} ? @{/admin/employees} : @{/}"
             th:text="${appName} ?: 'G3LAPS'"></a>
 
         <!-- Spring Security user role auth -->
