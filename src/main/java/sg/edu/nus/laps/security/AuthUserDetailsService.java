@@ -15,7 +15,6 @@ import sg.edu.nus.laps.auth.repository.UserRepository;
 @Service
 public class AuthUserDetailsService implements UserDetailsService {
 
-    // @Autowired
     private final UserRepository userRepo;
     public AuthUserDetailsService(UserRepository userRepo) {
         this.userRepo = userRepo;

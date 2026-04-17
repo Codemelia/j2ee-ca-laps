@@ -13,27 +13,13 @@ import sg.edu.nus.laps.leave.service.LeaveService;
 import sg.edu.nus.laps.security.AuthUserDetails;
 
 /*
-    MeController handles user/employee-facing pages (Authenticated users only)
-
-                    CONTROLLER SCOPE
-    ------------------------------------------------
-    DASHBOARD:
-    GET / OR /me
-        - Show dashboard summary and user context
-
-    USER-FACING PAGES:
-    GET  /me/profile
-        - Display employee profile
-    POST /me/profile
-        - Process employee profile edit request
-    GET  /me/notifications
-        - Display notifications list
+    MeController handles internal employee dashboard
+    Top 5 leave applications ordered by updated date ASC
 */
 @RequestMapping(path={"/", "/me"})
 @Controller
 public class MeController {
 
-    // @Autowired
     private final EmployeeService empSvc;
     private final LeaveService leaveSvc;
     private final LeaveRecordService lrSvc;
@@ -46,16 +32,9 @@ public class MeController {
         this.lrSvc = lrSvc;
     }
     
-    // AuthenticationPrincipal is used to retrieve user auth details
-    // From user auth, we manage the session by accessing its details
     @GetMapping
     public String getDashboard(@AuthenticationPrincipal AuthUserDetails user, 
         Model model) {
-
-        model.addAttribute("userEmail", user.getEmail());
-        model.addAttribute("userRole", user.getRoleName());
-
-        // Get Employee ID        
         // Only add model attributes for internal employees
         Long empId = user.getEmployeeId();
         if (empId != null) {
@@ -65,14 +44,11 @@ public class MeController {
             
             // Bind employee first name
             model.addAttribute("employeeFirstName", emp.getFirstName());
-
-            // Bind leave balances + recentApplications
             model.addAttribute("leaveRecords", lrSvc.getLeaveRecords(empId));
             model.addAttribute("recentApplications", leaveSvc.getRecentLeaveApplications(empId));
         }
 
         return "me/dashboard";
     }
-
 
 }

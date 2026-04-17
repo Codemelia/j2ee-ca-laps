@@ -55,14 +55,12 @@ public class AuthUserDetails implements UserDetails {
         return auths;
     }
 
-    // For password matching
     @Override
     public String getPassword() { return passwordHash; }
 
     @Override
     public String getUsername() { return email; }
     
-    // Spring Security throws DisabledException and rejects login
     @Override
     public boolean isEnabled() { return enabled; }
 
@@ -70,21 +68,6 @@ public class AuthUserDetails implements UserDetails {
     public String getEmail() { return email; }
     public String getRoleName() { return roleName; }
     public boolean getEnabled() { return this.enabled; }
-
-    // Check internal vs external admin
-    public boolean isInternalAdmin() {
-        return getAuthorities().stream()
-            .anyMatch(auth -> auth
-                .getAuthority().equals("AUTH_INTERNAL_ADMIN"));
-    }
-
-    public boolean isExternalAdmin() {
-        return getAuthorities().stream()
-            .anyMatch(auth -> auth
-                .getAuthority().equals("AUTH_EXTERNAL_ADMIN"));
-    }
-
-    // TO STRING
 
     @Override
     public String toString() {

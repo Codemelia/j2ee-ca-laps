@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import sg.edu.nus.laps.leave.model.LeaveType;
 import sg.edu.nus.laps.leave.repository.LeaveTypeRepository;
 
+/**
+ * LeaveTypeService provides methods to interact with leave types through repository.
+ */
 @Service
 public class LeaveTypeService {
     private final LeaveTypeRepository ltRepo;

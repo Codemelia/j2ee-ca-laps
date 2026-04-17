@@ -5,6 +5,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!form) return; // Prevent error
 
+    // Define field ids
+    const fieldIds = ["oldRawPassword", "newRawPassword", "confirmPassword"];
+
+    // Clear individual field error
+    function clearFieldError(field) {
+        const elem = document.getElementById(field + "Error");
+        if (elem) { elem.innerText = ""; }
+    }
+
+    // Clear all field errors on load of modal
+    function clearAllFieldErrors() { fieldIds.forEach(clearFieldError); }
+
+    // While user is typing, clear error on edited fields
+    fieldIds.forEach((field) => {
+        const input = form[field];
+        if (!input) return;
+
+        // add event listener to form fields
+        input.addEventListener("input", function () {
+            clearFieldError(field);
+            document.getElementById("globalError").innerText = "";
+            document.getElementById("successMsg").innerText = "";
+        })
+    })
+
+    
     // Listen to submit event (button click)
     form.addEventListener("submit", async function (event) {
 
@@ -17,11 +43,11 @@ document.addEventListener("DOMContentLoaded", function () {
             confirmPassword: this.confirmPassword.value
         }
 
+        // Must pass csrf token in on PUT request
         const token = document.querySelector('meta[name="_csrf"]').content;
         const header = document.querySelector('meta[name="_csrf_header"]').content;
 
-        // fetch Controller endpoint response
-        // Pass in formData as JSON
+        // Send PUT request and fetch Controller endpoint response
         const resp = await fetch("/auth/change-password", {
             method: "PUT",
             headers: {
@@ -35,6 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const result = await resp.json();
 
         // Clear previous messages
+        clearAllFieldErrors();
         document.getElementById("globalError").innerText = "";
         document.getElementById("successMsg").innerText = "";
 

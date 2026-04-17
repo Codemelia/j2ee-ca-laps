@@ -16,6 +16,11 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import sg.edu.nus.laps.security.custom.LapsExpiredSessionStrategy;
 import sg.edu.nus.laps.security.custom.LapsInvalidSessionStrategy;
 
+/**
+ * SecurityConfig configures security filter chains for 
+ * admin, employee/manager, and common pages 
+ * with role-based authentication and login/logout flows.
+ */
 @Configuration // Declare to generate bean definitions at runtime
 @EnableWebSecurity // Enable Spring Security configuration
 public class SecurityConfig {
@@ -60,8 +65,7 @@ public class SecurityConfig {
                 .successHandler(adminSuccessHandler()) // Role-based redirect / successful login redirect
                 .failureHandler((request, response, exception) -> {
                     String email = request.getParameter("email");
-                    response
-                        .sendRedirect("/auth/admin/login?error=true&email=" + email);
+                    response.sendRedirect("/auth/admin/login?error=true&email=" + email);
                 }) // If login fails, go to login page with error and form params
                 .permitAll()
             )
@@ -101,8 +105,7 @@ public class SecurityConfig {
                 .successHandler(employeeSuccessHandler()) // Role-based redirect / successful login redirect
                 .failureHandler((request, response, exception) -> {
                     String email = request.getParameter("email");
-                    response
-                        .sendRedirect("/auth/employee/login?error=true&email=" + email);
+                    response.sendRedirect("/auth/employee/login?error=true&email=" + email);
                 }) // If login fails, go to login page with error and form params
                 .permitAll()
             )

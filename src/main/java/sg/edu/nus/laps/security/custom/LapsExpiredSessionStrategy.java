@@ -7,7 +7,7 @@ import org.springframework.security.web.session.SessionInformationExpiredStrateg
 
 import jakarta.servlet.http.HttpServletResponse;
 
-// SET CUSTOM INVALID SESSION URLS
+// SET REDIRECT TO ADMIN / EMPLOYEE LOGIN BASED ON URI BASE
 public class LapsExpiredSessionStrategy implements SessionInformationExpiredStrategy {
     @Override
     public void onExpiredSessionDetected(
@@ -16,7 +16,6 @@ public class LapsExpiredSessionStrategy implements SessionInformationExpiredStra
         String uri = event.getRequest().getRequestURI();
         HttpServletResponse response = event.getResponse();
 
-        // SET REDIRECT TO ADMIN / EMPLOYEE LOGIN BASED ON URI BASE
         if (uri.startsWith("/admin")) { response
             .sendRedirect("/auth/admin/login?expired=true"); } 
         else { response
