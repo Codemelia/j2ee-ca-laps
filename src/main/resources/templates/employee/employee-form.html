@@ -34,6 +34,11 @@
                 th:if="${globalError}"
                 th:text="${globalError}"></div>
 
+            <!-- Success -->
+            <div class="alert alert-success"
+                th:if="${successMsg}"
+                th:text="${successMsg}"></div>
+
             <div th:if="${employee}">
             
                 

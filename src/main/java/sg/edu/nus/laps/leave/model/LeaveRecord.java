@@ -1,6 +1,5 @@
 package sg.edu.nus.laps.leave.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -62,7 +61,7 @@ public class LeaveRecord extends SetCreatedUpdated {
 	
 	// 2. Setting the Associations
 	// @ManyToOne 	-> Employee	(Multiple Leave Records belong to One Employee)
-	@ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "employee_id", nullable = false)
 	@NotNull(message = "Employee is Mandatory")
 	private Employee employee;

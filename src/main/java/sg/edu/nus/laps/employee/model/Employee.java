@@ -65,7 +65,7 @@ public class Employee extends SetCreatedUpdated {
 	private String contactNumber;
 
 	@Enumerated(EnumType.STRING) // JPA store ENUM as String in DB
-	@Column(nullable = false, length = 30) // JPA - MySQL constraints
+	@Column(name = "`rank`", nullable = false, length = 30) // JPA - MySQL constraints
 	@NotNull(message = "Please select employee's rank")
 	private EmployeeRank rank;
 	
@@ -122,11 +122,19 @@ public class Employee extends SetCreatedUpdated {
 	private User user;
 	
 	// Employee to LeaveApplication: One to Many
-	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+	// orphanRemoval - detach leaveApplication to allow delete
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY,
+		orphanRemoval = true
+	)
 	private List<LeaveApplication> leaveApplications = new ArrayList<>();
 	
 	// Employee to LeaveRecord: One to Many
-	@OneToMany(mappedBy= "employee", fetch = FetchType.LAZY)
+	// CascadeType.PERSIST, CascadeType.MERGE - Allow Employee modification to update leave records
+	// orphanRemoval - detach leaveApplication to allow delete
+	@OneToMany(mappedBy= "employee", fetch = FetchType.LAZY, 
+		cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+		orphanRemoval = true
+	)
 	private List<LeaveRecord> leaveRecords = new ArrayList<>();
 	
 	public Employee() {
@@ -272,6 +280,11 @@ public class Employee extends SetCreatedUpdated {
 
 	public void setAnnualLeave(Double annualLeave) {
 		this.annualLeave = annualLeave;
+	}
+
+	public void addLeaveRecord(LeaveRecord leaveRecord) {
+		this.leaveRecords.add(leaveRecord);
+		setLeaveRecords(leaveRecords);
 	}
 
 	@Override
