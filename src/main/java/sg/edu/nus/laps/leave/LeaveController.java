@@ -121,7 +121,6 @@ public class LeaveController {
         if (leaveApp.getLeaveType() != null) {
             Long leaveTypeId = leaveApp.getLeaveType().getId();
             leaveApp.setLeaveTypeId(leaveTypeId);
-            model.addAttribute("leaveTypeId", leaveTypeId); // Map to form field
         }
 
         System.out.println("LeaveApp: " + leaveApp);
