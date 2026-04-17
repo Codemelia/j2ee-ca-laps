@@ -143,6 +143,7 @@ public class EmployeeController {
 		// New employee for binding, set role name empty
 		Employee employee = new Employee();
 		employee.setRoleName("");
+		model.addAttribute(employee);
 
 		// Add roleList and rankList to model
 		// Add to model
@@ -179,25 +180,11 @@ public class EmployeeController {
 		}
         
 		try { 
-			
-			eService.saveNewEmployee(employee);
-			redirectAttrs.addFlashAttribute("success", "Employee has been created.");
-			
+						
 			// find employee's AL leave record
 			// set entitled days in employee's AL leave record based on created employee's annualLeave input
-			Long annualLeaveTypeId;
-			Integer currentYear = LocalDate.now().getYear();
-			
-			Optional<LeaveType> annualLeaveType = ltService.findByLeaveType("Annual");
-			
-			if(annualLeaveType.isPresent()) {
-				annualLeaveTypeId = annualLeaveType.get().getId();
-				
-				Optional<LeaveRecord> empAnnualLeaveRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employee.getId(), annualLeaveTypeId, currentYear);
-				if(empAnnualLeaveRecord.isPresent()) {
-					empAnnualLeaveRecord.get().setEntitledDays(employee.getAnnualLeave());
-				} 
-			}
+			eService.saveNewEmployee(employee);
+			redirectAttrs.addFlashAttribute("success", "Employee has been created.");
 			
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
@@ -205,7 +192,7 @@ public class EmployeeController {
 			
 			// Add roleList and rankList to model
 			// Add to model
-//			System.out.println(ex.getMessage());
+			System.out.println(ex.getMessage());
 			model.addAttribute("roleList", rService.findAllRoles());
 			// Add enum values for rank
 			model.addAttribute("rankList", EmployeeRank.values());
@@ -236,14 +223,17 @@ public class EmployeeController {
 			// Find employee's AL leave record
 			// Set employee's annualLeave field to value of entitled days from employee's AL leave record
 			// So that the annualLeave input field in html will be populated with number from leave record
-			Long annualLeaveTypeId = 1L;
+			Long annualLeaveTypeId = ltService.findByLeaveType("Annual").get().getId();
 			Integer currentYear = LocalDate.now().getYear();
 			
 			Optional<LeaveRecord> empAnnualRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(id, annualLeaveTypeId, currentYear);
 			if(empAnnualRecord.isPresent()) {
 				empToUpdate.setAnnualLeave(empAnnualRecord.get().getEntitledDays());
-			}
-		} 
+			} 
+		} else {
+			redirectAttrs.addFlashAttribute("employeeNotFound", "Employee not found. Create New Employee first.");
+			return "redirect:/employee/employee-form";
+		}
 
 		// Not needed - can set if/else on Thymeleaf
 		// else {
@@ -290,23 +280,6 @@ public class EmployeeController {
 			// Update employee details
 			eService.updateEmployee(employee);
 			redirectAttrs.addFlashAttribute("success", "Employee #" + id + " has been updated.");
-			
-			
-			// Update employee's AL leave record entitled days
-			Long annualLeaveTypeId;
-			Integer currentYear = LocalDate.now().getYear();
-			
-			Optional<LeaveType> annualLeaveType = ltService.findByLeaveType("Annual");
-			
-			if(annualLeaveType.isPresent()) {
-				annualLeaveTypeId = annualLeaveType.get().getId();
-				
-				Optional<LeaveRecord> empAnnualRecord = lrService.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(id, annualLeaveTypeId, currentYear);
-				
-				if(empAnnualRecord.isPresent()) {
-					empAnnualRecord.get().setEntitledDays(employee.getAnnualLeave());
-				}
-			}
 
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
