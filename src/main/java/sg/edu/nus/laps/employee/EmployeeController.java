@@ -202,8 +202,10 @@ public class EmployeeController {
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
 			bindingResult.reject("error", "Save failed: " + ex.getMessage());
+			
 			// Add roleList and rankList to model
 			// Add to model
+//			System.out.println(ex.getMessage());
 			model.addAttribute("roleList", rService.findAllRoles());
 			// Add enum values for rank
 			model.addAttribute("rankList", EmployeeRank.values());
