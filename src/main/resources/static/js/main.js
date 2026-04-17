@@ -29,15 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
         })
     })
 
-    // var table = document.getElementById('employeeTable');
-    // if (table && typeof $ !== 'undefined' && $.fn.dataTable) {
-    //     $('#employeeTable').DataTable({
-    //         paging: true,
-    //         searching: true,
-    //         ordering: true,
-    //         pageLength: 10
-    //     });
-    // }
 });
 
 // // Init datatables on myLeaveTable if it exists

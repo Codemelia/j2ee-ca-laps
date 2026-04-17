@@ -100,7 +100,8 @@
 								</form>
 								<p></p>
 								<form th:action="@{/admin/employees/delete/{id}(id=${e.id})}" method="post">
-								<button type="submit" class="btn btn-primary">Delete</button>
+								<button type="submit" class="btn btn-primary"
+									onclick="return confirm('Delete this employee?')">Delete</button>
 								</form>
 								</td>
 								
