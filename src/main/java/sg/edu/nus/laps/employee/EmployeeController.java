@@ -16,12 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
-import sg.edu.nus.laps.auth.model.Role;
 import sg.edu.nus.laps.auth.service.RoleService;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
 import sg.edu.nus.laps.leave.model.LeaveRecord;
-import sg.edu.nus.laps.leave.model.LeaveType;
 import sg.edu.nus.laps.leave.service.HolidayService;
 import sg.edu.nus.laps.leave.service.LeaveRecordService;
 import sg.edu.nus.laps.leave.service.LeaveTypeService;
@@ -66,15 +64,17 @@ public class EmployeeController {
     //     return session.getAttribute("user") != null;
     // }
 	
-	@GetMapping("/updateHolidays")
+	@GetMapping("/update-holidays")
 	public String updateHolidays(Model model, RedirectAttributes redirectAttrs) {
 		
 		try { 
 			hService.fetchAndSyncHolidays();
-			redirectAttrs.addFlashAttribute("success", "Public Holidays have been updated.");
+			redirectAttrs.addFlashAttribute("successMsg", 
+				"Public Holidays have been updated.");
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
-			redirectAttrs.addFlashAttribute("failure", "Public Holidays cannot be updated.");
+			redirectAttrs.addFlashAttribute("globalError", 
+				"Public Holidays cannot be updated.");
 			return "redirect:/admin/employees";
 		}
 	}
@@ -86,31 +86,14 @@ public class EmployeeController {
 	// UPDATED
 	@GetMapping
 	public String showEmployees(@AuthenticationPrincipal AuthUserDetails user, Model model) {
-		// if (!isLoggedIn(session)) {
-        //     redirectAttrs.addFlashAttribute("errorMessage",
-        //             "Please log in to view employees.");
-        //     return "redirect:/login";
-        // }
-		
+	
 		Integer empCount = eService.countEmployeesByRoleIdEmployee();
 		model.addAttribute("empCount", empCount);
-		
 		Integer mgrCount = eService.countEmployeesByRoleIdManager();
 		model.addAttribute("mgrCount", mgrCount);
-		
 		Integer adminCount = eService.countEmployeesByRoleIdAdmin();
 		model.addAttribute("adminCount", adminCount);
-		
-        // List<Employee> allEmployees = eService.findAll();
-        // model.addAttribute("allEmployees", allEmployees);
-		
-		// Original - Deleted 
-		   // Page<Employee> page = eService.findAll(pageable);
-		   // model.addAttribute("allEmployees", page.getContent());
-		   // model.addAttribute("currentPage", page.getNumber());
-		   // model.addAttribute("totalPages", page.getTotalPages());
-		   // model.addAttribute("page", page);
-		
+
 		// UPDATED 
 	    List<Employee> allEmployees = eService.findAll();
 	    model.addAttribute("allEmployees", allEmployees);
@@ -134,11 +117,6 @@ public class EmployeeController {
 	
 	@GetMapping("/create")
 	public String showCreateEmployeeForm(Model model) {
-		// if (!isLoggedIn(session)) {
-        //     redirectAttrs.addFlashAttribute("errorMessage",
-        //             "Please log in to view Create New Employee form.");
-        //     return "redirect:/auth/admin/login";
-        // }
 
 		// New employee for binding, set role name empty
 		Employee employee = new Employee();
@@ -146,9 +124,7 @@ public class EmployeeController {
 		model.addAttribute(employee);
 
 		// Add roleList and rankList to model
-		// Add to model
 		model.addAttribute("roleList", rService.findAllRoles());
-		// Add enum values for rank
 		model.addAttribute("rankList", EmployeeRank.values());
 		
 		return "employee/employee-form";
@@ -172,9 +148,7 @@ public class EmployeeController {
 		
 		if (bindingResult.hasErrors()) {
 			// Add roleList and rankList to model
-			// Add to model
 			model.addAttribute("roleList", rService.findAllRoles());
-			// Add enum values for rank
 			model.addAttribute("rankList", EmployeeRank.values());
 			return "employee/employee-form";
 		}
@@ -184,18 +158,18 @@ public class EmployeeController {
 			// find employee's AL leave record
 			// set entitled days in employee's AL leave record based on created employee's annualLeave input
 			eService.saveNewEmployee(employee);
-			redirectAttrs.addFlashAttribute("success", "Employee has been created.");
+			redirectAttrs.addFlashAttribute("successMsg", 
+				"Employee has been created.");
 			
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
-			bindingResult.reject("error", "Save failed: " + ex.getMessage());
-			
-			// Add roleList and rankList to model
-			// Add to model
-			System.out.println(ex.getMessage());
+
+			model.addAttribute("globalError", 
+				"Save failed: " + ex.getMessage());
 			model.addAttribute("roleList", rService.findAllRoles());
 			// Add enum values for rank
 			model.addAttribute("rankList", EmployeeRank.values());
+			model.addAttribute("employee", employee);
 			return "employee/employee-form";
 		}
 		
@@ -203,22 +177,15 @@ public class EmployeeController {
 	@GetMapping("/update/{id}")
 	public String showUpdateEmployeeForm(@PathVariable Long id, 
 			Model model, RedirectAttributes redirectAttrs) {
-		// if (!isLoggedIn(session)) {
-        //     redirectAttrs.addFlashAttribute("errorMessage",
-        //             "Please log in to update employee details.");
-        //     return "redirect:/auth/admin/login";
-        // }
-		
+
 		// Add roleList and rankList to model
 		// Add to model
 		model.addAttribute("roleList", rService.findAllRoles());
-		// Add enum values for rank
 		model.addAttribute("rankList", EmployeeRank.values());
 		
 		Optional<Employee> empOpt = eService.findById(id);
 		if (empOpt.isPresent()) {
 			Employee empToUpdate = empOpt.get();
-			model.addAttribute("employee", empToUpdate);
 			
 			// Find employee's AL leave record
 			// Set employee's annualLeave field to value of entitled days from employee's AL leave record
@@ -230,18 +197,13 @@ public class EmployeeController {
 			if(empAnnualRecord.isPresent()) {
 				empToUpdate.setAnnualLeave(empAnnualRecord.get().getEntitledDays());
 			} 
-		} else {
-			redirectAttrs.addFlashAttribute("employeeNotFound", "Employee not found. Create New Employee first.");
-			return "redirect:/employee/employee-form";
-		}
 
-		// Not needed - can set if/else on Thymeleaf
-		// else {
-		// 	// redirectAttrs.addFlashAttribute("errorMessage", 
-		// 	// 		"Employee does not exist.");
-		// 	// return "redirect:/admin/employees";
-		// }
-		
+			model.addAttribute("employee", empToUpdate);
+		} else {
+			redirectAttrs.addFlashAttribute("globalError", 
+				"Employee not found. Create New Employee first.");
+			return "redirect:/admin/employees/create";
+		}
 		return "employee/employee-form";
 	}
 	
@@ -252,22 +214,21 @@ public class EmployeeController {
 		
 		if(employee.getRank().equals(EmployeeRank.PROFESSIONAL)) {
 			if(employee.getAnnualLeave() < 18 || employee.getAnnualLeave() > 21) {
-				bindingResult.rejectValue("annualLeave", "error.leave", "For Professionals, Annual Leave must be between 18 and 21.");
+				bindingResult.rejectValue("annualLeave", "error.leave", 
+					"For Professionals, Annual Leave must be between 18 and 21.");
 			}
 		}
 		
 		if(employee.getRank().equals(EmployeeRank.NON_EXECUTIVE)) {
 			if(employee.getAnnualLeave() < 14 || employee.getAnnualLeave() > 17) {
-				bindingResult.rejectValue("annualLeave", "error.leave", "For Non-Executives, Annual Leave must be between 14 and 17.");
+				bindingResult.rejectValue("annualLeave", "error.leave", 
+					"For Non-Executives, Annual Leave must be between 14 and 17.");
 			}
 		}
 		
-		if (bindingResult.hasErrors()) {
-			
+		if (bindingResult.hasErrors()) {	
 			// Add roleList and rankList to model
-			// Add to model
 			model.addAttribute("roleList", rService.findAllRoles());
-			// Add enum values for rank
 			model.addAttribute("rankList", EmployeeRank.values());
 			return "employee/employee-form";
 		}
@@ -279,12 +240,14 @@ public class EmployeeController {
 		try {
 			// Update employee details
 			eService.updateEmployee(employee);
-			redirectAttrs.addFlashAttribute("success", "Employee #" + id + " has been updated.");
+			redirectAttrs.addFlashAttribute("successMsg", 
+				"Employee #" + id + " has been updated.");
 
 			return "redirect:/admin/employees";
 		} catch (Exception ex) { // Catches SQL + Custom exceptions
-			bindingResult.reject("error", "Update failed: " + ex.getMessage());
-			return "employee/employee-form";
+			redirectAttrs.addFlashAttribute("globalError", 
+				"Update failed: " + ex.getMessage());
+			return "redirect:/admin/employees";
 		}
 	}
 	
@@ -292,15 +255,18 @@ public class EmployeeController {
 	public String deleteEmployee(@PathVariable Long id, RedirectAttributes redirectAttrs) {
 		Optional<Employee> empOpt = eService.findById(id);
 		
-		if (empOpt.isPresent()) {
-			try {
-				eService.delete(empOpt.get());
-				redirectAttrs.addFlashAttribute("success", "Employee #" + id + " has been deleted.");
-			} catch (Exception ex) { // Catches SQL + Custom exceptions
-				redirectAttrs.addFlashAttribute("failure", "Delete failed: " + ex.getMessage());
-			}
-		} else {
-			redirectAttrs.addFlashAttribute("failure", "Employee does not exist.");
+		if (empOpt.isEmpty()) {
+			redirectAttrs.addFlashAttribute("globalError", 
+				"Employee does not exist.");
+		}
+
+		try {
+			eService.delete(empOpt.get());
+			redirectAttrs.addFlashAttribute("successMsg", 
+				"Employee #" + id + " has been deleted.");
+		} catch (Exception ex) { // Catches SQL + Custom exceptions
+			redirectAttrs.addFlashAttribute("globalError", 
+				"Delete failed: " + ex.getMessage());
 		}
 		return "redirect:/admin/employees";
 	}

@@ -171,21 +171,31 @@ public class EmployeeService {
 				existUser.setRole(newRole); // JPA will update users automatically
 			}
 		}
-		// Update employee's AL leave record entitled days
-		Long annualLeaveTypeId;
-		Integer currentYear = LocalDate.now().getYear();
 
+		// Update employee's AL leave record entitled days
+		Integer currentYear = LocalDate.now().getYear();
 		Optional<LeaveType> annualLeaveType = ltRepo.findByLeaveType("Annual");
 
-		if(annualLeaveType.isPresent()) {
-			annualLeaveTypeId = annualLeaveType.get().getId();
+		System.out.println(">>> RETRIEVED ANNUAL LEAVE TYPE: " + annualLeaveType.get().toString());
 
-			Optional<LeaveRecord> empAnnualRecord = lrRepo.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(existEmployee.getId(), annualLeaveTypeId, currentYear);
-
-			if(empAnnualRecord.isPresent()) {
-				empAnnualRecord.get().setEntitledDays(existEmployee.getAnnualLeave());
-			}
+		if(annualLeaveType.isEmpty()) {
+			throw new RuntimeException("Required leave type does not exist");
 		}
+
+		Long annualLeaveTypeId = annualLeaveType.get().getId();
+		LeaveRecord empAnnualRecord = lrRepo
+        .findByEmployeeIdAndLeaveTypeIdAndCalendarYear(
+            existEmployee.getId(), annualLeaveTypeId, currentYear)
+        		.orElseThrow(() -> new RuntimeException(
+				"Employee does not have an existing Leave Record"));
+
+		System.out.println(">>> RETRIEVED ANNUAL LEAVE RECORD: " + empAnnualRecord.toString());
+
+		// Update annual record
+		empAnnualRecord.setEntitledDays(employee.getAnnualLeave());
+
+		System.out.println(">>> UPDATING EMPLOYEE: " + existEmployee.toString());
+
 		// Update employee - updates user in DB too
 		eRepo.save(existEmployee);
 	}
@@ -244,18 +254,24 @@ public class EmployeeService {
 		User user = new User(email, passwordHash, true, newRole);
 		
 		// Create new LeaveRecords for new employee
-		Long annualLeaveTypeId;
 		Integer currentYear = LocalDate.now().getYear();
 		
 		Optional<LeaveType> annualLeaveType = ltRepo.findByLeaveType("Annual");
 		Optional<LeaveType> medicalLeaveType = ltRepo.findByLeaveType("Medical");
 		Optional<LeaveType> compLeaveType = ltRepo.findByLeaveType("Compensation");
-		
+
+		if (annualLeaveType.isEmpty()
+			|| medicalLeaveType.isEmpty()
+			|| compLeaveType.isEmpty()) {
+			throw new RuntimeException("Required leave types do not exist");
+		}
+
 		LeaveRecord annualLeaveRec = new LeaveRecord(currentYear, employee.getAnnualLeave(), 0.0, employee, annualLeaveType.get());
 		LeaveRecord medicalLeaveRec = new LeaveRecord(currentYear, 60.0, 0.0, employee, medicalLeaveType.get());
 		LeaveRecord compLeaveRec = new LeaveRecord(currentYear, 0.0, 0.0, employee, compLeaveType.get());
 		
-		// Set employee's user account and save
+		// Set employee's user account and leave records + save
+		employee.setLeaveRecords(List.of(annualLeaveRec, medicalLeaveRec, compLeaveRec));
 		employee.setUser(user); // JPA maps to User and saves
 		eRepo.save(employee);
 	}
@@ -276,7 +292,7 @@ public class EmployeeService {
 	// HELPERS
 	// Check employee validity
 	private void checkEmployeeValid(Employee employee) {
-		if (employee == null || employee.getUser() == null) {
+		if (employee == null) {
 			throw new InvalidEmployeeException();
 		}
 	}
@@ -327,6 +343,7 @@ public class EmployeeService {
 		if (employee.getManagerId() != null) { existEmployee.setManagerId(employee.getManagerId()); }
 		if (employee.getTeamName() != null) { existEmployee.setTeamName(employee.getTeamName()); }
 		if (employee.getRoleName() != null) { existEmployee.setRoleName(employee.getRoleName()); }
+		if (employee.getAnnualLeave() != null) { existEmployee.setAnnualLeave(employee.getAnnualLeave()); }
 	}
 
 	// Check new email valid
