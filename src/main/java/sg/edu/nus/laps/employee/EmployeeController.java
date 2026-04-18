@@ -109,18 +109,19 @@ public class EmployeeController {
 	@PostMapping("/create")
 	public String createEmployee(@Valid @ModelAttribute (name="employee") Employee employee, 
 		BindingResult bindingResult, RedirectAttributes redirectAttrs, Model model) {
-		if(employee.getRank().equals(EmployeeRank.PROFESSIONAL)) {
-			if(employee.getAnnualLeave() < 18 || employee.getAnnualLeave() > 21) {
-				bindingResult.rejectValue("annualLeave", "error.leave", "For Professionals, Annual Leave must be between 18 and 21.");
+		if (employee.getRank() != null) {
+			if (EmployeeRank.PROFESSIONAL.equals(employee.getRank())) {
+				if(employee.getAnnualLeave() < 18 || employee.getAnnualLeave() > 21) {
+					bindingResult.rejectValue("annualLeave", "error.leave", "For Professionals, Annual Leave must be between 18 and 21.");
+				}
 			}
-		}
-		
-		if(employee.getRank().equals(EmployeeRank.NON_EXECUTIVE)) {
-			if(employee.getAnnualLeave() < 14 || employee.getAnnualLeave() > 17) {
-				bindingResult.rejectValue("annualLeave", "error.leave", "For Non-Executives, Annual Leave must be between 14 and 17.");
-			}
-		}
 			
+			if(EmployeeRank.NON_EXECUTIVE.equals(employee.getRank())) {
+				if(employee.getAnnualLeave() < 14 || employee.getAnnualLeave() > 17) {
+					bindingResult.rejectValue("annualLeave", "error.leave", "For Non-Executives, Annual Leave must be between 14 and 17.");
+				}
+			}
+		}
 		
 		if (bindingResult.hasErrors()) {
 			// Add roleList and rankList to model

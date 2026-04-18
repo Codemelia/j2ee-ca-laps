@@ -39,20 +39,20 @@ public class Employee extends SetCreatedUpdated {
 
 	@Column(name = "first_name", nullable = false, length = 50)
 	@NotBlank(message = "First name is required")
-	@Size(min = 2, max = 50, message = "First name must be between 2 to 50 characters")
-	@Pattern(regexp = "^[A-Za-z '-]+$", message = "First name contains invalid characters") // Only allow letters, space, ', -
+	// @Size(min = 2, max = 50, message = "First name must be between 2 to 50 characters")
+	@Pattern(regexp = "^[A-Za-z '-]{2,50}$", message = "First name must be 2 to 50 characters without special characters")
 	private String firstName;
 
 	@Column(name = "last_name", nullable = false, length = 50)
 	@NotBlank(message = "Last name is required")
-	@Size(min = 2, max = 50, message = "Last name must be between 2 to 50 characters")
-	@Pattern(regexp = "^[A-Za-z '-]+$", message = "Last name contains invalid characters")
+	// @Size(min = 2, max = 50, message = "Last name must be between 2 to 50 characters")
+	@Pattern(regexp = "^[A-Za-z '-]{2,50}$", message = "Last name must be 2 to 50 characters without special characters")
 	private String lastName;
 
 	@Column(name = "contact_number", nullable = false, length = 15)
 	@NotBlank(message = "Contact number is required")
-	@Size(min = 8, max = 15, message = "Contact number must be between 8 to 15 characters")
-	@Pattern(regexp = "^\\+?\\d{8,15}$", message = "Enter a valid phone number") // Validate phone number regexp - \\s () \\d . not allowed for now
+	// @Size(min = 8, max = 15, message = "Contact number must be between 8 to 15 characters")
+	@Pattern(regexp = "^\\+?\\d{8,15}$", message = "Contact number must be valid with 8 to 15 digits") // Validate phone number regexp - \\s () \\d . not allowed for now
 	private String contactNumber;
 
 	@Enumerated(EnumType.STRING) // JPA store ENUM as String in DB
