@@ -12,7 +12,7 @@
 /* --- CSS Variables (change these to re-theme everything) --- */
 :root {
     --navy:       #1a2e4a;   /* headings, topbar background         */
-    --blue:       #2563a8;   /* links, buttons, accents             */
+    --blue:       #2a6ebd;   /* links, buttons, accents             */
     --blue-dark:  #1a4a80;   /* button hover                        */
     --cream:      #f7f4ef;   /* page background                     */
     --white:      #ffffff;   /* card / table backgrounds            */
@@ -21,6 +21,7 @@
     --text-light: #5a5a5a;   /* secondary / caption text            */
     --green:      #276237;   /* success messages                    */
     --green-bg:   #edf7f1;
+    --green-hover: #4cbc6a;
     --red:        #991b1b;   /* error messages                      */
     --red-bg:     #fff0f0;
     --amber:      #7a4f00;   /* info / logout messages              */
@@ -361,7 +362,6 @@ display: none;
     padding: 0;
 }
 
-/* --- Leave Details Card (wider) --- */
 .card.leave-details {
     max-width: 800px;
     margin: 48px auto 0;
@@ -407,7 +407,7 @@ display: none;
 .alert-info {
     color: var(--amber);
     background: var(--amber-bg);
-    border-color: #c8922a;
+    border-color: var(--amber);
 }
 
 /* --- Forms ------------------------------------------------- */
@@ -476,26 +476,42 @@ textarea {
     background-color: #494949;
 }
 
+.btn-success {
+    background-color: var(--green);
+    color: var(--green-bg);
+	border: 1px solid var(--green);
+}
+
+.btn-secondary:hover { background-color: var(--green-hover); color: var(--text) }
+
 .btn-danger {
-    background-color: #184372;
-    color: #ffffff;
+    background-color: var(--text);
+    color: var(--white);
 	border: 1px solid var(--text);
 }
-.btn-danger:hover  { background-color: var(--red); color: #ffffff; }
+.btn-danger:hover  { background-color: var(--red); color: var(--red-bg); }
 
 .btn-primary {
     background-color: var(--blue);
-    color: #ffffff;
+    color: var(--white);
 	border: 1px solid var(--blue);
 }
-.btn-primary:hover  { background-color: var(--blue-dark); color: #ffffff; }
+.btn-primary:hover  { background-color: var(--blue-dark); color: var(--white); }
 
 .btn-secondary {
     background-color: var(--white);
     color: var(--blue);
     border: 1px solid var(--blue);
 }
-.btn-secondary:hover { background-color: var(--blue-dark); }
+.btn-secondary:hover { background-color: var(--blue-dark); color: var(--white); }
+
+.btn-warning {
+    background-color: var(--text-light);
+    color: var(--text);
+	border: 1px solid var(--text);
+}
+
+.btn-warning:hover { background-color: var(--amber); color: var(--amber-bg) }
 
 .btn-full { width: 100%; text-align: center; }
 

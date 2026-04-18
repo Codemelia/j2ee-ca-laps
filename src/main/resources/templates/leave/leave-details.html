@@ -192,15 +192,16 @@
                         <div class="card-footer" th:if="${leaveApp != null}">
                             <!-- Goes back to previous page -->
                             <div class="footer-left">
-                                <button class="btn" type="button" onclick="history.back()">Back</button>
+                                <button class="btn btn-secondary" type="button" onclick="history.back()">Back</button>
                             </div>
                             <!-- Employee (self view) buttons -->
                             <div class="action-button-group" th:if="${isSelf}">
                                 <form th:if="${#lists.contains({'DRAFT', 'APPLIED', 'UPDATED'}, leaveApp.status.name())}"
                                     th:action="@{/leaves/edit/{id}(id=${leaveApp.id})}"
                                     method="get">
-                                    <button class="btn btn-secondary" type="submit">Update</button>
+                                    <button class="btn btn-primary" type="submit">Update</button>
                                 </form>
+                                
                                 <form th:if="${#lists.contains({'DRAFT', 'APPLIED', 'UPDATED'}, leaveApp.status.name())}"
                                     th:action="@{/leaves/delete/{id}(id=${leaveApp.id})}"
                                     method="post">
