@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+	
 	const rankDropdown = document.getElementById('rank');
 	const leaveInput = document.getElementById('annualLeave');
 	

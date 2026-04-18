@@ -416,6 +416,18 @@ display: none;
     padding: 36px 40px;
 }
 
+.card.leave-form {
+    max-width: 600px;
+    margin: 48px auto 0;
+    padding: 36px 40px;
+}
+
+.card.employee-form {
+    max-width: 600px;
+    margin: 48px auto 0;
+    padding: 36px 40px;
+}
+
 /* --- Description List Styling --- */
 .card dl {
     margin: 0 0 12px 0;
