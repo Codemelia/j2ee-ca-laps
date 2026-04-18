@@ -43,6 +43,13 @@
     <header th:replace="~{fragments/header :: header}"></header>
 
     <div class="page-wrapper">
+
+      <div class="container py-4">
+        <a onclick="history.back()" class="text-decoration-none" style="cursor: pointer;">
+          <i class="bi bi-arrow-left"></i> ← Back
+        </a>
+      </div>
+
       <div class="card">
         <h2 class="page-heading">Leave Application Form</h2>
         <!-- Global error -->
@@ -167,8 +174,8 @@
             th:value="${_csrf.token}"
           />
           <input type="hidden" name="viewName" value="leave/leave-form" />
-          <div class="nav-links">
-            <div
+          <div class="card-footer">
+            <div class="action-button-group"
               th:if="${leaveApp == null or leaveApp.id == null 
               || leaveApp.status.name() == 'DRAFT'}"
             >
@@ -187,7 +194,7 @@
                 Submit
               </button>
             </div>
-            <div
+            <div class="action-button-group"
               th:if="${leaveApp != null and leaveApp.id != null 
               && (leaveApp.status.name() == 'APPLIED'
               || leaveApp.status.name() == 'UPDATED')}"

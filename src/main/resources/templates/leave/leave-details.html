@@ -68,7 +68,7 @@
 
                             <!-- Employee Info -->
                             <section>
-                                <h3>Employee Information</h3>
+                                <h3 style="margin-top: 20px;">Employee Information</h3>
                                     <dl th:object="${leaveApp.employee}">
                                         <dt><b>Name</b></dt>
                                         <dd th:text="*{firstName + ' ' + lastName}"></dd>
@@ -201,7 +201,7 @@
                                     method="get">
                                     <button class="btn btn-primary" type="submit">Update</button>
                                 </form>
-                                
+
                                 <form th:if="${#lists.contains({'DRAFT', 'APPLIED', 'UPDATED'}, leaveApp.status.name())}"
                                     th:action="@{/leaves/delete/{id}(id=${leaveApp.id})}"
                                     method="post">

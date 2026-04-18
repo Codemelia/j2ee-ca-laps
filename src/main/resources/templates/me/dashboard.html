@@ -21,7 +21,7 @@
 
 				<!-- Leave Balance Cards -->
 				<h2>My Leave Balance</h2>
-				<div class="cards-container mb-4">
+				<div class="cards-container dashboard-cards mb-4">
 					<div class="card" th:each="rec : ${leaveRecords}">
 						<h3 th:text="${rec.leaveType.leaveType}">Leave Type</h3>
 						<p>Entitled: <span th:text="${rec.entitledDays}">0</span></p>
