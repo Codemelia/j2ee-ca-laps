@@ -25,7 +25,7 @@
         <header th:replace="~{fragments/header :: header}"></header>
         
         <div class="page-wrapper d-flex ">
-            <div class="container mt-4">
+            <div class="container">
                 <div class="card employee-form">
                     <h1 th:text="${employee.id} != null ? 'Update Employee Details' : 'Create New Employee'"></h1>
 
@@ -51,30 +51,30 @@
                             </div>
 
                             <div>
-                                <label for="firstName">First Name:</label>
+                                <label for="firstName">First Name <span class="required-star">*</span></label>
                                 <input type="text" th:field="*{firstName}" placeholder="First name"><br> 
                                 <span class="error" th:if="${#fields.hasErrors('firstName')}"
                                     th:errors="*{firstName}"></span>
                             </div>
                             
                             <div>    
-                                <label for="lastName">Last Name:</label>
+                                <label for="lastName">Last Name <span class="required-star">*</span></label>
                                 <input type="text" th:field="*{lastName}" placeholder="Last name"><br>
                                 <span class="error" th:if="${#fields.hasErrors('lastName')}"
                                     th:errors="*{lastName}"></span>
                             </div>
                             
                             <div>    
-                                <label for="contactNumber">Contact number:</label> 
-                                <input type="text" th:field="*{contactNumber}"><br>
+                                <label for="contactNumber">Contact number <span class="required-star">*</span></label> 
+                                <input type="text" th:field="*{contactNumber}" placeholder="Phone number"><br>
                                 <span class="error" th:if="${#fields.hasErrors('contactNumber')}"
                                     th:errors="*{contactNumber}"></span>
                             </div>
 
                             <div>
-                                <label for="roleName">Employee's User Role:</label>
+                                <label for="roleName">Employee's User Role <span class="required-star">*</span></label>
                                 <select th:field="*{roleName}">
-                                    <option value="" disabled>-- Select User Role --</option>
+                                    <option value="" disabled>Select User Role</option>
                                     <option th:each="role : ${roleList}"
                                             th:value="${role.name}"
                                             th:text="${role.name}">
@@ -85,10 +85,10 @@
                             </div>
                             
                             <div>    
-                                <label for="rank">Employee's Rank:</label>
+                                <label for="rank">Employee Rank <span class="required-star">*</span></label>
                                 <select th:field="*{rank}">
                                     <option value="" th:selected="${employee.rank == null}">
-                                        -- Select Employee's Rank --
+                                        Select Employee Rank
                                     </option>
                                     <option th:each="r : ${rankList}"
                                             th:value="${r}"
@@ -100,29 +100,29 @@
                             </div>    
                                 
                             <div>    
-                                <label for="managerId">Manager's ID:</label>
-                                <input type="text" th:field="*{managerId}"><br>
+                                <label for="managerId">Manager's ID <span class="required-star">*</span></label>
+                                <input type="text" th:field="*{managerId}" placeholder="Manager ID"><br>
                                 <span class="error" th:if="${#fields.hasErrors('managerId')}"
                                     th:errors="*{managerId}"></span>
                             </div>
                             
                             <div>    
-                                <label for="teamName">Team Name:</label>
-                                <input type="text" th:field="*{teamName}"><br>
+                                <label for="teamName">Team Name <span class="required-star">*</span></label>
+                                <input type="text" th:field="*{teamName}" placeholder="Team name"><br>
                                 <span class="error" th:if="${#fields.hasErrors('teamName')}"
                                     th:errors="*{teamName}"></span>
                             </div>
                             
                             <div>    
-                                <label for="jobTitle">Job Title:</label>
-                                <input type="text" th:field="*{jobTitle}"><br>
+                                <label for="jobTitle">Job Title <span class="required-star">*</span></label>
+                                <input type="text" th:field="*{jobTitle}" placeholder="Job title"><br>
                                 <span class="error" th:if="${#fields.hasErrors('jobTitle')}"
                                     th:errors="*{jobTitle}"></span>
                             </div>
                         
                             <div class="mb-4">    
-                                <label for="annualLeave">Annual Leave Entitlement:</label>
-                                <input type="text" th:field="*{annualLeave}"><br>
+                                <label for="annualLeave">Annual Leave Entitlement <span class="required-star">*</span></label>
+                                <input type="text" th:field="*{annualLeave}" placeholder="Annual leave entitlement"><br>
                                 <span class="error" th:if="${#fields.hasErrors('annualLeave')}"
                                     th:errors="*{annualLeave}"></span>
                             </div>
@@ -131,7 +131,6 @@
                                 th:value="${_csrf.token}">
 
                             <input type="hidden" name="viewName" value="employee/employee-form">
-                    
                     
                             <div class="d-flex justify-content-between align-items-start mb-4">
                                 <div>

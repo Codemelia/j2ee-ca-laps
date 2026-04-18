@@ -475,6 +475,13 @@ display: none;
     margin-bottom: 18px;
 }
 
+/* change add ymw*/
+.required-star {
+    color: red;
+    margin-left: 4px;
+    font-weight: bold;
+}
+
 label {
     display: block;
     font-weight: 600;
