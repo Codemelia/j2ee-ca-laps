@@ -1,6 +1,5 @@
 # J2EE CA - LAPS
-
-Leave Application Processing System (LAPS) for the J2EE course assignment.
+Group 3's Leave Application Processing System (G3LAPS) for the J2EE course assignment.
 
 For detailed planning on LAPS, view PROJECT.md.
 
@@ -159,11 +158,3 @@ To run with a fresh build, add a "clean" argument before spring-boot:run.
 
 3. macOS/Linux:
     ./mvnw clean package
-
----
-
-## 4. Notes For Team Members
-1. Do not commit secrets.
-2. Keep guide updates in this README when workflows change.
-3. Do a git pull/fetch BEFORE you push your code to origin
-4. Enter a concise, detailed commit message before pushing your code to allow easy tracing.
