@@ -84,8 +84,8 @@ public class LeaveApplication extends SetCreatedUpdated {
     private LeaveType leaveType;
 
     @Transient
-    @NotNull(message = "Leave Type ID must not be null")
-    @Positive(message = "Leave Type ID must be a positive number")
+    // @NotNull(message = "Leave Type ID must not be null")
+    // @Positive(message = "Leave Type ID must be a positive number")
     private Long leaveTypeId;
 
     @ManyToOne(fetch = FetchType.LAZY)

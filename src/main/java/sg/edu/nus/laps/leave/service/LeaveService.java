@@ -185,7 +185,7 @@ public class LeaveService {
 				.orElseThrow(() -> new RuntimeException("Leave Application does not Exist."));
 		
 		if (leave.getStatus() != LeaveStatus.APPLIED && leave.getStatus() != LeaveStatus.UPDATED) {
-			throw new RuntimeException("Leave Application has been Processed. Current Status : " + leave.getStatus());
+			throw new RuntimeException("Leave Application has been Processed. Current Status: " + leave.getStatus());
 		}
 		
 		if (decision == LeaveStatus.REJECTED) {
