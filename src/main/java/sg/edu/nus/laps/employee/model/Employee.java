@@ -62,7 +62,6 @@ public class Employee extends SetCreatedUpdated {
 	
 	// Admin will need to key in manager's id directly
 	@Column(name = "manager_id", nullable = true)
-	@NotBlank(message = "Please state employee's Manager's ID")
 	@Positive(message = "Manager's id must be a positive number") // Validate admin input
 	private Long managerId;
 
