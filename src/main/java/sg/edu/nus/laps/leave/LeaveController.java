@@ -22,7 +22,7 @@ import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveType;
 import sg.edu.nus.laps.leave.service.LeaveService;
 import sg.edu.nus.laps.leave.service.LeaveTypeService;
-import sg.edu.nus.laps.security.AuthUserDetails;
+import sg.edu.nus.laps.security.principal.AuthUserDetails;
 
 /**
  * LeaveController handles various operations related to leave applications

@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import sg.edu.nus.laps.common.exception.UnauthorisedUserException;
 import sg.edu.nus.laps.employee.EmployeeService;
 import sg.edu.nus.laps.employee.model.Employee;
-import sg.edu.nus.laps.security.AuthUserDetails;
+import sg.edu.nus.laps.security.principal.AuthUserDetails;
 
 @ControllerAdvice
 public class GlobalModelAttributes {

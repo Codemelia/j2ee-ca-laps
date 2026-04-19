@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.security;
+package sg.edu.nus.laps.security.principal;
 
 import java.util.ArrayList;
 import java.util.Collection;

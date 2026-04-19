@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.security;
+package sg.edu.nus.laps.security.principal;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

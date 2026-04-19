@@ -10,7 +10,7 @@ import sg.edu.nus.laps.employee.EmployeeService;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.leave.service.LeaveRecordService;
 import sg.edu.nus.laps.leave.service.LeaveService;
-import sg.edu.nus.laps.security.AuthUserDetails;
+import sg.edu.nus.laps.security.principal.AuthUserDetails;
 
 /*
     MeController handles internal employee dashboard

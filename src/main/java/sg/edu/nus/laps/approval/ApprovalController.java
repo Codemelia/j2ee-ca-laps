@@ -13,7 +13,7 @@ import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
 import sg.edu.nus.laps.leave.service.LeaveService;
-import sg.edu.nus.laps.security.AuthUserDetails;
+import sg.edu.nus.laps.security.principal.AuthUserDetails;
 
 /**
  * ApprovalController handles manager's leave approval workflow.

@@ -23,7 +23,7 @@ import sg.edu.nus.laps.leave.model.LeaveRecord;
 import sg.edu.nus.laps.leave.service.HolidayService;
 import sg.edu.nus.laps.leave.service.LeaveRecordService;
 import sg.edu.nus.laps.leave.service.LeaveTypeService;
-import sg.edu.nus.laps.security.AuthUserDetails;
+import sg.edu.nus.laps.security.principal.AuthUserDetails;
 
 /**
  * EmployeeController handles CRUD operations for managing employees as admin

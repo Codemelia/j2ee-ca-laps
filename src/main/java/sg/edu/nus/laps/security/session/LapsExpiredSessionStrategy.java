@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.security.custom;
+package sg.edu.nus.laps.security.session;
 
 import java.io.IOException;
 
@@ -16,9 +16,13 @@ public class LapsExpiredSessionStrategy implements SessionInformationExpiredStra
         String uri = event.getRequest().getRequestURI();
         HttpServletResponse response = event.getResponse();
 
-        if (uri.startsWith("/admin")) { response
-            .sendRedirect("/auth/admin/login?expired=true"); } 
-        else { response
-            .sendRedirect("/auth/employee/login?expired=true"); }
+        if (uri.startsWith("/admin")) { 
+            response
+                .sendRedirect("/auth/admin/login?expired=true"); 
+        } 
+        else { 
+            response
+                .sendRedirect("/auth/employee/login?expired=true"); 
+        }
     }
 }

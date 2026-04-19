@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.security.custom;
+package sg.edu.nus.laps.security.session;
 
 import java.io.IOException;
 
@@ -15,9 +15,13 @@ public class LapsInvalidSessionStrategy implements InvalidSessionStrategy {
         HttpServletResponse response) throws IOException, ServletException {
         String uri = request.getRequestURI();
 
-        if (uri.startsWith("/admin")) { response
-            .sendRedirect("/auth/admin/login?invalid=true"); } 
-        else { response
-            .sendRedirect("/auth/employee/login?invalid=true"); }
+        if (uri.startsWith("/admin")) { 
+            response
+                .sendRedirect("/auth/admin/login?invalid=true"); 
+        } 
+        else { 
+            response
+                .sendRedirect("/auth/employee/login?invalid=true"); 
+        }
     }
 }

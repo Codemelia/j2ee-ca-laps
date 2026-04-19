@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import jakarta.validation.Valid;
 import sg.edu.nus.laps.auth.model.PasswordDTO;
 import sg.edu.nus.laps.auth.service.UserService;
-import sg.edu.nus.laps.security.AuthUserDetails;
+import sg.edu.nus.laps.security.principal.AuthUserDetails;
 
 /**
  * AuthController handles authentication-related requests:

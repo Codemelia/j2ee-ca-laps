@@ -3,6 +3,8 @@ package sg.edu.nus.laps.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -13,8 +15,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
-import sg.edu.nus.laps.security.custom.LapsExpiredSessionStrategy;
-import sg.edu.nus.laps.security.custom.LapsInvalidSessionStrategy;
+import sg.edu.nus.laps.security.session.LapsExpiredSessionStrategy;
+import sg.edu.nus.laps.security.session.LapsInvalidSessionStrategy;
 
 /**
  * SecurityConfig configures security filter chains for 
@@ -38,9 +40,18 @@ public class SecurityConfig {
             .requestMatchers(
                 "/css/**", 
                 "/js/**", 
-                "/images/**", 
-                "/facicon.ico",
-                "/contact");
+                "/images/**");
+    }
+
+    // Auth manager (inject validation provider)
+    @Bean
+    public AuthenticationManager authManager(
+        HttpSecurity http,
+        ValidAuthProvider provider) throws Exception {
+        return http
+            .getSharedObject(AuthenticationManagerBuilder.class)
+            .authenticationProvider(provider)
+            .build();
     }
 
 	// INTERNAL / EXTERNAL ADMIN AUTH LOGIN LOGOUT
@@ -128,12 +139,13 @@ public class SecurityConfig {
     @Order(3) // Define priority low
     SecurityFilterChain commonFilterChain(HttpSecurity http) throws Exception {
         http
+            .securityMatcher("/", "/me/**", "/leaves/**", "/auth/change-password")
             // REQUEST AUTHORISATION
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/me/**", "/leaves/**") // Common dashboard for EMPLOYEE / MANAGER / INTERNAL ADMIN
                     .hasAnyAuthority("ROLE_EMPLOYEE", "ROLE_MANAGER", "AUTH_INTERNAL_ADMIN")
                 .requestMatchers("/auth/change-password") // Allow all roles to change password
-                    .hasAnyAuthority("ROLE_EMPLOYEE", "ROLE_MANAGER", "ROLE_ADMIN")
+                    .hasAnyRole("EMPLOYEE", "MANAGER", "ADMIN")
                 .anyRequest().authenticated() // All other pages will be authenticated
             )
 
@@ -151,6 +163,23 @@ public class SecurityConfig {
                 .maximumSessions(1) // Allow only 1 active session per user
                 .expiredSessionStrategy(new LapsExpiredSessionStrategy()) // Redirect after expiry
             );
+        return http.build();
+    }
+
+    // FALLBACK FOR OTHER ROUTES
+    @Bean
+    @Order(4)
+    SecurityFilterChain fallbackFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/error", "/error/**").permitAll()
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/auth/employee/login")
+                .permitAll()
+            );
+
         return http.build();
     }
 
