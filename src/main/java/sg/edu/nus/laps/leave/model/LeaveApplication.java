@@ -22,6 +22,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import sg.edu.nus.laps.common.util.SetCreatedUpdated;
 import sg.edu.nus.laps.employee.model.Employee;
@@ -75,7 +76,6 @@ public class LeaveApplication extends SetCreatedUpdated {
     @Transient // This tells JPA not to create a column in MySQL
     private double duration;
 
-
     public double getDuration() { return duration;	}
 	public void setDuration(double duration) {this.duration = duration;}
 	
@@ -84,6 +84,8 @@ public class LeaveApplication extends SetCreatedUpdated {
     private LeaveType leaveType;
 
     @Transient
+    @NotNull(message = "Leave Type ID must not be null")
+    @Positive(message = "Leave Type ID must be a positive number")
     private Long leaveTypeId;
 
     @ManyToOne(fetch = FetchType.LAZY)

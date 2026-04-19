@@ -12,7 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import sg.edu.nus.laps.common.util.SetCreatedUpdated;
 
@@ -25,7 +25,7 @@ public class LeaveType extends SetCreatedUpdated {
 	private Long id;
 	
 	@Column(name="leave_type" ,nullable=false,length = 20)
-	@NotNull(message = "Leave type is mandatory")
+	@NotBlank(message = "Leave type is mandatory")
 	@Size(max = 20, message = "Leave type cannot exceed 20 characters")
 	private String leaveType;
 	
@@ -51,9 +51,7 @@ public class LeaveType extends SetCreatedUpdated {
 	public void setLeaveApplication(List<LeaveApplication> leaveApplication) 	{ this.leaveApplication = leaveApplication; }
 
 	public LeaveType() {}
-	public LeaveType(Long id,
-		@NotNull(message = "Leave type is mandatory") @Size(max = 20, message = "Leave type cannot exceed 20 characters") String leaveType,
-		@Size(max = 200, message = "Description cannot exceed 200 characters") String leaveDescription,
+	public LeaveType(Long id, String leaveType, String leaveDescription,
 		List<LeaveRecord> leaveRecords, List<LeaveApplication> leaveApplication) {
 		super();
 		this.id = id;
