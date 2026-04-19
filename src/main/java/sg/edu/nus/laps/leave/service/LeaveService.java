@@ -473,10 +473,20 @@ public class LeaveService {
 		String typeName = leaveType.getLeaveType();
 		
 		if ("Annual".equalsIgnoreCase(typeName)) {
-			if (employee.getRank() == EmployeeRank.PROFESSIONAL) {
-				entitledDays = 18.0;
+			// Try to retrieve from previous year
+			LeaveRecord prevLeaveRecord = lrRepo
+				.findByEmployeeIdAndLeaveTypeIdAndCalendarYear(
+					employee.getId(), 1L, year - 1)
+				.orElse(null);
+
+			if (prevLeaveRecord != null) {
+				entitledDays = prevLeaveRecord.getEntitledDays();
 			} else {
-				entitledDays = 14.0;
+				if (employee.getRank() == EmployeeRank.PROFESSIONAL) {
+					entitledDays = 18.0;
+				} else {
+					entitledDays = 14.0;
+				}
 			}
 		} else if ("Medical".equalsIgnoreCase(typeName)) {
 			entitledDays = 60.0;

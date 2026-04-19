@@ -5,7 +5,8 @@ Group 3's Leave Application Processing System (G3LAPS) for the J2EE course assig
 This PROJECT.md file is organized as a practical project structure and workflow guide.
 
 1. Project Information
-2. Repository Structure
+2. Business Logic and Validation Constraints
+3. Repository Structure
 
 ---
 
@@ -46,7 +47,7 @@ This application uses the following stack components for development.
 5. Frontend layer: Thymeleaf templates, CSS, JavaScript, jQuery + DataTables, Bootstrap 5
 6. Validation and exception handling: Jakarta Validation and centralized/separate exception handling
 7. Authentication and authorization: Spring Security, Thymeleaf Extras - Spring Security 6, role/authority-based access control, custom authentication provider, and custom invalid/expired session strategies
-8. Configuration and localization: Profile-based configuration (application.properties, application-railway.properties, application-aws.properties) and messages.properties
+8. Configuration and localization: Profile-based configuration (application.properties, application-railway properties, application-aws.properties) and messages.properties
 9. Database initialization and dummy data: schema.sql and data.sql for schema setup and test/demo data population
 10. Packaging and deployment: Dockerfile with cloud deployment configuration for Railway and AWS EC2/RDS via Learner Lab
 11. External API integration: Spring RestTemplate-based integration for holiday data retrieval
@@ -61,7 +62,71 @@ This application uses the following stack components for development.
 
 ---
 
-## 2. Repository Structure
+## 2. Business Logic & Validation Constraints
+
+### 2.1 General Temporal & Integrity Validations 
+These checks apply to leave operations (Drafts, Submissions, and Updates) to ensure data consistency. 
+
+1. Chronological Order: The "Start Date" must be before or equal to the "End Date." 
+2. Future/Present Only: Leave cannot be applied for dates earlier than today. 
+3. Working Days Only: The Start and End dates must fall on a weekday (Monday to Friday). 
+4. Self-Identity Check: Users can only update, delete, or cancel leave applications that belong to their own Employee ID. 
+
+### 2.2 Leave-Type Specific Constraints
+Different rules apply for is Annual, Medical, or Compensation leave.
+
+1. Medical Leave: "Proof" URL (e.g., Medical Certificate) must be provided. 
+2. Annual/Medical Leave: Half-day applications are not allowed. 
+3. Compensation Leave: 0.5-day increments are permitted but not fully implemented for now.
+4. All Leaves: New leave applications cannot overlap with any existing "Approved" leave applications. 
+5. All Leaves: "Reason" must be provided
+
+### 2.3 State-Based Action Rules
+The system restricts what a user or manager can do based on the current LeaveStatus:
+```
+| Action           | Permitted Statuses        | Notes                                                    |
+| -----------------| ------------------------- | -------------------------------------------------------- |
+| Save             | DRAFT                     | Draft updates overwrite previous drafts                  |
+| Submit           | DRAFT, -                  | Only new applications or drafts can be submitted         |
+| Update           | APPLIED, UPDATED          | Leave Type cannot be changed during an update            |
+| Delete           | APPLIED, UPDATED          | Performs a "Soft-Delete" by setting status to DELETED    |
+| Approve/Reject   | APPLIED, UPDATED          | Managers must provide a comment if rejecting             |
+| Cancel           | APPROVED                  | Only allowed if the leave start date has not yet passed  |
+```
+
+### 2.4 Complex Business Rules
+The system uses a sophisticated method to calculate how many days are actually deducted from an employee's balance. 
+
+1. The Chain Logic: 
+If a new Annual Leave application is submitted, the system "dials back"/"dials forward" to check if it connects to an existing Approved Annual Leave (even across weekends). 
+
+2. Effective Duration Calculation: 
+If ≤ 14 Days: Only working days (excluding weekends and Public Holidays) are deducted. 
+If > 14 Days: The rule changes to Calendar Days. All days within the range (including weekends and holidays) are deducted. 
+
+3. Medical Leave: Always deducted as calendar days (Total span). 
+
+### 2.5 Leave Balance & Year-End Logic 
+
+1. Insufficient Balance:
+The system prevents approval if the calculated deduction exceeds the user's EntitledDays for that year. 
+
+2. Year Crossover: 
+If a leave period spans across December 31st and January 1st, the system splits the deduction logic between the two years. It applies the 14-day rule to the total span. 
+
+3. Just-In-Time (JIT) Initialization:
+If a record for the next year doesn't exist yet, the system automatically initializes it based on the employee's entitlement from the previous year; if it is not available, the system falls back to the employee's rank default entitlement.
+
+### 2.6 Reversal & Restoration 
+Cancellation Re-calculation: 
+When an approved leave is cancelled, the system re-runs the "Effective Duration" logic to ensure the exact number of days previously deducted is restored to the LeaveRecord.
+
+### 2.7 Automated Maintenance of Singapore Public Holiday Data
+The HolidayService acts as a bridge between the Singapore Government's Open Data Portal (data.gov.sg) and application’s database. 
+
+---
+
+## 3. Repository Structure
 This application uses a feature-based, scalable structure. 
 
 ### Skeleton
