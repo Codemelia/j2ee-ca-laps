@@ -29,7 +29,7 @@ public class HolidayService {
 	 * 		[DataSet]. data.gov.sg from https://data.gov.sg/datasets/d_149b61ad0a22f61c09dc80f2df5bbec8
 	 */
 	private final String DATASET_ID = "d_149b61ad0a22f61c09dc80f2df5bbec8";
-	private final String BASE_URL = "https://data.gov.sg/api/action/datastore_search?resource_id=" + DATASET_ID + "&limit=100";
+	private final String BASE_URL = "https://data.gov.sg/api/action/datastore_search?resource_id=" + DATASET_ID;
 	
 	private final RestTemplate restTemplate = new RestTemplate();
 	
