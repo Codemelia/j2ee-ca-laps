@@ -41,14 +41,16 @@ This is an overview of the functions of each role (Y = Yes, N = No):
 This application uses the following stack components for development.
 1. Language and runtime: Java 17
 2. Application framework: Spring Boot 4.0.5 with Spring MVC, Spring Data JPA, and Thymeleaf
-3. Database and ORM: MySQL 8.0.45 with Hibernate
-4. Build and dependency management: Maven
+3. Database and ORM: MySQL with Hibernate/JPA
+4. Build and dependency management: Maven (Maven Wrapper included)
 5. Frontend layer: Thymeleaf templates, CSS, JavaScript, jQuery + DataTables, Bootstrap 5
-6. Validation and exception handling: Jakarta Validation and GlobalControllerAdvice
-7. Authentication and authorization: Spring Security and Thymeleaf Extras - Spring Security 6
-8. Configuration and localization: application.properties and messages.properties
-9. Packaging and deployment: Dockerfile and AWS EC2 via Learner Lab
-10. External/REST API: Spring RestTemplate and ResponseBody
+6. Validation and exception handling: Jakarta Validation and centralized/separate exception handling
+7. Authentication and authorization: Spring Security, Thymeleaf Extras - Spring Security 6, role/authority-based access control, custom authentication provider, and custom invalid/expired session strategies
+8. Configuration and localization: Profile-based configuration (application.properties, application-railway.properties, application-aws.properties) and messages.properties
+9. Database initialization and dummy data: schema.sql and data.sql for schema setup and test/demo data population
+10. Packaging and deployment: Dockerfile with cloud deployment configuration for Railway and AWS EC2/RDS via Learner Lab
+11. External API integration: Spring RestTemplate-based integration for holiday data retrieval
+12. Testing support: Spring Boot test starters for Web MVC, Security, JPA, Thymeleaf, and Validation
 
 ### 1.5 Main feature modules
 1. auth: login/logout and user security support
