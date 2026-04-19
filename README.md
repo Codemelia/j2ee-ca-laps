@@ -9,7 +9,6 @@ This README is organized as a practical setup and workflow guide.
 1. Git workflow
 2. Environment variable configuration
 3. Project run commands
-4. General notes for team members
 
 ---
 
