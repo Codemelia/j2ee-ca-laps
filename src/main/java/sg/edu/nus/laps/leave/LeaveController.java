@@ -2,8 +2,6 @@ package sg.edu.nus.laps.leave;
 
 import java.util.List;
 import java.util.Optional;
-
-
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,9 +18,15 @@ import jakarta.validation.Valid;
 import sg.edu.nus.laps.employee.EmployeeService;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveType;
+import sg.edu.nus.laps.leave.service.LeaveRecordService;
 import sg.edu.nus.laps.leave.service.LeaveService;
 import sg.edu.nus.laps.leave.service.LeaveTypeService;
+import sg.edu.nus.laps.leave.model.LeaveRecord;
 import sg.edu.nus.laps.security.principal.AuthUserDetails;
+import java.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 /**
  * LeaveController handles various operations related to leave applications
@@ -112,7 +116,34 @@ public class LeaveController {
         model.addAttribute("leaveApp", leaveApp);
         return "leave/leave-form";
     }
+    
+    @Autowired
+    private LeaveService leaveService;
 
+    // Movement Register: displays leave records by month/year with pagination
+    @GetMapping("/movement-register")
+    public String movementRegister(
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(defaultValue = "0") int page,
+            Model model) {
+
+        // Default current month/year
+        LocalDate now = LocalDate.now();
+        int m = (month != null) ? month : now.getMonthValue();
+        int y = (year != null) ? year : now.getYear();
+
+        // Fetch paginated data
+        Page<LeaveApplication> records =
+            leaveService.getMovementRegister(m, y, PageRequest.of(page, 10));
+
+        model.addAttribute("records", records);
+        model.addAttribute("month", m);
+        model.addAttribute("year", y);
+
+        return "movement-register";
+    }
+    
     // Processing save draft
     // DRAFT -> DRAFT
     @PostMapping("/save")

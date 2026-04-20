@@ -10,6 +10,8 @@ import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
 import sg.edu.nus.laps.leave.model.LeaveType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface LeaveApplicationRepository extends JpaRepository<LeaveApplication, Long> {
@@ -86,4 +88,11 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
     
     // Find leave applications by employee and status
     List<LeaveApplication> findByEmployeeIdAndStatus(Long employeeId, LeaveStatus status);
+    
+    // Retrieve leave applications for Movement Register filtered by month/year with pagination
+    @Query("SELECT l FROM LeaveApplication l WHERE MONTH(l.fromDate) = :month AND YEAR(l.fromDate) = :year")
+    Page<LeaveApplication> findByMonth(@Param("month") int month,
+                                       @Param("year") int year,
+                                       Pageable pageable);
+    
 }
