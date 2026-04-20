@@ -90,11 +90,13 @@ public class LeaveService {
 				leave.getEmployee(), 
 				leave.getFromDate(), 
 				leave.getToDate());
-		if (!overlaps.isEmpty()) {
-			throw new RuntimeException("Selected Dates overlap with an Existing Approved Leave Application.");
+		boolean hasConflict = overlaps.stream().anyMatch(existing -> isActuallyOverlapping(leave, existing));
+
+		if (hasConflict) {
+			throw new RuntimeException("The selected dates or time blocks overlap with an existing leave application.");
 		}
 
-        leave.setStatus(LeaveStatus.APPLIED);
+		leave.setStatus(LeaveStatus.APPLIED);
 		return laRepo.save(leave);
 	}
 	
@@ -105,44 +107,52 @@ public class LeaveService {
 	 */
 	@Transactional
 	public void updateLeave(Long empId, LeaveApplication updatedLeave) {
-		if (empId == null) { throw new RuntimeException("Invalid Employee Profile"); }
-		
-		LeaveApplication existingLeave = laRepo.findById(updatedLeave.getId())
-				.orElseThrow(() -> new RuntimeException("Leave Application does not Exist."));
-		if (existingLeave.getStatus() != LeaveStatus.APPLIED 
-			&& existingLeave.getStatus() != LeaveStatus.UPDATED) {
-			throw new RuntimeException("Only Leave Application in 'APPLIED' or 'UPDATED' state can be Edited. "
-				+ "Current Status : " + existingLeave.getStatus());
-		}
-		if (updatedLeave.getLeaveTypeId() != null
-				&& !existingLeave.getLeaveType().getId().equals(updatedLeave.getLeaveTypeId())) {
-			throw new RuntimeException("Leave Type cannot be Edited. Please create a New Leave Application instead.");
+		if (empId == null) {
+			throw new RuntimeException("Invalid Employee Profile");
 		}
 
-		verifySelfIdentity(empId, existingLeave);
-		updatedLeave.setEmployee(existingLeave.getEmployee());
-		updatedLeave.setLeaveType(existingLeave.getLeaveType());
-		validateDate(updatedLeave);
-		validateMedicalLeave(updatedLeave);
-		
-		List<LeaveApplication> overlaps = laRepo.findOverlappingApplication(
-				List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED),
-				updatedLeave.getEmployee(), 
-				updatedLeave.getFromDate(), 
-				updatedLeave.getToDate());
-		boolean trueOverlap = overlaps.stream()
-				.anyMatch(l -> !l.getId().equals(updatedLeave.getId()));
-		if (trueOverlap) {
-			throw new RuntimeException("Updated Date Range overlaps with Existing Approved Leave Application.");
+		// 1. Fetch managed entity
+		LeaveApplication existingLeave = laRepo.findById(updatedLeave.getId())
+				.orElseThrow(() -> new RuntimeException("Leave Application does not Exist."));
+
+		// 2. Security & Status Checks
+		if (existingLeave.getStatus() != LeaveStatus.APPLIED && existingLeave.getStatus() != LeaveStatus.UPDATED) {
+			throw new RuntimeException("Only Leave Application in 'APPLIED' or 'UPDATED' state can be Edited.");
 		}
-		
+		verifySelfIdentity(empId, existingLeave);
+
+		if (updatedLeave.getLeaveTypeId() != null
+				&& !existingLeave.getLeaveType().getId().equals(updatedLeave.getLeaveTypeId())) {
+			throw new RuntimeException("Leave Type cannot be Edited.");
+		}
+
+		// 3. Map values to Existing Leave first
 		existingLeave.setFromDate(updatedLeave.getFromDate());
+		existingLeave.setFromAMPM(updatedLeave.getFromAMPM());
 		existingLeave.setToDate(updatedLeave.getToDate());
+		existingLeave.setToAMPM(updatedLeave.getToAMPM());
 		existingLeave.setProof(updatedLeave.getProof());
 		existingLeave.setReason(updatedLeave.getReason());
 		existingLeave.setWorkDissemination(updatedLeave.getWorkDissemination());
 		existingLeave.setContactDetails(updatedLeave.getContactDetails());
-		
+
+		// 4. Validate the Modified Existing Leave
+		validateDate(existingLeave);
+		validateMedicalLeave(existingLeave);
+
+		// 5. Refined Overlap Check
+		List<LeaveApplication> overlaps = laRepo.findOverlappingApplication(
+				List.of(LeaveStatus.REJECTED, LeaveStatus.CANCELLED, LeaveStatus.DELETED), existingLeave.getEmployee(),
+				existingLeave.getFromDate(), existingLeave.getToDate());
+
+		// Use a helper to check for actual time-block collisions (AM/PM aware)
+		boolean trueOverlap = overlaps.stream().filter(l -> !l.getId().equals(existingLeave.getId()))
+				.anyMatch(l -> isActuallyOverlapping(existingLeave, l));
+
+		if (trueOverlap) {
+			throw new RuntimeException("Updated Date Range overlaps with an existing application.");
+		}
+
 		existingLeave.setStatus(LeaveStatus.UPDATED);
 		laRepo.save(existingLeave);
 	}
@@ -263,16 +273,61 @@ public class LeaveService {
 		}
 	}
 
+	private boolean isActuallyOverlapping(LeaveApplication newApp, LeaveApplication existing) {
+		// 1. Quick Discard: If dates don't even touch, no overlap.
+		if (existing.getToDate().isBefore(newApp.getFromDate()) || existing.getFromDate().isAfter(newApp.getToDate())) {
+			return false;
+		}
+
+		// 2. Mid-Range Collision:
+		// If the date ranges overlap by more than just the edge dates, it's a definite
+		// conflict.
+		if (existing.getFromDate().isBefore(newApp.getToDate()) && existing.getToDate().isAfter(newApp.getFromDate())) {
+			return true;
+		}
+
+		// 3. Shared Boundary Case: They touch on EXACTLY one day (Start vs End)
+
+		// Case A: Existing ends on the same day New starts
+		if (existing.getToDate().equals(newApp.getFromDate())) {
+			// If Existing ends PM, it occupies the whole day or the last half,
+			// so New starting at either AM or PM is a conflict.
+			if (existing.getToAMPM().equalsIgnoreCase("PM"))
+				return true;
+
+			// If Existing ends AM, New can only start PM.
+			// If New also tries to start AM, it's a conflict.
+			if (existing.getToAMPM().equalsIgnoreCase("AM") && newApp.getFromAMPM().equalsIgnoreCase("AM"))
+				return true;
+		}
+
+		// Case B: Existing starts on the same day New ends
+		if (existing.getFromDate().equals(newApp.getToDate())) {
+			// If Existing starts AM, it occupies the whole day or the first half.
+			if (existing.getFromAMPM().equalsIgnoreCase("AM"))
+				return true;
+
+			// If Existing starts PM, New must end AM.
+			// If New also ends PM, it's a conflict.
+			if (existing.getFromAMPM().equalsIgnoreCase("PM") && newApp.getToAMPM().equalsIgnoreCase("PM"))
+				return true;
+		}
+
+		return false;
+	}
+
 	/*
 	 * a. Helper Method: ValidateDate --> Validate if the fromDate and toDate is in Chronological Order.
 	 * 		Validate if the fromDate is later or equals to Today's Date.
 	 * 		Validate if the fromDate and toDate is on WEEKDAY
+	 * 		Validate if the Leave Type is Compensation
 	 */
 	private void validateDate(LeaveApplication leave) {
 		LocalDate fromDate = leave.getFromDate();
 		LocalDate toDate = leave.getToDate();
 		String typeName = leave.getLeaveType().getLeaveType();
-		
+		int currentYear = LocalDate.now().getYear();
+
 		if (fromDate.isBefore(LocalDate.now())) {
 			throw new RuntimeException("Leave Start Date cannot be Earlier than Today's Date.");
 		}
@@ -285,9 +340,36 @@ public class LeaveService {
 		if (isWeekend(toDate)) {
 			throw new RuntimeException("Leave End Date must be a working day (Monday to Friday).");
 		}
-		if (("Annual".equalsIgnoreCase(typeName) || "Medical".equalsIgnoreCase(typeName)) 
-				&& leave.isHalfDay()) {
-			throw new RuntimeException("Half-Day are only Permitted for Compensation Leave.");
+		// 3. Compensation-Specific Logic
+		if ("Compensation".equalsIgnoreCase(typeName)) {
+
+			// Rule 1: Same-day logical sequence (Prevent PM -> AM)
+			if (fromDate.equals(toDate)) {
+				if ("PM".equalsIgnoreCase(leave.getFromAMPM()) && "AM".equalsIgnoreCase(leave.getToAMPM())) {
+					throw new RuntimeException(
+							"On a single-day Compensation leave, the start period cannot be after the end period.");
+				}
+			}
+
+			// Rule 2: Year Restrictions (Must be current year & No crossover)
+			if (fromDate.getYear() != currentYear) {
+				throw new RuntimeException(
+						"Compensation leave must be taken within the current calendar year (" + currentYear + ").");
+			}
+			if (toDate.getYear() != fromDate.getYear()) {
+				throw new RuntimeException(
+						"Compensation leave cannot span across different years. Please split your application if necessary.");
+			}
+
+		} else {
+			// 4. Annual/Medical Validation
+			if (leave.isHalfDay()) {
+				throw new RuntimeException("Half-day increments are only permitted for Compensation Leave.");
+			}
+			// Force full-day boundaries for non-compensation types to ensure consistent
+			// math
+			leave.setFromAMPM("AM");
+			leave.setToAMPM("PM");
 		}
 	}
 
@@ -326,7 +408,7 @@ public class LeaveService {
 				effectiveLeaveDuration = calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
 			}
 		} else if ("Compensation".equalsIgnoreCase(leaveType)) {
-				effectiveLeaveDuration = leave.isHalfDay() ? 0.5 : calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
+				effectiveLeaveDuration = calcCompDuration(leave);
 		}
 		
 		applyDeduction(leave, effectiveLeaveDuration);
@@ -422,8 +504,9 @@ public class LeaveService {
 	private void applyDeduction(LeaveApplication leave, double effectiveLeaveDuration) {
 		int fromYear = leave.getFromDate().getYear();
 		int toYear = leave.getToDate().getYear();
+		String typeName = leave.getLeaveType().getLeaveType();
 		
-		if (fromYear == toYear) {
+		if ("Compensation".equalsIgnoreCase(typeName) || fromYear == toYear) {
 			updateLeaveRecordwithJITInject(leave.getEmployee(), leave.getLeaveType(), fromYear, effectiveLeaveDuration);
 		} else {
 			LocalDate lastDay = LocalDate.of(fromYear, 12, 31);
@@ -434,7 +517,7 @@ public class LeaveService {
 			
 			long totalCalendarSpan = ChronoUnit.DAYS.between(leave.getFromDate(), leave.getToDate()) + 1;
 			
-			if (totalCalendarSpan > 14 || "Medical".equalsIgnoreCase(leave.getLeaveType().getLeaveType())) {
+			if (totalCalendarSpan > 14 || "Medical".equalsIgnoreCase(typeName)) {
 				leaveY1 = (double) ChronoUnit.DAYS.between(leave.getFromDate(), lastDay) + 1;
 				leaveY2 = effectiveLeaveDuration - leaveY1;
 			} else {
@@ -561,6 +644,37 @@ public class LeaveService {
 		
 		lr.setConsumedDays(lr.getConsumedDays() - leaveDays);
 		lrRepo.save(lr);
+	}
+
+	/*
+	 * k. Helper Method:  calculateCompensationDuration --> Compute the Total Number of Compensation Days Applied
+	 */
+	private double calcCompDuration(LeaveApplication leave) {
+		List<LocalDate> holidays = holRepo.findAllHolidayDates();
+		double effectiveLeaveDuration = 0;
+
+		for (LocalDate date = leave.getFromDate(); !date.isAfter(leave.getToDate()); date = date.plusDays(1)) {
+			// Skip Weekends and Public Holidays
+			if (isWeekend(date) || holidays.contains(date)) {
+				continue;
+			}
+			
+			// Initialize as a Full-Day
+			double dayComp = 1.0;
+
+			// Adjust for Start day if it's a Half-Day
+			if (date.equals(leave.getFromDate()) && "PM".equalsIgnoreCase(leave.getFromAMPM())) {
+				dayComp -= 0.5;
+			}
+
+			// Adjust for End day if it's a Half-Day
+			if (date.equals(leave.getToDate()) && "AM".equalsIgnoreCase(leave.getToAMPM())) {
+				dayComp -= 0.5;
+			}
+
+			effectiveLeaveDuration += dayComp;
+		}
+		return Math.max(0, effectiveLeaveDuration);
 	}
 
 	// --- Dash-Board Builder Methods ---
