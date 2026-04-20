@@ -1,12 +1,13 @@
 package sg.edu.nus.laps.leave.service;
 
 import java.time.DayOfWeek;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,9 @@ import sg.edu.nus.laps.leave.repository.HolidayRepository;
 import sg.edu.nus.laps.leave.repository.LeaveApplicationRepository;
 import sg.edu.nus.laps.leave.repository.LeaveRecordRepository;
 import sg.edu.nus.laps.leave.repository.LeaveTypeRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 /*
     LeaveService handles all leave CRUD operations
@@ -720,6 +724,14 @@ public class LeaveService {
 		}
 		return history;
 
+	}
+	
+	@Autowired
+	private LeaveApplicationRepository leaveApplicationRepository;
+	
+	// Retrieve paginated leave applications for Movement Register for selected month/year
+	public Page<LeaveApplication> getMovementRegister(int month, int year, Pageable pageable) {
+	    return leaveApplicationRepository.findByMonth(month, year, pageable);
 	}
 
 }
