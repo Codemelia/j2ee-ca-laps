@@ -412,7 +412,7 @@ public class LeaveService {
 				effectiveLeaveDuration = calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
 			}
 		} else if ("Compensation".equalsIgnoreCase(leaveType)) {
-				effectiveLeaveDuration = calcCompDuration(leave);
+				effectiveLeaveDuration = calcCompDeductibles(leave);
 		}
 		
 		applyDeduction(leave, effectiveLeaveDuration);
@@ -653,7 +653,7 @@ public class LeaveService {
 	/*
 	 * k. Helper Method:  calculateCompensationDuration --> Compute the Total Number of Compensation Days Applied
 	 */
-	private double calcCompDuration(LeaveApplication leave) {
+	public double calcCompDeductibles(LeaveApplication leave) {
 		List<LocalDate> holidays = holRepo.findAllHolidayDates();
 		double effectiveLeaveDuration = 0;
 
@@ -709,17 +709,27 @@ public class LeaveService {
 	
 	// 5. The Retrieval Logic (Sharing the count into the entity)
 	@Transactional(readOnly = true)
-	public List  <LeaveApplication> getEmployeeLeaveHistory(Long employeeId ) {
-		// 1. Get current year 
-	    int currentYear = LocalDate.now().getYear();
+	public List<LeaveApplication> getEmployeeLeaveHistory(Long employeeId) {
+		// 1. Get current year
+		int currentYear = LocalDate.now().getYear();
 		List<LeaveApplication> history = laRepo.findByEmployeeIdAndYear(employeeId, currentYear);
-		// List<LocalDate> holidays = holRepo.findAllHolidayDates();
+		// 2. List<LocalDate> holidays = holRepo.findAllHolidayDates();
 
 		for (LeaveApplication leave : history) {
-			// Calculate the count
-			double days = calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
+			String typeName = leave.getLeaveType().getLeaveType();
+			double days;
 
-			// "Share" the count into the duration field in the entity
+			// 3. Route to the correct calculation logic
+			if ("Compensation".equalsIgnoreCase(typeName)) {
+				// Use the AM/PM aware logic
+				days = calcCompDeductibles(leave);
+			} else {
+				// Use the standard working-day logic for Annual/Medical
+				// This still uses the 'old' logic of counting full days
+				days = calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
+			}
+
+			// 4. "Share" the count into the duration field in the entity
 			leave.setDuration(days);
 		}
 		return history;
