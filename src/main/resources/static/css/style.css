@@ -527,6 +527,60 @@ textarea {
     display: block;
 }
 
+/* --- Compensation Toggle Styling --- */
+.compensation-toggle {
+    width: 90px !important; 
+    padding: 7px 28px 7px 10px !important; 
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--blue);
+    background-color: #f0f7ff;
+    border: 1.5px solid var(--blue);
+    border-radius: 4px;
+    cursor: pointer;
+    vertical-align: middle; /* Aligns with the date input better */
+
+    /* Remove default browser arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    /* Add custom downward arrow (encoded #2563a8) */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%232563a8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 14px;
+    
+    transition: all 0.2s ease-in-out;
+}
+
+/* Specific selector for when JS sets display to inline-block */
+.compensation-toggle:not([style*="display: none"]) {
+    animation: fadeInScale 0.25s ease-out forwards;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: translateY(-5px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.compensation-toggle:hover {
+    border-color: var(--navy);
+    background-color: #e1effe;
+}
+
+.compensation-toggle option {
+    background: white;
+    color: var(--text);
+    font-weight: 500;
+}
+
 /* --- Buttons ----------------------------------------------- */
 .btn {
     display: inline-block;

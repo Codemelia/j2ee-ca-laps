@@ -80,8 +80,8 @@
             <div class="form-group">
               <!-- 17add ymw <span>-->
               <label>Start Date<span class="required-star">*</span></label>
-			  <div style="display: inline-flex; align-items: center; gap: 8px;">
-				<input type = "date" th:field = "*{fromDate}" required />
+			  <div style="display: inline-flex; align-items: center; gap: 8px; width: 100%;">
+				<input type = "date" th:field = "*{fromDate}" required style = "flex-grow: 1;"/>
 				<select th:field = "*{fromAMPM}" class="form-control compensation-toggle" style = "display:none; width: 80px;">
 					<option value = "AM">AM</option>
 					<option value = "PM">PM</option>
@@ -96,8 +96,8 @@
             <div class="form-group">
               <!-- 17add ymw <span>-->
               <label>End Date<span class="required-star">*</span></label>
-			  <div style="display: inline-flex; align-items: center; gap: 8px;">
-			  	<input type = "date" th:field="*{toDate}" required />
+			  <div style="display: inline-flex; align-items: center; gap: 8px; width: 100%;">
+			  	<input type = "date" th:field="*{toDate}" required style = "flex-grow: 1;"/>
 				<select th:field = "*{toAMPM}" class = "form-control compensation-toggle" style = "display:none; width: 80px;">
 					<option value = "AM">AM</option>
 					<option value = "PM">PM</option>
