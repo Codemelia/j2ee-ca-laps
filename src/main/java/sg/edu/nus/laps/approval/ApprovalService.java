@@ -47,31 +47,40 @@ public class ApprovalService {
 
     // Manager Approval functions
 
-    /**
-     * Retrieves all pending leave applications for a manager's subordinates.
-     * Status: APPLIED or UPDATED
-     * Status: APPROVED or REJECTED
-     * 
-     * @param managerId the manager's employee ID
-     * @return list of pending leave applications
-     */
-    @Transactional(readOnly = true)
-    public List<LeaveApplication> getTeamLeaveRequests(Long managerId, LeaveStatus... statuses) {
-        if (statuses == null || statuses.length == 0) {
-            return List.of();
-        }
+	/**
+	 * Retrieves all pending leave applications for a manager's subordinates.
+	 * Status: APPLIED or UPDATED Status: APPROVED or REJECTED
+	 * 
+	 * @param managerId the manager's employee ID
+	 * @return list of pending leave applications
+	 */
+	@Transactional(readOnly = true)
+	public List<LeaveApplication> getTeamLeaveRequests(Long managerId, LeaveStatus... statuses) {
+		if (statuses == null || statuses.length == 0) {
+			return List.of();
+		}
 
-		List<LeaveApplication> leaveApps = laRepo.findByEmployeeManagerIdAndStatusIn(
-            managerId, Arrays.asList(statuses));
+		List<LeaveApplication> leaveApps = laRepo.findByEmployeeManagerIdAndStatusIn(managerId,
+				Arrays.asList(statuses));
 		for (LeaveApplication leave : leaveApps) {
-			// Calculate the count
-			double days = lService.calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
+			String typeName = leave.getLeaveType().getLeaveType();
+			double days;
 
-			// "Share" the count into the duration field in the entity
+			// 3. Route to the correct calculation logic
+			if ("Compensation".equalsIgnoreCase(typeName)) {
+				// Use the AM/PM aware logic
+				days = lService.calcCompDeductibles(leave);
+			} else {
+				// Use the standard working-day logic for Annual/Medical
+				// This still uses the 'old' logic of counting full days
+				days = lService.calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
+			}
+
+			// 4. "Share" the count into the duration field in the entity
 			leave.setDuration(days);
 		}
-        return leaveApps;
-    }
+		return leaveApps;
+	}
 
     /**
      * Retrieves the complete leave history for a specific subordinate.
@@ -111,6 +120,7 @@ public class ApprovalService {
         return laRepo.findConflictingLeaves(managerId, fromDate, toDate, excludeId);
     }
 
+    /*
     // Retrieve overtime compensation claims for manager's team
     @Transactional(readOnly = true)
     public List<LeaveRecord> getTeamOvertimeClaims(Long managerId, OvertimeClaimStatus... statuses) {
@@ -121,11 +131,11 @@ public class ApprovalService {
 		List<OvertimeClaim> teamClaims = otService.retrieveTeamClaims(managerId, Arrays.asList(statuses));
 		for (OvertimeClaim claim : teamClaims) {
 			// Calculate the count
-			double days = 
+			double days = lService.calcCompDeductibles();
 		}
         return leaveApps;
     }
-
+     */
 
     // Process report export in CSV format
     @Transactional(readOnly = true)
