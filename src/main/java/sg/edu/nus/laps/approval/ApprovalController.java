@@ -248,4 +248,17 @@ public class ApprovalController {
         }
     }
 
+    // Overtime Compensation
+    @GetMapping("/team-claims")
+    public String viewTeamOvertimeClaims(
+        @AuthenticationPrincipal AuthUserDetails user,
+        Model model) {
+        
+            
+
+
+        return "";
+
+    }
+
 }

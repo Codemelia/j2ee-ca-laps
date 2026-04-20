@@ -2,13 +2,18 @@ package sg.edu.nus.laps.approval;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import sg.edu.nus.laps.claim.OvertimeClaim;
+import sg.edu.nus.laps.claim.OvertimeClaimService;
+import sg.edu.nus.laps.claim.OvertimeClaimStatus;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
+import sg.edu.nus.laps.leave.model.LeaveRecord;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
 import sg.edu.nus.laps.leave.repository.LeaveApplicationRepository;
 import sg.edu.nus.laps.leave.service.LeaveService;
@@ -24,6 +29,7 @@ import sg.edu.nus.laps.leave.service.LeaveService;
 public class ApprovalService {
     private final LeaveApplicationRepository laRepo;
     private final LeaveService lService; // unidirectional
+    private final OvertimeClaimService otService;
 
     private static final DateTimeFormatter DATE_FORMAT = 
         DateTimeFormatter.ofPattern("yyyy-MM-dd"); // For start end date
@@ -32,9 +38,11 @@ public class ApprovalService {
     
     public ApprovalService(
         LeaveApplicationRepository laRepo,
-        LeaveService lService) {
+        LeaveService lService,
+        OvertimeClaimService otService) {
         this.laRepo = laRepo;
         this.lService = lService;
+        this.otService = otService;
     }
 
     // Manager Approval functions
@@ -47,8 +55,8 @@ public class ApprovalService {
      * @param managerId the manager's employee ID
      * @return list of pending leave applications
      */
+    @Transactional(readOnly = true)
     public List<LeaveApplication> getTeamLeaveRequests(Long managerId, LeaveStatus... statuses) {
-
         if (statuses == null || statuses.length == 0) {
             return List.of();
         }
@@ -72,8 +80,8 @@ public class ApprovalService {
      * @param employeeId the subordinate's employee ID
      * @return list of all leave applications for the employee
      */
+    @Transactional(readOnly = true)
     public List<LeaveApplication> getSubordinateHistory(Long employeeId) {
-    	
     	List<LeaveApplication> pendingApplications = laRepo.findByEmployeeIdOrderByFromDateDesc(employeeId);
     	for (LeaveApplication leave : pendingApplications) {
 			// Calculate the count
@@ -82,7 +90,6 @@ public class ApprovalService {
 			// "Share" the count into the duration field in the entity
 			leave.setDuration(days);}
 			return pendingApplications;
-       
     }
 
     /**
@@ -95,13 +102,30 @@ public class ApprovalService {
      * @param excludeId leave application ID to exclude from results
      * @return list of approved leave applications that overlap the specified date range
      */
+    @Transactional(readOnly = true)
     public List<LeaveApplication> getConflictingLeaves(
         Long managerId, 
-		java.time.LocalDate fromDate, 
-		java.time.LocalDate toDate, 
+		LocalDate fromDate, 
+		LocalDate toDate, 
 		Long excludeId) {
         return laRepo.findConflictingLeaves(managerId, fromDate, toDate, excludeId);
     }
+
+    // Retrieve overtime compensation claims for manager's team
+    @Transactional(readOnly = true)
+    public List<LeaveRecord> getTeamOvertimeClaims(Long managerId, OvertimeClaimStatus... statuses) {
+        if (statuses == null || statuses.length == 0) {
+            return List.of();
+        }
+
+		List<OvertimeClaim> teamClaims = otService.retrieveTeamClaims(managerId, Arrays.asList(statuses));
+		for (OvertimeClaim claim : teamClaims) {
+			// Calculate the count
+			double days = 
+		}
+        return leaveApps;
+    }
+
 
     // Process report export in CSV format
     @Transactional(readOnly = true)

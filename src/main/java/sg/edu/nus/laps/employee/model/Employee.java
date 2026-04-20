@@ -25,6 +25,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import sg.edu.nus.laps.auth.model.User;
+import sg.edu.nus.laps.claim.OvertimeClaim;
 import sg.edu.nus.laps.common.util.SetCreatedUpdated;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveRecord;
@@ -114,11 +115,17 @@ public class Employee extends SetCreatedUpdated {
 		cascade = {CascadeType.PERSIST, CascadeType.MERGE},
 		orphanRemoval = true)
 	private List<LeaveRecord> leaveRecords = new ArrayList<>();
+
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY,
+		orphanRemoval = true)
+	private List<OvertimeClaim> overtimeClaims = new ArrayList<>();
+
 	
 	public Employee() {}
 	public Employee(Long id, String firstName, String lastName, String contactNumber,
 		EmployeeRank rank, Long managerId, String teamName, String jobTitle, Double annualLeave,
-		String roleName, User user, List<LeaveApplication> leaveApplications, List<LeaveRecord> leaveRecords) {
+		String roleName, User user, List<LeaveApplication> leaveApplications, 
+		List<LeaveRecord> leaveRecords, List<OvertimeClaim> overtimeClaims) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -132,6 +139,7 @@ public class Employee extends SetCreatedUpdated {
 		this.user = user;
 		this.leaveApplications = leaveApplications;
 		this.leaveRecords = leaveRecords;
+		this.overtimeClaims = overtimeClaims;
 	}
 
 	public Long getId() { return id; }
@@ -160,13 +168,27 @@ public class Employee extends SetCreatedUpdated {
 	public void setRoleName(String roleName) { this.roleName = roleName; }
 	public Double getAnnualLeave() { return annualLeave; }
 	public void setAnnualLeave(Double annualLeave) { this.annualLeave = annualLeave; }
+	public List<OvertimeClaim> getOvertimeClaims() { return this.overtimeClaims; }
+	public void setOvertimeClaims(List<OvertimeClaim> overtimeClaims) { this.overtimeClaims = overtimeClaims; }
 
 	@Override
 	public String toString() {
-		return "Employee [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", contactNumber="
-				+ contactNumber + ", rank=" + rank + ", managerId=" + managerId + ", createdAt=" + createdAt
-				+ ", updatedAt=" + updatedAt + ", annualLeave=" + annualLeave + ", user=" + user + ", leaveApplications=" + leaveApplications
-				+ ", leaveRecords=" + leaveRecords + "]";
+		return "{" +
+			" id='" + getId() + "'" +
+			", firstName='" + getFirstName() + "'" +
+			", lastName='" + getLastName() + "'" +
+			", contactNumber='" + getContactNumber() + "'" +
+			", rank='" + getRank() + "'" +
+			", managerId='" + getManagerId() + "'" +
+			", teamName='" + getTeamName() + "'" +
+			", jobTitle='" + getJobTitle() + "'" +
+			", annualLeave='" + getAnnualLeave() + "'" +
+			", roleName='" + getRoleName() + "'" +
+			", user='" + getUser() + "'" +
+			", leaveApplications='" + getLeaveApplications() + "'" +
+			", leaveRecords='" + getLeaveRecords() + "'" +
+			", overtimeClaims='" + getOvertimeClaims() + "'" +
+			"}";
 	}
 	
 }
