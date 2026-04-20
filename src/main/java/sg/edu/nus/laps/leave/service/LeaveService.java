@@ -651,7 +651,8 @@ public class LeaveService {
 	}
 
 	/*
-	 * k. Helper Method:  calculateCompensationDuration --> Compute the Total Number of Compensation Days Applied
+	 * k. Helper Method:  calcCompDeductibles --> Compute the Total Number of Compensation Days Applied
+	 * 		Possible Enhancement: Re-factor with calcLeaveDeductibles Method since the syntax is Similar 
 	 */
 	public double calcCompDeductibles(LeaveApplication leave) {
 		List<LocalDate> holidays = holRepo.findAllHolidayDates();
