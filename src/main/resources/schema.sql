@@ -104,7 +104,7 @@ CREATE TABLE overtime_claims (
     employee_id     BIGINT           NOT NULL,
     worked_date     DATE             NOT NULL,
     claimed_days    DECIMAL(4, 2)    NOT NULL,
-    status          ENUM('APPLIED', 'APPROVED', 'REJECTED')   NOT NULL,
+    status          ENUM('APPLIED', 'APPROVED', 'REJECTED', 'DELETED')   NOT NULL,
     created_at      DATETIME         NOT NULL        DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME         NOT NULL        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_claims_employee FOREIGN KEY (employee_id) REFERENCES employees(id)

@@ -301,7 +301,7 @@ public class ApprovalController {
         // Retrieve complete leave history for the subordinate
         model.addAttribute("subordinateFullName", 
             subordinate.getFirstName() + " " + subordinate.getLastName());
-        model.addAttribute("claimList", aService.getSubordinateClaimHistory(empId));
+        model.addAttribute("teamClaims", aService.getSubordinateClaimHistory(empId));
         model.addAttribute("isSelf", false);
         return "claim/claim-list";
     }

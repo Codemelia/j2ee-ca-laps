@@ -15,6 +15,8 @@ import sg.edu.nus.laps.claim.model.OvertimeClaimStatus;
 public interface OvertimeClaimRepository extends JpaRepository<OvertimeClaim, Long> {
 
 	List<OvertimeClaim> findByEmployeeIdOrderByCreatedAtDesc(Long employeeId);
+	List<OvertimeClaim> findByEmployeeIdAndStatusNotOrderByCreatedAtDesc(
+		Long employeeId, OvertimeClaimStatus status);
 
 	List<OvertimeClaim> findByEmployeeManagerIdAndStatusInOrderByCreatedAtDesc(
 		Long managerId, List<OvertimeClaimStatus> statusList);

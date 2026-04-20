@@ -92,7 +92,8 @@ public class OvertimeClaimService {
     @Transactional(readOnly = true)
     public List<OvertimeClaim> getClaimHistory(Long employeeId) {
         if (employeeId == null) { return List.of(); }
-        return otRepo.findByEmployeeIdOrderByCreatedAtDesc(employeeId);
+        return otRepo.findByEmployeeIdAndStatusNotOrderByCreatedAtDesc(
+            employeeId, OvertimeClaimStatus.DELETED);
     }
 
     // Manager: approve/reject claim

@@ -7,10 +7,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.model.EmployeeRank;
@@ -742,22 +740,19 @@ public class LeaveService {
 
 	}
 	
-	@Autowired
-	private LeaveApplicationRepository leaveApplicationRepository;
-	
 	// Retrieve paginated leave applications for Movement Register for selected month/year
 	public Page<LeaveApplication> getMovementRegister(int month, int year, Pageable pageable) {
-	    return leaveApplicationRepository.findByMonth(month, year, pageable);
+	    return laRepo.findByMonth(month, year, pageable);
 	}
 	
-	public List<LeaveApplication> getTeamMovement(String teamName, int month, int year) {
+	// Only retrieve approved leaves for team movement (available to all employees)
+	public List<LeaveApplication> getTeamMovement(Long retrieveId, int month, int year) {
 		// 1. Convert the month/year into a date range for the SQL query
 		LocalDate start = LocalDate.of(year, month, 1);
 		LocalDate end = start.with(java.time.temporal.TemporalAdjusters.lastDayOfMonth());
 
-		// 2. Call the repository method you defined
-		return laRepo.findTeamMovement(teamName, start, end);
-		}
-
+		// 2. Call the repository method
+		return laRepo.findTeamMovement(retrieveId, start, end);
+	}
 
 }

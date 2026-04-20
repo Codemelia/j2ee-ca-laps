@@ -133,7 +133,8 @@ public class ApprovalService {
     // Retrieve claim history for specific subordinate
     @Transactional(readOnly = true)
     public List<OvertimeClaim> getSubordinateClaimHistory(Long empId) {
-        return otRepo.findByEmployeeIdOrderByCreatedAtDesc(empId);
+        return otRepo.findByEmployeeIdAndStatusNotOrderByCreatedAtDesc(
+            empId, OvertimeClaimStatus.DELETED);
     }
 
     // Process report export in CSV format

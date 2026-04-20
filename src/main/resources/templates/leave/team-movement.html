@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
     xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 
-	<head th:insert="~{fragments/head ::head('Leave History', ~{::extra})}">
+	<head th:insert="~{fragments/head ::head('Team Movement Register', ~{::extra})}">
 	</head>
 
 	<body>
@@ -14,7 +14,10 @@
 		</div>
         <div class="page-wrapper">
 			<div class="container mt-4">
-				<h1 th:text="${!#lists.isEmpty(leaveList)} ? 'Team Movement: ' + ${leaveList[0].employee.teamName} : 'Team Movement'">Team Movement</h1>
+				<h1 th:text="${!#lists.isEmpty(leaveList)} ? 'Movement Register: ' + ${leaveList[0].employee.teamName} : 'Movement Register'">Team Register</h1>
+				<p class="text-muted">
+					Movement register of team members' approved leaves
+				</p>
 				<form th:action="@{/leaves/team-movement}" method="get" class="d-flex align-items-center">
 				    <label for="monthSelect" class="me-2 fw-bold">Period:</label>
 				    <select name="month" id="monthSelect" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
@@ -49,7 +52,7 @@
 					        <th>End Date</th>
 							<th>Staff Name</th> 
 							<th>Leave Type</th>					        
-					        <th>Status</th>
+					        <!-- <th>Status</th> -->
 					    </tr>
 					</thead>
 					
@@ -57,11 +60,11 @@
 					<tbody>
 					    <tr th:each="leave : ${leaveList}">
 							<td th:text="${#temporals.format(leave.fromDate, 'dd MMM yyyy')}">01 Jan 2026</td>
-												        <td th:text="${#temporals.format(leave.toDate, 'dd MMM yyyy')}">02 Jan 2026</td>
+							<td th:text="${#temporals.format(leave.toDate, 'dd MMM yyyy')}">02 Jan 2026</td>
 					        <td th:text="${leave.employee.firstName + ' ' + leave.employee.lastName}">Amy</td>
-					        					        <td th:text="${leave.leaveType?.leaveType}">Annual</td>				        
+							<td th:text="${leave.leaveType?.leaveType}">Annual</td>				        
 					        
-					        
+					        <!--
 					        <td>
 					            <span class="badge rounded-pill"
 					                th:classappend="${
@@ -69,6 +72,7 @@
 					                th:text="${leave.status.name()}">
 					            </span>
 					        </td>
+							-->
 					    </tr>
 					</tbody>
 				</table>

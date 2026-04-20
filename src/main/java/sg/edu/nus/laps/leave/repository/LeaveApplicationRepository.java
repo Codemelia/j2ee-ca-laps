@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
@@ -104,13 +105,13 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 		@Param("year") int year,
 		Pageable pageable);
     
-  //TeamMovement table
+  //TeamMovement table, retrieve mgr Id, if it is null, fall back  to emp id (manager view)
     @Query("SELECT l FROM LeaveApplication l " +
-    	       "WHERE l.employee.teamName = :teamName " +
-    	       "AND l.status IN ('APPLIED', 'UPDATED', 'APPROVED') " +
-    	       "AND l.fromDate <= :monthEnd AND l.toDate >= :monthStart")
+			"WHERE COALESCE(l.employee.managerId, l.employee.id) = :retrieveId " +
+			"AND l.status = 'APPROVED' " +
+			"AND l.fromDate <= :monthEnd AND l.toDate >= :monthStart")
     	List<LeaveApplication> findTeamMovement(
-    	    @Param("teamName") String teamName, 
+    	    @Param("retrieveId") Long retrieveId, 
     	    @Param("monthStart") LocalDate monthStart, 
     	    @Param("monthEnd") LocalDate monthEnd
     	);

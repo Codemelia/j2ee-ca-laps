@@ -389,6 +389,14 @@ display: none;
     flex: 0 0 auto;
 }
 
+.claim-action-btn {
+    width: 110px;
+}
+
+.claim-action-form {
+    margin: 0;
+}
+
 .action-button-group {
     display: flex;
     flex-wrap: wrap;

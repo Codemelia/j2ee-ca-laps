@@ -37,8 +37,8 @@ public class OvertimeClaim extends SetCreatedUpdated {
     @Column(name = "worked_date", nullable = false)
     private LocalDate workedDate;
 
-    @DecimalMin(value = "0.5", message = "Claimed days must be minimum 0.5 day(s)")
-    @DecimalMax(value = "3.0", message = "Claimed days cannot exceed 3.0 days")
+    @DecimalMin(value = "0.5", message = "Claimed days must be minimum 0.5 day per worked date")
+    @DecimalMax(value = "1.0", message = "Claimed days cannot exceed 1.0 day per worked date")
     @Column(name = "claimed_days", nullable = false)
     private double claimedDays;
 
@@ -74,7 +74,7 @@ public class OvertimeClaim extends SetCreatedUpdated {
     @AssertTrue(message = "Claimed compensation units must be in increments of 0.5")
     public boolean hasValidDays() {
         if (claimedDays < 0) { return false; }
-        // Check whether units are in increments of 0.6
+        // Check whether units are in increments of 0.5
         double multi = claimedDays * 2; // Always integer (expected)
         return Math.abs(multi - Math.round(multi)) < 1e-9; // Checks whether value is extremely close to integer
     }

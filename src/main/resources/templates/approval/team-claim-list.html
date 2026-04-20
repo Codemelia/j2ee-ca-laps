@@ -4,15 +4,6 @@
 
 	<head th:replace="~{fragments/head ::head('Team Claim History', ~{::extra})}">
         <th:block th:fragment="extra">
-            <style>
-                .claim-action-btn {
-                    min-width: 110px;
-                }
-
-                .claim-action-form {
-                    margin: 0;
-                }
-            </style>
             <script th:src="@{/js/manager-pages.js}" defer></script>
         </th:block>
     </head>
@@ -30,10 +21,10 @@
                 <div class="header-section">
                     <h1 class="mb-0">Team Overtime Compensation Claims</h1>
                     <p th:if="${isPending}" class="text-muted">
-                        Review and approve pending team overtime claim requests
+                        Action pending overtime claim requests
                     </p>
                     <p th:unless="${isPending}" class="text-muted">
-                        Review and export processed team overtime claim requests
+                        Review processed overtime claim requests
                     </p>
                     <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mt-3 mb-3">
                         <div class="btn-group" role="group" aria-label="Team claim view toggle">
@@ -120,23 +111,24 @@
                                 <td>
                                     <form
                                         class="claim-action-form"
-                                        th:if="${claim.status.name() == 'APPLIED'}"
+                                        th:if="${'APPLIED'.equals(claim.status.name())}"
                                         th:action="@{/manager/team-claims/approve}" method="post">
                                         <input type="hidden" name="id" th:value="${claim.id}">
                                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                        <button type="submit" class="btn btn-primary claim-action-btn">Approve</button>
+                                        <button type="submit" class="btn btn-primary claim-action-btn"
+                                            onclick="return confirm('Approve this claim?')">Approve</button>
                                     </form>
                                     <p></p>
                                     <form
                                         class="claim-action-form"
-                                        th:if="${claim.status.name() == 'APPLIED'}"
+                                        th:if="${'APPLIED'.equals(claim.status.name())}"
                                         th:action="@{/manager/team-claims/reject}" method="post">
                                         <input type="hidden" name="id" th:value="${claim.id}">
                                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                         <button type="submit" class="btn btn-danger claim-action-btn"
                                             onclick="return confirm('Reject this claim?')">Reject</button>
                                     </form>
-                                    <span th:unless="${claim.status.name() == 'APPLIED'}">
+                                    <span th:unless="${'APPLIED'.equals(claim.status.name())}">
                                         No Action Required
                                     </span>
                                 </td>
