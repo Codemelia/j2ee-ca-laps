@@ -36,7 +36,6 @@ public class OvertimeClaim extends SetCreatedUpdated {
     @Column(name = "worked_date", nullable = false)
     private LocalDate workedDate;
 
-    @NotNull(message = "Claimed compensation units are mandatory")
     @PositiveOrZero(message = "Claimed compensation units must be positive or zero")
     @Column(name = "claimed_days", nullable = false)
     private double claimedDays;
@@ -51,9 +50,8 @@ public class OvertimeClaim extends SetCreatedUpdated {
     private Employee employee;
 
     public OvertimeClaim() {}
-    public OvertimeClaim(Long id, LocalDate workedDate, double claimedDays,
+    public OvertimeClaim(LocalDate workedDate, double claimedDays,
         OvertimeClaimStatus status, Employee employee) {
-        this.id = id;
         this.workedDate = workedDate;
         this.claimedDays = claimedDays;
         this.status = status;
@@ -61,7 +59,7 @@ public class OvertimeClaim extends SetCreatedUpdated {
     }
 
     public Long getId() { return this.id; }
-    public void setId(Long id) { this.id = id; }
+    // public void setId(Long id) { this.id = id; }
     public LocalDate getWorkedDate() { return this.workedDate; }
     public void setWorkedDate(LocalDate workedDate) { this.workedDate = workedDate; }
     public double getClaimedDays() { return this.claimedDays; }
@@ -72,7 +70,7 @@ public class OvertimeClaim extends SetCreatedUpdated {
     public void setEmployee(Employee employee) { this.employee = employee; }
 
     @AssertTrue(message = "Claimed compensation units must be in increments of 0.5")
-    private boolean isValidClaimUnits() {
+    public boolean hasValidDays() {
         if (claimedDays < 0) { return false; }
         // Check whether units are in increments of 0.6
         double multi = claimedDays * 2; // Always integer (expected)

@@ -19,8 +19,6 @@ import sg.edu.nus.laps.leave.repository.LeaveTypeRepository;
 public class OvertimeClaimService {
 
     private static final String COMPENSATION_LEAVE_TYPE = "Compensation";
-    private static final double HALF_DAY_COMP_UNITS = 0.5;
-    private static final double FULL_DAY_COMP_UNITS = 1.0;
 
     private final OvertimeClaimRepository claimRepo;
     private final LeaveTypeRepository leaveTypeRepo;
@@ -45,7 +43,9 @@ public class OvertimeClaimService {
             throw new IllegalArgumentException("Overtime claim must not be null");
         }
 
-        validateClaimDays(claim.getClaimedDays());
+        if (!claim.hasValidDays()) {
+            throw new IllegalArgumentException("Claimed compensation units must be in increments of 0.5");
+        }
 
         // Find employee from repo
         Optional<Employee> optEmp = empRepo.findById(empId);
@@ -124,12 +124,6 @@ public class OvertimeClaimService {
         double credDays = claim.getClaimedDays();
         leaveRecord.setEntitledDays(leaveRecord.getEntitledDays() + credDays);
         leaveRecordRepo.save(leaveRecord);
-    }
-
-    private void validateClaimDays(double claimedUnits) {
-        if (claimedUnits != HALF_DAY_COMP_UNITS && claimedUnits != FULL_DAY_COMP_UNITS) {
-            throw new IllegalArgumentException("Claimed compensation units must be 0.5 or 1.0 (in days)");
-        }
     }
 
 }

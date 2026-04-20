@@ -156,7 +156,9 @@ a:hover { color: var(--blue-dark); }
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    gap: 24px;
+    width: min(72vw, 980px);
+    justify-content: space-evenly;
+    gap: 12px;
 }
 
 .topbar .top-links a {
@@ -166,6 +168,8 @@ a:hover { color: var(--blue-dark); }
     font-size: 1rem;
     font-weight: bold;
     padding: 6px 10px;
+    white-space: nowrap;
+    text-align: center;
     border-radius: 6px;
     transition: all 0.2s ease;
 }
@@ -812,9 +816,9 @@ footer {
         transform: none;
         order: 3;
         width: 100%;
-        justify-content: center;
+        justify-content: space-evenly;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 12px;
     }
 
     .topbar .user-info {
