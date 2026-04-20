@@ -1,15 +1,17 @@
 package sg.edu.nus.laps.approval;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
-import sg.edu.nus.laps.leave.repository.HolidayRepository;
 import sg.edu.nus.laps.leave.repository.LeaveApplicationRepository;
+import sg.edu.nus.laps.leave.service.LeaveService;
 
 /**
  *  ApprovalService provides methods for 
@@ -20,12 +22,19 @@ import sg.edu.nus.laps.leave.repository.LeaveApplicationRepository;
  */
 @Service
 public class ApprovalService {
-	private final HolidayRepository holRepo;
     private final LeaveApplicationRepository laRepo;
+    private final LeaveService lService; // unidirectional
+
+    private static final DateTimeFormatter DATE_FORMAT = 
+        DateTimeFormatter.ofPattern("yyyy-MM-dd"); // For start end date
+    private static final DateTimeFormatter DATETIME_FORMAT = 
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // For createdAt
     
-    public ApprovalService(HolidayRepository holRepo, LeaveApplicationRepository laRepo) {
+    public ApprovalService(
+        LeaveApplicationRepository laRepo,
+        LeaveService lService) {
         this.laRepo = laRepo;
-        this.holRepo = holRepo;
+        this.lService = lService;
     }
 
     // Manager Approval functions
@@ -33,41 +42,27 @@ public class ApprovalService {
     /**
      * Retrieves all pending leave applications for a manager's subordinates.
      * Status: APPLIED or UPDATED
+     * Status: APPROVED or REJECTED
      * 
      * @param managerId the manager's employee ID
      * @return list of pending leave applications
      */
-    
-    //b. Helper Method: isWeekend --> Check if Selected Date falls on SAT or SUN
-    private boolean isWeekend(LocalDate date) {
-		DayOfWeek day = date.getDayOfWeek();
-		return (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY);
-	}
-   
-    //Helper Method: calcLeaveDeductibles --> If the Total Leave Duration is less than 14 days, weekends and PH should be excluded
-	
-	private double calcLeaveDeductibles(LocalDate fromDate, LocalDate toDate) {
-		List<LocalDate> holidays = holRepo.findAllHolidayDates();
-		double dayCounter = 0;
-		
-		for (LocalDate date = fromDate; !date.isAfter(toDate); date = date.plusDays(1)) {
-			if (!isWeekend(date) && !holidays.contains(date)) {
-				dayCounter ++;
-			}
-		}
-		return dayCounter;
-	}
-    public List<LeaveApplication> getPendingRequests(Long managerId) {
-		List<LeaveApplication> pendingApplications = laRepo.findByEmployeeManagerIdAndStatusIn(
-			managerId, List.of(LeaveStatus.APPLIED, LeaveStatus.UPDATED));
-		for (LeaveApplication leave : pendingApplications) {
+    public List<LeaveApplication> getTeamLeaveRequests(Long managerId, LeaveStatus... statuses) {
+
+        if (statuses == null || statuses.length == 0) {
+            return List.of();
+        }
+
+		List<LeaveApplication> leaveApps = laRepo.findByEmployeeManagerIdAndStatusIn(
+            managerId, Arrays.asList(statuses));
+		for (LeaveApplication leave : leaveApps) {
 			// Calculate the count
-			double days = calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
+			double days = lService.calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
 
 			// "Share" the count into the duration field in the entity
 			leave.setDuration(days);
 		}
-        return pendingApplications;
+        return leaveApps;
     }
 
     /**
@@ -82,7 +77,7 @@ public class ApprovalService {
     	List<LeaveApplication> pendingApplications = laRepo.findByEmployeeIdOrderByFromDateDesc(employeeId);
     	for (LeaveApplication leave : pendingApplications) {
 			// Calculate the count
-			double days = calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
+			double days = lService.calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
 
 			// "Share" the count into the duration field in the entity
 			leave.setDuration(days);}
@@ -106,6 +101,53 @@ public class ApprovalService {
 		java.time.LocalDate toDate, 
 		Long excludeId) {
         return laRepo.findConflictingLeaves(managerId, fromDate, toDate, excludeId);
+    }
+
+    // Process report export in CSV format
+    @Transactional(readOnly = true)
+    public byte[] processExportRequest(Long managerId, List<Long> leaveAppIdList) {
+
+        // Retrieve leave apps by Leave ID and Manager ID
+        List<LeaveApplication> leaveApps = laRepo.findByLeaveAppIdInAndManagerId(leaveAppIdList, managerId);
+        if (leaveApps == null || leaveApps.isEmpty()) {
+            throw new IllegalArgumentException("Report generation failed on null or empty leave list");
+        }
+
+        // Build CSV file
+        StringBuilder csvSB = new StringBuilder();
+        csvSB.append("Leave ID,Employee ID,Employee Name,Leave Type,Start Date,End Date,Duration in Days,Leave Status,Applied On,Manager Comment")
+            .append(System.lineSeparator()); // Separate row
+
+        // For each leave app in list, retrieve rows and append to csv
+        for (LeaveApplication leaveApp : leaveApps) {
+            double daysDuration = lService.calcLeaveDeductibles(leaveApp.getFromDate(), leaveApp.getToDate());
+            appendCsvRow(csvSB, leaveApp, daysDuration);
+        }
+
+        return csvSB.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    // Escape quotes for CSV generation
+    // Wraps value in double quotes
+    private String csvEscape(String value) {
+        if (value == null) { return "\"\""; } // Empty
+        String escaped = value.replace("\"", "\"\"");
+        return "\"" + escaped + "\"";
+    }
+
+    // append csv columns for each row
+    private void appendCsvRow(StringBuilder csvSB, LeaveApplication leaveApp, double daysDuration) {
+        csvSB.append(leaveApp.getId()).append(',')
+            .append(leaveApp.getEmployee().getId()).append(',')
+            .append(csvEscape(leaveApp.getEmployee().getFirstName() + " " + leaveApp.getEmployee().getLastName())).append(',')
+            .append(csvEscape(leaveApp.getLeaveType() != null ? leaveApp.getLeaveType().getLeaveType() : "")).append(',')
+            .append(csvEscape(leaveApp.getFromDate() != null ? leaveApp.getFromDate().format(DATE_FORMAT) : "")).append(',')
+            .append(csvEscape(leaveApp.getToDate() != null ? leaveApp.getToDate().format(DATE_FORMAT) : "")).append(',')
+            .append(daysDuration).append(',')
+            .append(csvEscape(leaveApp.getStatus() != null ? leaveApp.getStatus().name() : "")).append(',')
+            .append(csvEscape(leaveApp.getCreatedAt() != null ? leaveApp.getCreatedAt().format(DATETIME_FORMAT) : "")).append(',')
+            .append(csvEscape(leaveApp.getManagerComment()))
+            .append(System.lineSeparator());
     }
 
 }

@@ -1,7 +1,13 @@
 package sg.edu.nus.laps.approval;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -52,11 +58,25 @@ public class ApprovalController {
      * @return the team leave list view
      */
     @GetMapping("/team-leaves")
-    public String viewTeamLeaves(@AuthenticationPrincipal AuthUserDetails user, 
+    public String viewTeamLeaves(
+        @AuthenticationPrincipal AuthUserDetails user,
+        @RequestParam(name = "view", defaultValue = "pending") String view,
         Model model) {
-        // Retrieve pending requests for this manager's team
-        List<LeaveApplication> pendingList = aService.getPendingRequests(user.getEmployeeId());
-        model.addAttribute("leaveList", pendingList);
+
+        boolean isPending = !"approved".equalsIgnoreCase(view);
+        List<LeaveApplication> leaveList;
+
+        if (isPending) {
+            leaveList = aService.getTeamLeaveRequests(
+                user.getEmployeeId(), LeaveStatus.APPLIED, LeaveStatus.UPDATED);
+        } else {
+            leaveList = aService
+                .getTeamLeaveRequests(user.getEmployeeId(), LeaveStatus.APPROVED, LeaveStatus.REJECTED);
+        }
+
+        model.addAttribute("leaveList", leaveList);
+        model.addAttribute("isPending", isPending);
+        model.addAttribute("currentView", isPending ? "pending" : "approved");
         return "approval/team-leave-list";
     }
 
@@ -199,6 +219,33 @@ public class ApprovalController {
                 "Error: " + e.getMessage());
         }
         return "redirect:/manager/team-leaves";
+    }
+
+    // REST API to export CSV
+    @ResponseBody
+    @PostMapping("/export-csv")
+    public ResponseEntity<?> exportCSV(
+        @AuthenticationPrincipal AuthUserDetails user,
+        @RequestBody List<Long> leaveAppIdList) {
+        if (leaveAppIdList == null || leaveAppIdList.isEmpty()) {
+            return ResponseEntity.badRequest().body(
+                Map.of("message", "Report generation failed on null or empty request"));
+        }
+
+        // Attempt to export and return file
+        // By manager ID and leave app IDs
+        try {
+            byte[] csv = aService.processExportRequest(user.getEmployeeId(), leaveAppIdList);
+            String fileName = user.getEmployeeId() + "-leave-report-" + LocalDate.now() + ".csv";
+
+            return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("text/csv"))
+                // Content disposition renders CSV file as download
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .body(csv);
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Report generation failed on unexpected error");
+        }
     }
 
 }

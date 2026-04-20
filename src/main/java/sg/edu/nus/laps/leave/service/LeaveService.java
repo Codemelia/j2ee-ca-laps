@@ -404,7 +404,7 @@ public class LeaveService {
 	/*
 	 * e. Helper Method: calcLeaveDeductibles --> If the Total Leave Duration is less than 14 days, weekends and PH should be excluded
 	 */
-	private double calcLeaveDeductibles(LocalDate fromDate, LocalDate toDate) {
+	public double calcLeaveDeductibles(LocalDate fromDate, LocalDate toDate) {
 		List<LocalDate> holidays = holRepo.findAllHolidayDates();
 		double dayCounter = 0;
 		

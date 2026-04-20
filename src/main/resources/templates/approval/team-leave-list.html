@@ -4,93 +4,7 @@
 
 	<head th:replace="~{fragments/head ::head('Team Leave History', ~{::extra})}">
         <th:block th:fragment="extra">
-			
-            <!--
-            <style>
-                body {
-                    background-color: #f5f5f5;
-                }
-                .container-custom {
-                    margin-top: 30px;
-                    background-color: white;
-                    padding: 30px;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                }
-                .header-section {
-                    margin-bottom: 30px;
-                    border-bottom: 2px solid #007bff;
-                    padding-bottom: 15px;
-                }
-                .table-responsive {
-                    margin-top: 20px;
-                }
-                .status-badge {
-                    padding: 5px 10px;
-                    border-radius: 4px;
-                    font-weight: bold;
-                    font-size: 0.85em;
-                    display: inline-block;
-                }
-                .status-applied {
-                    background-color: #ffc107;
-                    color: #000;
-                }
-                .status-updated {
-                    background-color: #17a2b8;
-                    color: #fff;
-                }
-                .action-buttons {
-                    display: flex;
-                    gap: 5px;
-                    flex-wrap: wrap;
-                }
-                .btn-sm {
-                    padding: 4px 8px;
-                    font-size: 12px;
-                }
-                .empty-state {
-                    text-align: center;
-                    padding: 40px;
-                    color: #666;
-                }
-                .table thead {
-                    background-color: #343a40;
-                    color: white;
-                }
-                .table tbody tr:hover {
-                    background-color: #f8f9fa;
-                }
-            </style>
-            -->
-            <script defer>
-                /**
-                * Set the leave ID in the reject modal
-                */
-                function setLeaveId(leaveId) {
-                    document.getElementById('leaveId').value = leaveId;
-                }
-
-                /**
-                * Form validation before submitting
-                */
-                document.getElementById('rejectForm').addEventListener('submit', function(e) {
-                    const comment = document.getElementById('comment').value.trim();
-                    if (!comment || comment.length < 5) {
-                        e.preventDefault();
-                        alert('Please provide a comment of at least 5 characters.');
-                        return false;
-                    }
-                });
-
-                /**
-                * Reset modal when closed
-                */
-                document.getElementById('rejectModal').addEventListener('hidden.bs.modal', function() {
-                    document.getElementById('comment').value = '';
-                    document.getElementById('leaveId').value = '';
-                });
-            </script>
+            <script th:src="@{/js/team-leaves.js}" defer></script>
         </th:block>
     </head>
 
@@ -98,14 +12,41 @@
 		<header th:replace="~{fragments/header :: header}"></header>
 	
 		<div class="page-wrapper">
-			<div class="container mt-4">			<div class="container py-4">
-									<a onclick="history.back()" class="text-decoration-none" style="cursor: pointer;">
-										<i class="bi bi-arrow-left"></i> ← Back
-									</a>
-								</div>
+			<div class="container mt-4">			
+                <div class="container py-4">
+                    <a onclick="history.back()" class="text-decoration-none" style="cursor: pointer;">
+                        <i class="bi bi-arrow-left"></i> ← Back
+                    </a>
+                </div>
                 <div class="header-section">
                     <h1 class="mb-0">Team Leave Applications</h1>
-                    <p class="text-muted">Review and approve pending leave requests from your team members</p>
+                    <p th:if="${isPending}" class="text-muted">
+                        Review and approve pending team leave requests
+                    </p>
+                    <p th:unless="${isPending}" class="text-muted">
+                        Review and export processed team leave requests
+                    </p>
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mt-3 mb-3">
+                        <div class="btn-group" role="group" aria-label="Team leave view toggle">
+                            <a th:href="@{/manager/team-leaves(view='pending')}"
+                                class="btn"
+                                th:classappend="${isPending} ? ' btn-primary' : ' btn-secondary'">
+                                Pending
+                            </a>
+                            <a th:href="@{/manager/team-leaves(view='approved')}"
+                                class="btn"
+                                th:classappend="${isPending} ? ' btn-secondary' : ' btn-primary'">
+                                Processed
+                            </a>
+                        </div>
+
+                        <div class="text-md-end">
+                            <button type="button" id="exportCsvBtn" class="btn btn-success">
+                                Export Report
+                            </button>
+                            <p class="text-muted mb-0">Export a CSV file of the current filtered table</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Global error -->
@@ -120,8 +61,10 @@
 
                 <!-- Alert if no pending requests -->
                 <div th:if="${leaveList == null || leaveList.isEmpty()}" class="alert alert-info empty-state">
-                    <h5>No Pending Leave Applications</h5>
-                    <p>All leave applications have been reviewed.</p>
+                    <h5 th:if="${isPending}">No Pending Leave Applications</h5>
+                    <h5 th:unless="${isPending}">No Approved Leave Applications</h5>
+                    <p th:if="${isPending}">All leave applications have been reviewed</p>
+                    <p th:unless="${isPending}">No Processed Leave Applications</p>
                 </div>
 
                 <!-- Table of leave applications -->
@@ -140,7 +83,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="leave : ${leaveList}">
+                            <tr th:each="leave : ${leaveList}" 
+                                th:attr="data-leave-id=${leave.id}">
                                 <td>
                                     <a th:href="@{/manager/team-leaves/{empId}(empId=${leave.employee.id})}">
                                         <span th:text="${leave.employee.firstName} + ' ' + ${leave.employee.lastName}">
@@ -158,6 +102,8 @@
                                         th:classappend="${
                                             'APPLIED'.equals(leave.status.name()) ? 'bg-warning text-dark' :
                                             'UPDATED'.equals(leave.status.name()) ? 'bg-info text-dark' :
+                                            'APPROVED'.equals(leave.status.name()) ? 'bg-success' :
+                                            'REJECTED'.equals(leave.status.name()) ? 'bg-danger' :
                                             'bg-info'}"
                                         th:text="${leave.status.name()}">
                                     </span>
