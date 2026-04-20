@@ -97,7 +97,7 @@
                             <tr th:each="claim : ${teamClaims}" 
                                 th:attr="data-claim-id=${claim.id}">
                                 <td>
-                                    <a th:href="@{/manager/team-leaves/{empId}(empId=${claim.employee.id})}">
+                                    <a th:href="@{/manager/team-claims/{empId}(empId=${claim.employee.id})}">
                                         <span th:text="${claim.employee.firstName} + ' ' + ${claim.employee.lastName}">
                                             Employee Name
                                         </span>

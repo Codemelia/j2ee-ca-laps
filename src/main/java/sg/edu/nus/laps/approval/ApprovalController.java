@@ -14,9 +14,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import sg.edu.nus.laps.claim.OvertimeClaim;
 import sg.edu.nus.laps.claim.OvertimeClaimService;
-import sg.edu.nus.laps.claim.OvertimeClaimStatus;
+import sg.edu.nus.laps.claim.model.OvertimeClaim;
+import sg.edu.nus.laps.claim.model.OvertimeClaimStatus;
 import sg.edu.nus.laps.employee.EmployeeService;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
@@ -100,7 +100,7 @@ public class ApprovalController {
      * @return the subordinate history view, or redirect if unauthorized
      */
     @GetMapping("/team-leaves/{empId}")
-    public String viewSubordinateHistory(@PathVariable Long empId, 
+    public String viewSubordinateLeaveHistory(@PathVariable Long empId, 
         @AuthenticationPrincipal AuthUserDetails user, Model model,
         RedirectAttributes redirAttr) {
         
@@ -118,7 +118,7 @@ public class ApprovalController {
         // Retrieve complete leave history for the subordinate
         model.addAttribute("subordinateFullName", 
             subordinate.getFirstName() + " " + subordinate.getLastName());
-        model.addAttribute("leaveList", aService.getSubordinateHistory(empId));
+        model.addAttribute("leaveList", aService.getSubordinateLeaveHistory(empId));
         model.addAttribute("isSelf", false);
         return "leave/leave-list";
     }
@@ -281,6 +281,31 @@ public class ApprovalController {
         return "approval/team-claim-list";
     }
 
+    // View subordinate claim history
+    @GetMapping("/team-claims/{empId}")
+    public String viewSubordinateClaimHistory(@PathVariable Long empId, 
+        @AuthenticationPrincipal AuthUserDetails user, Model model,
+        RedirectAttributes redirAttr) {
+        
+        // Verify the manager actually manages this employee
+        Optional<Employee> optSubordinate = eService.findById(empId);
+        if (optSubordinate.isEmpty() || !optSubordinate.get().getManagerId().equals(user.getEmployeeId())) {
+            redirAttr.addFlashAttribute("globalError", 
+                "You may only view your team members' compensation claims");
+            return "redirect:/manager/team-claims";
+        }
+
+        // Retrieve subordinate
+        Employee subordinate = optSubordinate.get();
+        
+        // Retrieve complete leave history for the subordinate
+        model.addAttribute("subordinateFullName", 
+            subordinate.getFirstName() + " " + subordinate.getLastName());
+        model.addAttribute("claimList", aService.getSubordinateClaimHistory(empId));
+        model.addAttribute("isSelf", false);
+        return "claim/claim-list";
+    }
+
     // Approve Compensation Claim
     // Same process as team leave approve
     @PostMapping("/team-claims/approve")
@@ -324,6 +349,7 @@ public class ApprovalController {
     }
 
     // REST API to export CSV for claims
+    // Same process as leave export
     @ResponseBody
     @PostMapping("/team-claims/export-csv")
     public ResponseEntity<?> exportClaimsCSV(

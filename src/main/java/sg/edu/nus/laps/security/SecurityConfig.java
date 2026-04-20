@@ -139,7 +139,7 @@ public class SecurityConfig {
     @Order(3) // Define priority low
     SecurityFilterChain commonFilterChain(HttpSecurity http) throws Exception {
         http
-            .securityMatcher("/", "/me/**", "/leaves/**", "/auth/change-password")
+            .securityMatcher("/", "/me/**", "/leaves/**", "/claims/**", "/auth/change-password")
             // REQUEST AUTHORISATION
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/me/**", "/leaves/**") // Common dashboard for EMPLOYEE / MANAGER / INTERNAL ADMIN

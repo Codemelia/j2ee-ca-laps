@@ -25,7 +25,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import sg.edu.nus.laps.auth.model.User;
-import sg.edu.nus.laps.claim.OvertimeClaim;
+import sg.edu.nus.laps.claim.model.OvertimeClaim;
 import sg.edu.nus.laps.common.util.SetCreatedUpdated;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveRecord;

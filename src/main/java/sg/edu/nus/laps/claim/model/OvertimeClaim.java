@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.claim;
+package sg.edu.nus.laps.claim.model;
 
 import java.time.LocalDate;
 

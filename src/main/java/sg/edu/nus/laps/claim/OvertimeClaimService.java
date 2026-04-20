@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import sg.edu.nus.laps.claim.model.OvertimeClaim;
+import sg.edu.nus.laps.claim.model.OvertimeClaimStatus;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.employee.repository.EmployeeRepository;
 import sg.edu.nus.laps.leave.model.LeaveRecord;
@@ -43,7 +45,7 @@ public class OvertimeClaimService {
             throw new IllegalArgumentException("Overtime claim must not be null");
         }
 
-        validateClaimUnits(claim.getClaimedDays());
+        validateClaimDays(claim.getClaimedDays());
 
         // Find employee from repo
         Optional<Employee> optEmp = empRepo.findById(empId);
@@ -58,7 +60,7 @@ public class OvertimeClaimService {
 
     // Retrieve employee claim history
     @Transactional(readOnly = true)
-    public List<OvertimeClaim> findClaimsHistory(Long employeeId) {
+    public List<OvertimeClaim> getClaimHistory(Long employeeId) {
         if (employeeId == null) { return List.of(); }
         return claimRepo.findByEmployeeIdOrderByCreatedAtDesc(employeeId);
     }
@@ -103,8 +105,8 @@ public class OvertimeClaimService {
     private void creditCompensationLeave(OvertimeClaim claim) {
 
         // Retrieve compensation leave type
-        LeaveType compensationType = leaveTypeRepo.findByLeaveType(COMPENSATION_LEAVE_TYPE)
-            .orElseThrow(() -> new IllegalStateException("Compensation leave type not found"));
+        LeaveType compType = leaveTypeRepo.findByLeaveType(COMPENSATION_LEAVE_TYPE)
+            .orElseThrow(() -> new IllegalStateException("Required leave type not found"));
 
         // Retrieve employee id and year
         Long employeeId = claim.getEmployee().getId();
@@ -113,18 +115,18 @@ public class OvertimeClaimService {
         // If current leave record does not exist,
         // Create new leave record
         LeaveRecord leaveRecord = leaveRecordRepo
-            .findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employeeId, compensationType.getId(), claimYear)
+            .findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employeeId, compType.getId(), claimYear)
             .orElseGet(() -> 
                 new LeaveRecord(claimYear, 0.0, 0.0, 
-                    claim.getEmployee(), compensationType));
+                    claim.getEmployee(), compType));
 
         // Convert hours to days and save to record
-        double creditedDays = claim.getClaimedDays();
-        leaveRecord.setEntitledDays(leaveRecord.getEntitledDays() + creditedDays);
+        double credDays = claim.getClaimedDays();
+        leaveRecord.setEntitledDays(leaveRecord.getEntitledDays() + credDays);
         leaveRecordRepo.save(leaveRecord);
     }
 
-    private void validateClaimUnits(double claimedUnits) {
+    private void validateClaimDays(double claimedUnits) {
         if (claimedUnits != HALF_DAY_COMP_UNITS && claimedUnits != FULL_DAY_COMP_UNITS) {
             throw new IllegalArgumentException("Claimed compensation units must be 0.5 or 1.0 (in days)");
         }

@@ -1,4 +1,4 @@
-package sg.edu.nus.laps.claim;
+package sg.edu.nus.laps.claim.model;
 
 public enum OvertimeClaimStatus {
 

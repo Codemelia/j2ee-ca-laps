@@ -9,9 +9,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import sg.edu.nus.laps.claim.OvertimeClaim;
 import sg.edu.nus.laps.claim.OvertimeClaimRepository;
-import sg.edu.nus.laps.claim.OvertimeClaimStatus;
+import sg.edu.nus.laps.claim.model.OvertimeClaim;
+import sg.edu.nus.laps.claim.model.OvertimeClaimStatus;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveStatus;
 import sg.edu.nus.laps.leave.repository.LeaveApplicationRepository;
@@ -89,7 +89,7 @@ public class ApprovalService {
      * @return list of all leave applications for the employee
      */
     @Transactional(readOnly = true)
-    public List<LeaveApplication> getSubordinateHistory(Long employeeId) {
+    public List<LeaveApplication> getSubordinateLeaveHistory(Long employeeId) {
     	List<LeaveApplication> pendingApplications = laRepo.findByEmployeeIdOrderByFromDateDesc(employeeId);
     	for (LeaveApplication leave : pendingApplications) {
 			// Calculate the count
@@ -128,6 +128,12 @@ public class ApprovalService {
         }
 		return otRepo.findTeamClaimsByYearAndStatusIn(
             managerId, LocalDate.now().getYear(), Arrays.asList(statuses));
+    }
+
+    // Retrieve claim history for specific subordinate
+    @Transactional(readOnly = true)
+    public List<OvertimeClaim> getSubordinateClaimHistory(Long empId) {
+        return otRepo.findByEmployeeIdOrderByCreatedAtDesc(empId);
     }
 
     // Process report export in CSV format
