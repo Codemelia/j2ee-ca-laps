@@ -80,7 +80,13 @@
             <div class="form-group">
               <!-- 17add ymw <span>-->
               <label>Start Date<span class="required-star">*</span></label>
-              <input type="date" th:field="*{fromDate}" required />
+			  <div style="display: inline-flex; align-items: center; gap: 8px;">
+				<input type = "date" th:field = "*{fromDate}" required />
+				<select th:field = "*{fromAMPM}" class="form-control compensation-toggle" style = "display:none; width: 80px;">
+					<option value = "AM">AM</option>
+					<option value = "PM">PM</option>
+				</select>
+			  </div>
               <span
                 class="error"
                 th:if="${#fields.hasErrors('fromDate')}"
@@ -90,7 +96,13 @@
             <div class="form-group">
               <!-- 17add ymw <span>-->
               <label>End Date<span class="required-star">*</span></label>
-              <input type="date" th:field="*{toDate}" required />
+			  <div style="display: inline-flex; align-items: center; gap: 8px;">
+			  	<input type = "date" th:field="*{toDate}" required />
+				<select th:field = "*{toAMPM}" class = "form-control compensation-toggle" style = "display:none; width: 80px;">
+					<option value = "AM">AM</option>
+					<option value = "PM">PM</option>
+				</select>
+			  </div>
               <span class="field-error" th:if="${dateError}">
                 You have an existing Leave within this date range</span
               >
