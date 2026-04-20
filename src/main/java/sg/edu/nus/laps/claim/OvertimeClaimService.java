@@ -1,5 +1,6 @@
 package sg.edu.nus.laps.claim;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +46,10 @@ public class OvertimeClaimService {
 
         if (!claim.hasValidDays()) {
             throw new IllegalArgumentException("Claimed compensation units must be in increments of 0.5");
+        }
+
+        if (claim.getWorkedDate().isBefore(LocalDate.now().minusWeeks(2))) {
+            throw new IllegalArgumentException("Worked date cannot be more than 2 weeks before today");
         }
 
         // Find employee from repo
