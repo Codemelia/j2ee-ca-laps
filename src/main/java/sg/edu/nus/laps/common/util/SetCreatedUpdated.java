@@ -1,6 +1,7 @@
 package sg.edu.nus.laps.common.util;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
@@ -11,6 +12,8 @@ import jakarta.persistence.PreUpdate;
 // Mappings will be inherited by child classes
 @MappedSuperclass
 public abstract class SetCreatedUpdated {
+
+	private static final ZoneId SGT = ZoneId.of("Asia/Singapore");
 
 	@Column(name = "created_at", nullable = false, updatable = false)
 	protected LocalDateTime createdAt;
@@ -23,14 +26,14 @@ public abstract class SetCreatedUpdated {
 
 	@PrePersist // set NOW() in MySQL on create
 	private void onCreate() {
-		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime now = LocalDateTime.now(SGT);
 		this.createdAt = now;
 		this.updatedAt = now;
 	}
 
 	@PreUpdate // set NOW() in MySQL on update
 	private void onUpdate() {
-		this.updatedAt = LocalDateTime.now();
+		this.updatedAt = LocalDateTime.now(SGT);
 	}
 
 }
