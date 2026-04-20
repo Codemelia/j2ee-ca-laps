@@ -16,6 +16,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -36,7 +39,8 @@ public class OvertimeClaim extends SetCreatedUpdated {
     @Column(name = "worked_date", nullable = false)
     private LocalDate workedDate;
 
-    @PositiveOrZero(message = "Claimed compensation units must be positive or zero")
+    @DecimalMin(value = "0.5", message = "Claimed days must be minimum 0.5 day(s)")
+    @DecimalMax(value = "3.0", message = "Claimed days cannot exceed 3.0 days")
     @Column(name = "claimed_days", nullable = false)
     private double claimedDays;
 

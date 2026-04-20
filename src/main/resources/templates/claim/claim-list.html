@@ -158,7 +158,7 @@
 
                                         <!-- Restrict to .5 steps -->
 										<input id="claimedDays" type="number" 
-                                            class="form-control" th:field="*{claimedDays}" min="0" step="0.5" required>
+                                            class="form-control" th:field="*{claimedDays}" min="0.5" step="0.5" required>
 										<div class="error" 
                                             th:if="${#fields.hasErrors('claimedDays')}" 
                                             th:errors="*{claimedDays}"></div>
