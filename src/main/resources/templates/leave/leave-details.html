@@ -111,10 +111,18 @@
                                     </dd>
                 
                                     <dt><b>Contact Details</b></dt>
-                                    <dd th:text="*{contactDetails} ?: 'No Contact Details Provided'"></dd>
+                                    <dd th:if="*{contactDetails != null and !#strings.isEmpty(contactDetails)}"
+                                        th:text="*{contactDetails}"></dd>
+                                    <dd th:unless="*{contactDetails != null and !#strings.isEmpty(contactDetails)}">
+                                        No Contact Details Provided
+                                    </dd>
 
                                     <dt><b>Work Dissemination</b></dt>
-                                    <dd th:text="*{workDissemination} ?: 'No Work Dissemination Provided'"></dd>
+                                    <dd th:if="*{workDissemination != null and !#strings.isEmpty(workDissemination)}"
+                                        th:text="*{workDissemination}"></dd>
+                                    <dd th:unless="*{workDissemination != null and !#strings.isEmpty(workDissemination)}">
+                                        No Work Dissemination Provided
+                                    </dd>
                                 </dl>
                             </section>
 

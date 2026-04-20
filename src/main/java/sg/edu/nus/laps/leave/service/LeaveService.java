@@ -209,7 +209,7 @@ public class LeaveService {
 	@Transactional
 	public void cancelLeave(Long leaveId, Long empId) {
 		LeaveApplication leave = laRepo.findById(leaveId)
-				.orElseThrow(() -> new RuntimeException("Leave Application does not Exist."));
+			.orElseThrow(() -> new RuntimeException("Leave Application does not Exist."));
 
 		verifySelfIdentity(empId, leave);
 

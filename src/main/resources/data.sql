@@ -122,13 +122,15 @@ INSERT INTO leave_applications (
   (32, 2, 1, '2026-07-15 00:00:00', '2026-07-17 23:59:59', NULL, 'Family trip', 'Task handover to Ben White', 'amy.lim@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-17 09:00:00', '2026-04-17 09:00:00'),
   (33, 3, 3, '2026-06-16 00:00:00', '2026-06-16 23:59:59', NULL, 'Personal matters', 'Coverage by Mark Chan', 'ben.white@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-17 09:10:00', '2026-04-17 09:10:00'),
   (34, 2, 2, '2026-04-14 00:00:00', '2026-04-16 23:59:59', 'https://placehold.co/350x200/000000/FFFFFF.png', 'Medical rest', 'Stand-up covered by Ben White', 'amy.lim@iss.nus.edu.sg', NULL, FALSE, 'UPDATED', '2026-04-14 08:40:00', '2026-04-14 12:00:00'),
+  (36, 2, 1, '2026-04-22 00:00:00', '2026-04-24 23:59:59', NULL, 'Family trip', 'Tasks handed over to Ben White', 'amy.lim@iss.nus.edu.sg', NULL, FALSE, 'APPLIED', '2026-04-20 10:00:00', '2026-04-20 10:00:00'),
+  (37, 1, 1, '2026-04-27 00:00:00', '2026-04-29 23:59:59', NULL, 'Personal leave', 'Work covered by Amy Lim', 'mark.chan@iss.nus.edu.sg', NULL, FALSE, 'APPROVED', '2026-04-20 11:00:00', '2026-04-20 11:00:00'),
   (35, 3, 3, '2026-05-11 13:00:00', '2026-05-11 17:00:00', NULL, 'Compensation leave PM', 'Pager duty swapped with Amy Lim', 'ben.white@iss.nus.edu.sg', NULL, TRUE, 'APPLIED', '2026-04-18 09:00:00', '2026-04-18 09:00:00');
 
 -- ALTER TABLE leave_applications AUTO_INCREMENT = 36;
 
 -- ── leave_records ( ManytoOne → leave_types, ManytoOne → employees) ───────────────────────────────────────────────────────────────
 INSERT INTO leave_records (id, employee_id, leave_type_id, calendar_year, entitled_days, consumed_days, created_at, updated_at) VALUES
-  (1, 1, 1, 2026, 18.0, 2.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
+  (1, 1, 1, 2026, 18.0, 5.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
   (2, 2, 1, 2026, 14.0, 2.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
   (3, 1, 2, 2026, 60.0, 1.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'), 
   (4, 2, 2, 2026, 60.0, 2.0, '2026-04-01 00:00:00', '2026-04-01 00:00:00'),
