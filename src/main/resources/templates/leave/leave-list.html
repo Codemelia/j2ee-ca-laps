@@ -81,7 +81,7 @@
 							<td>
 							<!--Link to detail page, based on referer -->
 								<a th:if="${!isSelf}" 
-									th:href="@{/manager/leaves/{id}(id=${leave.id})}" 
+									th:href="@{/manager/team-leaves/details/{id}(id=${leave.id})}" 
 									class="btn btn-secondary btn-sm">View</a>
 								<a th:if="${isSelf}" 
 									th:href="@{/leaves/details/{id}(id=${leave.id})}" 
