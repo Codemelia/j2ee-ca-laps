@@ -16,8 +16,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.PositiveOrZero;
 import sg.edu.nus.laps.common.util.SetCreatedUpdated;
 import sg.edu.nus.laps.employee.model.Employee;
@@ -31,7 +31,7 @@ public class OvertimeClaim extends SetCreatedUpdated {
     private Long id;
 
     @NotNull(message = "Worked date is mandatory")
-    @FutureOrPresent(message = "Worked date must not be in the past")
+    @PastOrPresent(message = "Worked date must not be in the future")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "worked_date", nullable = false)
     private LocalDate workedDate;

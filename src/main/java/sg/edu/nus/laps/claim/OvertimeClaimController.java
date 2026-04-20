@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -98,6 +99,26 @@ public class OvertimeClaimController {
             model.addAttribute("showClaimFormModal", true);
             model.addAttribute("claim", claim);
             return "claim/claim-list";
+        }
+
+    }
+
+    // Soft delete claims
+    @PostMapping("/delete/{id}")
+    public String deleteClaim(
+        @AuthenticationPrincipal AuthUserDetails user,
+        @PathVariable Long id,
+        Model model, RedirectAttributes redirAttr) {
+
+        try {
+            otService.deleteClaim(user.getEmployeeId(), id);
+            redirAttr.addFlashAttribute("successMsg", 
+                String.format("Claim #%d was deleted successfully", id));
+            return "redirect:/claims";
+        } catch (Exception ex) {
+            redirAttr.addFlashAttribute("globalError",
+                "Delete failed: " + ex.getMessage());
+            return "redirect:/claims";
         }
 
     }

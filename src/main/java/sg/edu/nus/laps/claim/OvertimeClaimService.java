@@ -20,17 +20,17 @@ public class OvertimeClaimService {
 
     private static final String COMPENSATION_LEAVE_TYPE = "Compensation";
 
-    private final OvertimeClaimRepository claimRepo;
+    private final OvertimeClaimRepository otRepo;
     private final LeaveTypeRepository leaveTypeRepo;
     private final LeaveRecordRepository leaveRecordRepo;
     private final EmployeeRepository empRepo;
 
     public OvertimeClaimService(
-        OvertimeClaimRepository claimRepo,
+        OvertimeClaimRepository otRepo,
         LeaveTypeRepository leaveTypeRepo,
         LeaveRecordRepository leaveRecordRepo,
         EmployeeRepository empRepo) {
-        this.claimRepo = claimRepo;
+        this.otRepo = otRepo;
         this.leaveTypeRepo = leaveTypeRepo;
         this.leaveRecordRepo = leaveRecordRepo;
         this.empRepo = empRepo;
@@ -55,14 +55,34 @@ public class OvertimeClaimService {
 
         claim.setEmployee(optEmp.get()); // Employee exists
         claim.setStatus(OvertimeClaimStatus.APPLIED); // Set default APPLIED
-        return claimRepo.save(claim);
+        return otRepo.save(claim);
+    }
+
+    // delete applied claim
+    public void deleteClaim(Long employeeId, Long id) {
+        Optional<OvertimeClaim> optClaim = otRepo.findById(id);
+
+        if (optClaim.isEmpty()) {
+            throw new IllegalStateException("Claim does not exist");
+        }
+
+        OvertimeClaim claim = optClaim.get();
+
+        if (!claim.getEmployee().getId().equals(employeeId)) {
+            throw new IllegalArgumentException("Employee does not match claim records");
+        }
+
+        // If all ok, update claim status to deleted and save
+        claim.setStatus(OvertimeClaimStatus.DELETED);
+        otRepo.save(claim);
+        
     }
 
     // Retrieve employee claim history
     @Transactional(readOnly = true)
     public List<OvertimeClaim> getClaimHistory(Long employeeId) {
         if (employeeId == null) { return List.of(); }
-        return claimRepo.findByEmployeeIdOrderByCreatedAtDesc(employeeId);
+        return otRepo.findByEmployeeIdOrderByCreatedAtDesc(employeeId);
     }
 
     // Manager: approve/reject claim
@@ -79,7 +99,7 @@ public class OvertimeClaimService {
         }
 
         // Retrieve claim by id
-        OvertimeClaim claim = claimRepo.findById(claimId)
+        OvertimeClaim claim = otRepo.findById(claimId)
             .orElseThrow(() -> new IllegalArgumentException("Overtime claim not found"));
 
         // Null check and whether manager is employee's manager
@@ -94,7 +114,7 @@ public class OvertimeClaimService {
 
         // Set status to claim and update
         claim.setStatus(targetStatus);
-        OvertimeClaim savedClaim = claimRepo.save(claim);
+        OvertimeClaim savedClaim = otRepo.save(claim);
 
         // If approved, credit comp entitlement to employee leave record
         if (targetStatus == OvertimeClaimStatus.APPROVED) { creditCompensationLeave(savedClaim); }

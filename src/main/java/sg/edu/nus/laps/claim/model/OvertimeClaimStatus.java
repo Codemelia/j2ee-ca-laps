@@ -8,7 +8,8 @@ public enum OvertimeClaimStatus {
 	*/
 	APPLIED("Your compensation claim is awaiting review from your reporting manager."),
 	APPROVED("Your compensation claim has been approved by your reporting manager."),
-	REJECTED("Your compensation claim has been rejected by your reporting manager.");
+	REJECTED("Your compensation claim has been rejected by your reporting manager."),
+	DELETED("Your compensation claim has been deleted.");
 	
 	private final String displayOvertimeClaimStatus;
 	

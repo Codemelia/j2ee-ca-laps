@@ -164,7 +164,7 @@ public class LeaveController {
             redirAttr.addFlashAttribute("successMsg", 
                 String.format("Leave Application #%d was saved successfully", leaveApp.getId()));
             return "redirect:/leaves";
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             model.addAttribute("globalError", 
                 "Error: " + ex.getMessage() + ", Status: " + leaveApp.getStatus()
                 .getDisplayLeaveStatus());
@@ -194,7 +194,7 @@ public class LeaveController {
             redirAttr.addFlashAttribute("successMsg", 
                 String.format("Leave Application #%d was submitted successfully", leaveApp.getId()));
             return "redirect:/leaves";
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             model.addAttribute("globalError", 
                 "Error: " + ex.getMessage() + ", Status: " + leaveApp.getStatus()
                 .getDisplayLeaveStatus());
@@ -223,7 +223,7 @@ public class LeaveController {
             redirAttr.addFlashAttribute("successMsg", 
                 String.format("Leave Application #%d was updated successfully", leaveApp.getId()));
             return "redirect:/leaves";
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             model.addAttribute("globalError", 
                 "Error: " + ex.getMessage() + ", Status: " + leaveApp.getStatus()
                 .getDisplayLeaveStatus());
@@ -242,7 +242,7 @@ public class LeaveController {
             lService.deleteLeave(id, user.getEmployeeId());
             redirAttr.addFlashAttribute("successMsg", 
                 String.format("Leave Application #%d was deleted successfully", id));
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             redirAttr.addFlashAttribute("globalError",
                 "Delete failed: " + e.getMessage());
         }
@@ -258,7 +258,7 @@ public class LeaveController {
             lService.cancelLeave(id, user.getEmployeeId());
             redirAttr.addFlashAttribute("successMsg", 
                 String.format("Leave Application #%d was cancelled successfully", id));
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             redirAttr.addFlashAttribute("globalError",
                 "Cancel failed: " + e.getMessage());
         }
@@ -270,29 +270,29 @@ public class LeaveController {
     @AuthenticationPrincipal AuthUserDetails user, 
     @RequestParam(required = false) Integer month,
     Model model, RedirectAttributes redirect) {
-    // 1. Get the current date if parameters are missing
-    LocalDate now = LocalDate.now();
-    int activeMonth = (month == null) ? now.getMonthValue() : month;
-    int currentYear = LocalDate.now().getYear();
+        // 1. Get the current date if parameters are missing
+        LocalDate now = LocalDate.now();
+        int activeMonth = (month == null) ? now.getMonthValue() : month;
+        int currentYear = LocalDate.now().getYear();
 
-    // 2. Extract the team name from the authenticated user
-    // (Assuming your AuthUserDetails has a method to get the Employee object or teamName)
-    Long empId = user.getEmployeeId();
-    Employee employee = empService.findById(empId).orElse(null);
-    if(employee == null) {
-    redirect.addFlashAttribute("globalError", "employee not found.");
-    return "redirect:/leaves"; 
-    }
-    String teamName = employee.getTeamName();
+        // 2. Extract the team name from the authenticated user
+        // (Assuming your AuthUserDetails has a method to get the Employee object or teamName)
+        Long empId = user.getEmployeeId();
+        Employee employee = empService.findById(empId).orElse(null);
+        if(employee == null) {
+            redirect.addFlashAttribute("globalError", "employee not found.");
+            return "redirect:/leaves"; 
+        }
+        String teamName = employee.getTeamName();
 
-    // 3. Call the service (using the variables we just created)
-    List<LeaveApplication> teamLeaveList = lService.getTeamMovement(teamName, activeMonth, currentYear);
+        // 3. Call the service (using the variables we just created)
+        List<LeaveApplication> teamLeaveList = lService.getTeamMovement(teamName, activeMonth, currentYear);
 
-    // 4. Add data to the model for the UI
-    model.addAttribute("leaveList", teamLeaveList);
-    model.addAttribute("currentMonth", activeMonth);
-    model.addAttribute("displayYear", currentYear);
-    return "leave/team-movement";
+        // 4. Add data to the model for the UI
+        model.addAttribute("leaveList", teamLeaveList);
+        model.addAttribute("currentMonth", activeMonth);
+        model.addAttribute("displayYear", currentYear);
+        return "leave/team-movement";
     }
 
 

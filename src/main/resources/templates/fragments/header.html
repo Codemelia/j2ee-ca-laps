@@ -23,16 +23,16 @@
                 <!-- ROLE_EMPLOYEE: Dashboard, My Leaves -->
                 <th:block sec:authorize="hasRole('EMPLOYEE')">
                     <a th:href="@{/me}">Dashboard</a>
-                    <a th:href="@{/leaves}">My Leaves</a>
 					<a th:href="@{/leaves/team-movement}">Team Movement</a>
+                    <a th:href="@{/leaves}">My Leaves</a>
                     <a th:href="@{/claims}">My Claims</a>
                 </th:block>
 
                 <!-- ROLE_MANAGER: Dashboard, My Leaves, Team Leaves -->
                 <th:block sec:authorize="hasRole('MANAGER')">
                     <a th:href="@{/me}">Dashboard</a>
-                    <a th:href="@{/leaves}">My Leaves</a>
 					<a th:href="@{/leaves/team-movement}">Team Movement</a>
+                    <a th:href="@{/leaves}">My Leaves</a>
                     <a th:href="@{/claims}">My Claims</a>
                     <a th:href="@{/manager/team-leaves(view='pending')}">Leave Requests</a>
                     <a th:href="@{/manager/team-claims(view='pending')}">Claim Requests</a>
@@ -41,8 +41,8 @@
                 <!-- INTERNAL ROLE_ADMIN: Dashboard, My Leaves, Employee Management -->
                 <th:block sec:authorize="hasRole('ADMIN') and hasAuthority('AUTH_INTERNAL_ADMIN')">
                     <a th:href="@{/me}">Dashboard</a>
-                    <a th:href="@{/leaves}">My Leaves</a>
                     <a th:href="@{/leaves/team-movement}">Team Movement</a>
+                    <a th:href="@{/leaves}">My Leaves</a>
                     <a th:href="@{/claims}">My Claims</a>
                     <a th:href="@{/admin/employees}">Employee Management</a>
                 </th:block>
