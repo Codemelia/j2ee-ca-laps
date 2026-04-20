@@ -609,6 +609,10 @@ public class LeaveService {
 			}
 		}
 
+		if ("Compensation".equalsIgnoreCase(leaveType)) {
+			return calcCompDeductibles(leave);
+		}
+
 		return calcLeaveDeductibles(leave.getFromDate(), leave.getToDate());
 	}
 
@@ -618,8 +622,9 @@ public class LeaveService {
 	private void reverseDeduction(LeaveApplication leave, double leaveDays) {
 		int fromYear = leave.getFromDate().getYear();
 		int toYear = leave.getToDate().getYear();
+		String typeName = leave.getLeaveType().getLeaveType();
 
-		if (fromYear == toYear) {
+		if ("Compensation".equalsIgnoreCase(typeName) || fromYear == toYear) {
 			restoreBalance(leave.getEmployee(), leave.getLeaveType(), fromYear, leaveDays);
 		} else {
 			LocalDate lastDay = LocalDate.of(fromYear, 12, 31);
@@ -629,7 +634,7 @@ public class LeaveService {
 
 			long totalLeaveDuration = ChronoUnit.DAYS.between(leave.getFromDate(), leave.getToDate()) + 1;
 
-			if (totalLeaveDuration > 14 || "Medical".equalsIgnoreCase(leave.getLeaveType().getLeaveType())) {
+			if (totalLeaveDuration > 14 || "Medical".equalsIgnoreCase(typeName)) {
 				restoreY1 = (double) ChronoUnit.DAYS.between(leave.getFromDate(), lastDay) + 1;
 				restoreY2 = leaveDays - restoreY1;
 			} else {
