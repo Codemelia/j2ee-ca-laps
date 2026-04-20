@@ -1,8 +1,11 @@
 package sg.edu.nus.laps.claim;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
@@ -68,39 +72,34 @@ public class OvertimeClaimController {
         return"claim/claim-form";
     }
 
-    // process claim submission
+    // process claim submission (REST)
+    // Handling via AJAX for better UI
     @PostMapping("/submit")
-    public String postClaimForm(
+    @ResponseBody
+    public ResponseEntity<Map<String, ?>> postClaimForm(
         @AuthenticationPrincipal AuthUserDetails user,
         @Valid @ModelAttribute("claim") OvertimeClaim claim,
-        BindingResult result, Model model, 
-        RedirectAttributes redirAttr) {
-        
-        // validation error
+        BindingResult result) {
+
+        // if have field error, return as map for ajax handling
         if (result.hasErrors()) {
-            model.addAttribute("teamClaims", otService.getClaimHistory(user.getEmployeeId()));
-            model.addAttribute("isSelf", true);
-            model.addAttribute("showClaimFormModal", true);
-            model.addAttribute("claim", claim);
-            return "claim/claim-list";
+            Map<String, String> errors = new HashMap<>();
+            result.getFieldErrors().forEach(err ->
+                errors.putIfAbsent(err.getField(), err.getDefaultMessage())); // insert validation error
+            return ResponseEntity.badRequest().body(Map.of("errors", errors));
         }
 
+        // attempt to submit claim
         try {
             otService.submitClaim(user.getEmployeeId(), claim);
-            redirAttr.addFlashAttribute("successMsg", 
-                String.format("Claim #%d was submitted successfully", claim.getId()));
-            return "redirect:/claims";
+            return ResponseEntity.ok(Map.of(
+                "message", String.format("Claim #%d was submitted successfully", claim.getId())
+            ));
         } catch (Exception ex) {
-            model.addAttribute("globalError", 
-                "Error: " + ex.getMessage() + ", Status: " + claim.getStatus()
-                .getDisplayOvertimeClaimStatus());
-            model.addAttribute("teamClaims", otService.getClaimHistory(user.getEmployeeId()));
-            model.addAttribute("isSelf", true);
-            model.addAttribute("showClaimFormModal", true);
-            model.addAttribute("claim", claim);
-            return "claim/claim-list";
+            return ResponseEntity.badRequest().body(Map.of(
+                "message", "Error: " + ex.getMessage()
+            ));
         }
-
     }
 
     // Soft delete claims

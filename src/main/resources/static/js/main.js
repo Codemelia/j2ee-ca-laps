@@ -30,29 +30,3 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 
 });
-
-// // Init datatables on myLeaveTable if it exists
-// document.addEventListener('DOMContentLoaded', function() {
-//     var table = document.getElementById('myLeaveTable');
-//     if (table && typeof $ !== 'undefined' && $.fn.dataTable) {
-//         $('#myLeaveTable').DataTable({
-//             paging: true,
-//             searching: true,
-//             ordering: true,
-//             pageLength: 10
-//         });
-//     }
-// });
-
-// // Init datatables on teamLeaveTable if it exists
-// document.addEventListener('DOMContentLoaded', function() {
-//     var table = document.getElementById('teamLeaveTable');
-//     if (table && typeof $ !== 'undefined' && $.fn.dataTable) {
-//         $('#teamLeaveTable').DataTable({
-//             paging: true,
-//             searching: true,
-//             ordering: true,
-//             pageLength: 10
-//         });
-//     }
-// });

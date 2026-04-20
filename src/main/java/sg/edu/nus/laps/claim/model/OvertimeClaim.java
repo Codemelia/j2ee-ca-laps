@@ -31,14 +31,14 @@ public class OvertimeClaim extends SetCreatedUpdated {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Worked date is mandatory")
+    @NotNull(message = "Worked date is required")
     @PastOrPresent(message = "Worked date must not be in the future")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "worked_date", nullable = false)
     private LocalDate workedDate;
 
-    @DecimalMin(value = "0.5", message = "Claimed days must be minimum 0.5 day per worked date")
-    @DecimalMax(value = "1.0", message = "Claimed days cannot exceed 1.0 day per worked date")
+    @DecimalMin(value = "0.5", message = "Claimed days must be minimum 0.5 day (4 hours)")
+    @DecimalMax(value = "1.0", message = "Claimed days cannot exceed 1.0 day (8 hours)")
     @Column(name = "claimed_days", nullable = false)
     private double claimedDays;
 
