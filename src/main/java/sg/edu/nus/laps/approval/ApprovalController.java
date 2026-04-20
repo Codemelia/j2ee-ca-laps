@@ -139,6 +139,10 @@ public class ApprovalController {
             la.getToDate(), 
             la.getId());
 
+        Long leaveEmpId = la.getEmployee().getId();
+        String managerName = eService.getManagerName(leaveEmpId);
+
+        model.addAttribute("managerName", managerName);
         model.addAttribute("leaveApp", la);
         model.addAttribute("conflicts", conflicts);
         model.addAttribute("isSelf", false);
