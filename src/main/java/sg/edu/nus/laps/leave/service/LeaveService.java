@@ -744,5 +744,15 @@ public class LeaveService {
 	public Page<LeaveApplication> getMovementRegister(int month, int year, Pageable pageable) {
 	    return leaveApplicationRepository.findByMonth(month, year, pageable);
 	}
+	
+	public List<LeaveApplication> getTeamMovement(String teamName, int month, int year) {
+		// 1. Convert the month/year into a date range for the SQL query
+		LocalDate start = LocalDate.of(year, month, 1);
+		LocalDate end = start.with(java.time.temporal.TemporalAdjusters.lastDayOfMonth());
+
+		// 2. Call the repository method you defined
+		return laRepo.findTeamMovement(teamName, start, end);
+		}
+
 
 }

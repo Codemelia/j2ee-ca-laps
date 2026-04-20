@@ -24,12 +24,14 @@
                 <th:block sec:authorize="hasRole('EMPLOYEE')">
                     <a th:href="@{/me}">Dashboard</a>
                     <a th:href="@{/leaves}">My Leave History</a>
+					<a th:href="@{/leaves/team-movement}">Team Movement</a>
                 </th:block>
 
                 <!-- ROLE_MANAGER: Dashboard, My Leaves, Team Leaves -->
                 <th:block sec:authorize="hasRole('MANAGER')">
                     <a th:href="@{/me}">Dashboard</a>
                     <a th:href="@{/leaves}">My Leave History</a>
+					<a th:href="@{/leaves/team-movement}">Team Movement</a>
                     <a th:href="@{/manager/team-leaves(view='pending')}">Team Leave Applications</a>
                     <a th:href="@{/manager/team-claims(view='pending')}">Team Overtime Claims</a>
                 </th:block>

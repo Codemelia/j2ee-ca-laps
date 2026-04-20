@@ -104,4 +104,16 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 		@Param("year") int year,
 		Pageable pageable);
     
+  //TeamMovement table
+    @Query("SELECT l FROM LeaveApplication l " +
+    	       "WHERE l.employee.teamName = :teamName " +
+    	       "AND l.status IN ('APPLIED', 'UPDATED', 'APPROVED') " +
+    	       "AND l.fromDate <= :monthEnd AND l.toDate >= :monthStart")
+    	List<LeaveApplication> findTeamMovement(
+    	    @Param("teamName") String teamName, 
+    	    @Param("monthStart") LocalDate monthStart, 
+    	    @Param("monthEnd") LocalDate monthEnd
+    	);
+
+    
 }

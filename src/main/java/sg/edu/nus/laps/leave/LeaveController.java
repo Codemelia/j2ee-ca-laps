@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
 import sg.edu.nus.laps.employee.EmployeeService;
+import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
 import sg.edu.nus.laps.leave.model.LeaveType;
 import sg.edu.nus.laps.leave.service.LeaveService;
@@ -263,5 +264,36 @@ public class LeaveController {
         }
         return "redirect:/leaves";
     }
+    
+    @GetMapping("/team-movement")
+    public String viewTeamMovement(
+    @AuthenticationPrincipal AuthUserDetails user, 
+    @RequestParam(required = false) Integer month,
+    Model model, RedirectAttributes redirect) {
+    // 1. Get the current date if parameters are missing
+    LocalDate now = LocalDate.now();
+    int activeMonth = (month == null) ? now.getMonthValue() : month;
+    int currentYear = LocalDate.now().getYear();
+
+    // 2. Extract the team name from the authenticated user
+    // (Assuming your AuthUserDetails has a method to get the Employee object or teamName)
+    Long empId = user.getEmployeeId();
+    Employee employee = empService.findById(empId).orElse(null);
+    if(employee == null) {
+    redirect.addFlashAttribute("globalError", "employee not found.");
+    return "redirect:/leaves"; 
+    }
+    String teamName = employee.getTeamName();
+
+    // 3. Call the service (using the variables we just created)
+    List<LeaveApplication> teamLeaveList = lService.getTeamMovement(teamName, activeMonth, currentYear);
+
+    // 4. Add data to the model for the UI
+    model.addAttribute("leaveList", teamLeaveList);
+    model.addAttribute("currentMonth", activeMonth);
+    model.addAttribute("displayYear", currentYear);
+    return "leave/team-movement";
+    }
+
 
 }
