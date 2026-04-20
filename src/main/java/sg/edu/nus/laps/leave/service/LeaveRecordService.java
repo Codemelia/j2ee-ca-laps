@@ -1,12 +1,12 @@
 package sg.edu.nus.laps.leave.service;
 
 import java.util.List;
+
 import java.util.Optional;
-
 import org.springframework.stereotype.Service;
-
 import sg.edu.nus.laps.leave.model.LeaveRecord;
 import sg.edu.nus.laps.leave.repository.LeaveRecordRepository;
+
 /**
  * LeaveRecordService provides methods to 
  * retrieve leave records for employees from repository.
@@ -29,6 +29,6 @@ public class LeaveRecordService {
             .findByEmployeeIdAndLeaveTypeIdAndCalendarYear(employeeId, leaveTypeId, calendarYear);
     	if(leaveRecordOpt.isPresent()) { return leaveRecordOpt; }
     	return Optional.empty();
-    }
+    } 
     
 }
