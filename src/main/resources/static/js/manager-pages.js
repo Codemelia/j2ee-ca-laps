@@ -105,7 +105,7 @@ function exportCurrentPageToCsv() {
             });
         }
 
-        // If no error
+        // If no error, get content dispos
         const dispos = response.headers.get('Content-Disposition');
         
         // Default filename

@@ -28,37 +28,49 @@ This is an overview of the functions of each role (Y = Yes, N = No):
 ```
 | Function               | Employee | Manager | Admin (Internal) | Admin (External) |
 | ---------------------- | -------- | ------- | ---------------- | ---------------- |
-| Login / Logout         | Y        | Y       |         Y        |         Y        |
-| Apply Leave            | Y        | Y       |         Y        |         N        |
-| View Own Leave         | Y        | Y       |         Y        |         N        |
-| Approve Leave          | N        | Y       |         N        |         N        |
-| View Subordinate Leave | N        | Y       |         N        |         N        |
-| Manage Users/Employees | N        | N       |         Y        |         Y        |
-| Manage Entitlements    | N        | N       |         Y        |         Y        |
-| Manage Roles           | N        | N       |         Y        |         Y        |
+| Login / Logout         |    Y     |    Y    |         Y        |         Y        |
+| Change Password        |    Y     |    Y    |         Y        |         Y        |
+| ---------------------- | -------- | ------- | ---------------- | ---------------- |
+| Apply Leave            |    Y     |    Y    |         Y        |         N        |
+| View Own Leave         |    Y     |    Y    |         Y        |         N        |
+| Approve/Reject Leave   |    N     |    Y    |         N        |         N        |
+| View Subordinate Leave |    N     |    Y    |         N        |         N        |
+| View Movement Register |    Y     |    Y    |         Y        |         N        |
+| ---------------------- | -------- | ------- | ---------------- | ---------------- |
+| Submit Overtime Claim  |    Y     |    Y    |         Y        |         N        |
+| View Claims            |    Y     |    Y    |         Y        |         N        |
+| Approve/Reject Claims  |    N     |    Y    |         N        |         N        |
+| View Subordinate Claims|    N     |    Y    |         N        |         N        |
+| ---------------------- | -------- | ------- | ---------------- | ---------------- |
+| Manage Users/Employees |    N     |    N    |         Y        |         Y        |
+| Manage Entitlements    |    N     |    N    |         Y        |         Y        |
+| Manage Roles           |    N     |    N    |         Y        |         Y        |
 ```
 
-### 1.4 Core technology stack
+### 1.4 Core technology stack and infrastructure
 This application uses the following stack components for development.
 1. Language and runtime: Java 17
 2. Application framework: Spring Boot 4.0.5 with Spring MVC, Spring Data JPA, and Thymeleaf
 3. Database and ORM: MySQL with Hibernate/JPA
 4. Build and dependency management: Maven (Maven Wrapper included)
-5. Frontend layer: Thymeleaf templates, CSS, JavaScript, jQuery + DataTables, Bootstrap 5
+5. Frontend layer: Thymeleaf templates, CSS, JavaScript / AJAX, jQuery + DataTables, Bootstrap 5
 6. Validation and exception handling: Jakarta Validation and centralized/separate exception handling
 7. Authentication and authorization: Spring Security, Thymeleaf Extras - Spring Security 6, role/authority-based access control, custom authentication provider, and custom invalid/expired session strategies
 8. Configuration and localization: Profile-based configuration (application.properties, application-railway properties, application-aws.properties) and messages.properties
 9. Database initialization and dummy data: schema.sql and data.sql for schema setup and test/demo data population
 10. Packaging and deployment: Dockerfile with cloud deployment configuration for Railway and AWS EC2/RDS via Learner Lab
 11. External API integration: Spring RestTemplate-based integration for holiday data retrieval
-12. Testing support: Spring Boot test starters for Web MVC, Security, JPA, Thymeleaf, and Validation
+12. Testing support: Spring Boot test starters for Web MVC, Security, JPA, Validation, and Thymeleaf
 
 ### 1.5 Main feature modules
-1. auth: login/logout and user security support
-2. leave: leave application lifecycle and leave records
-3. approval: manager approval/rejection workflows
-4. employee: employee and user administration
-5. me: authenticated employee dashboard
+1. auth: Login/logout and user CRUD
+2. leave: Leave application lifecycle, leave CRUD and logic
+3. claim: Overtime compensation claim CRUD and logic
+4. approval: Manager approval/rejection workflows for leave/overtime claims
+5. employee: Employee and user administration
+6. me: Employee dashboard
+7. security: Spring Security configuration 
+8. common: Common util, model attributes, controller advice
 
 ---
 
@@ -77,7 +89,7 @@ Different rules apply for is Annual, Medical, or Compensation leave.
 
 1. Medical Leave: "Proof" URL (e.g., Medical Certificate) must be provided. 
 2. Annual/Medical Leave: Half-day applications are not allowed. 
-3. Compensation Leave: 0.5-day increments are permitted but not fully implemented for now.
+3. Compensation Leave: Computed in half-day increments (AM/PM)
 4. All Leaves: New leave applications cannot overlap with any existing "Approved" leave applications. 
 5. All Leaves: "Reason" must be provided
 
@@ -94,7 +106,7 @@ The system restricts what a user or manager can do based on the current LeaveSta
 | Cancel           | APPROVED                  | Only allowed if the leave start date has not yet passed  |
 ```
 
-### 2.4 Complex Business Rules
+### 2.4 Business Rules
 The system uses a sophisticated method to calculate how many days are actually deducted from an employee's balance. 
 
 1. The Chain Logic: 
@@ -124,6 +136,11 @@ When an approved leave is cancelled, the system re-runs the "Effective Duration"
 ### 2.7 Automated Maintenance of Singapore Public Holiday Data
 The HolidayService acts as a bridge between the Singapore Government's Open Data Portal (data.gov.sg) and application’s database. 
 
+### 2.8 Overtime Compensation Claim Rules
+1. Employee can only submit claim for 0.5/1.0 day per workedDate.
+2. Employee cannot submit a claim that is past the previous salary period by > 14 days (MoM rule).
+3. Employee cannot submit a claim that has a workedDate in the future.
+
 ---
 
 ## 3. Repository Structure
@@ -133,7 +150,7 @@ This application uses a feature-based, scalable structure.
 ```
 j2ee-ca-laps
 ├── src/main/java/sg/edu/nus/laps
-│   ├── approval [MANAGER: APPROVE/REJECT TEAM LEAVES]
+│   ├── approval [MANAGER: APPROVE/REJECT TEAM LEAVES/CLAIMS (mostly read)]
 │   │     ├── ApprovalController.java
 │   │     └── ApprovalService.java
 │
@@ -143,6 +160,7 @@ j2ee-ca-laps
 │   │     |     └── InvalidUserException.java
 │   │     │
 │   │     ├── model
+│   │     |     ├── LoginRequestDTO.java
 │   │     |     ├── PasswordDTO.java
 │   │     |     ├── Role.java
 │   │     |     └── User.java
@@ -156,6 +174,15 @@ j2ee-ca-laps
 │   │     |     └── UserService.java
 │   │     │
 │   │     └── AuthController.java
+│
+│   ├── claim [EMPLOYEE CLAIMS + MAIN CLAIM LOGIC]
+│   │     ├── model
+│   │     |     ├── OvertimeClaim.java
+│   │     |     └── OvertimeClaimStatus.java
+│   │     │
+│   │     ├── OvertimeClaimController.java
+│   │     ├── OvertimeClaimRepository.java
+│   │     └── OvertimeClaimService.java
 |
 │   ├── common [COMMON FILES USED ACROSS PACKAGES]
 │   │     ├── exception
@@ -212,15 +239,18 @@ j2ee-ca-laps
 │   ├── me [EMPLOYEE: DASHBOARD]
 │   │     ├── MeController.java
 │
-│   ├── security [SERVE USER/EMP-FACING PAGES]
-│   │     ├── custom
+│   ├── security [USER AUTHENTICATION + AUTHORISATION + SESSION MANAGEMENT]
+│   │     ├── principal
+│   │     |     ├── AuthUserDetails.java
+│   │     |     └── AuthUserDetailsService.java
+│   │     │
+│   │     ├── session
 │   │     |     ├── LapsExpiredSessionStrategy.java
 │   │     |     └── LapsInvalidSessionStrategy.java
 │   │     │
-│   │     ├── AuthUserDetails.java
-│   │     ├── AuthUserDetailsService.java
 │   │     ├── SecurityConfig.java
-│   │     └── SecurityUtil.java
+│   │     ├── SecurityConfig.java
+│   │     └── ValidAuthProvider.java
 │
 │   └── LapsApplication.java
 │
@@ -230,16 +260,22 @@ j2ee-ca-laps
 │   │     ├── images
 │   │     ├── js
 │   │     │     ├── change-password.js [PUT REQUEST TO AuthController]
+│   │     │     ├── claim-form.js [POST REQUEST to OvertimeClaimController]
 │   │     │     ├── employee-form.js [INTERACTIVITY ON EMPLOYEE FORM]
 │   │     │     ├── leave-form.js [INTERACTIVITY ON LEAVE FORM]
-│   │     │     └── main.js [PASSWORD CHANGE MODAL + DATATABLES]
+│   │     │     ├── main.js [PASSWORD CHANGE MODAL + DATATABLES]
+│   │     │     └── manager-pages.js [REJECT LEAVES + EXPORT CSV REPORT]
 │
 │   ├── templates
-│   │     ├── approval ["/manager/team-leaves"]
-│   │     │     └── team-leave-list.html
+│   │     ├── approval
+│   │     │     └── team-claim-list.html ["/manager/team-claims"]
+│   │     │     └── team-leave-list.html ["/manager/team-leaves"]
 │   │     │
 │   │     ├── auth ["/auth/employee/login", "/auth/admin/login"]
 │   │     │     └── login.html
+│   │     │
+│   │     ├── claim ["/claims]
+│   │     │     └── claim-list.html
 │   │     │
 │   │     ├── employee ["/admin/employees"]
 │   │     │     ├── employee-form.html
@@ -250,9 +286,12 @@ j2ee-ca-laps
 │   │     ├── leave ["/leaves"]
 │   │     │     ├── leave-details.html
 │   │     │     ├── leave-form.html
-│   │     │     └── leave-list.html
+│   │     │     ├── leave-list.html
+│   │     │     └── team-movement.html
 │   │     │
-│   │     └── me ["/", "/me"]
-│               └── dashboard.html
+│   │     ├── me ["/", "/me"]
+│   │     │     └── dashboard.html
+│   │     │
+│   │     └── error.html
 ...
 ```
