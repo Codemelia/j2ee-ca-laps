@@ -4,7 +4,7 @@
 
 	<head th:replace="~{fragments/head ::head('Team Leave History', ~{::extra})}">
         <th:block th:fragment="extra">
-            <script th:src="@{/js/team-leaves.js}" defer></script>
+            <script th:src="@{/js/manager-pages.js}" defer></script>
         </th:block>
     </head>
 
@@ -33,7 +33,7 @@
                                 th:classappend="${isPending} ? ' btn-primary' : ' btn-secondary'">
                                 Pending
                             </a>
-                            <a th:href="@{/manager/team-leaves(view='approved')}"
+                            <a th:href="@{/manager/team-leaves(view='processed')}"
                                 class="btn"
                                 th:classappend="${isPending} ? ' btn-secondary' : ' btn-primary'">
                                 Processed
@@ -41,10 +41,14 @@
                         </div>
 
                         <div class="text-md-end">
-                            <button type="button" id="exportCsvBtn" class="btn btn-success">
-                                Export Report
+                            <button type="button" id="exportCsvBtn" class="btn btn-success"
+                                data-export-endpoint="/manager/team-leaves/export-csv"
+                                data-row-id-attr="data-leave-id"
+                                data-empty-message="No leave applications to export"
+                                data-default-file-name="team-leaves-report.csv">
+                                Export CSV
                             </button>
-                            <p class="text-muted mb-0">Export a CSV file of the current filtered table</p>
+                            <p class="text-muted mb-0">Export a CSV report of the current filtered table</p>
                         </div>
                     </div>
                 </div>

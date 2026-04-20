@@ -14,6 +14,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import sg.edu.nus.laps.claim.OvertimeClaim;
+import sg.edu.nus.laps.claim.OvertimeClaimService;
+import sg.edu.nus.laps.claim.OvertimeClaimStatus;
 import sg.edu.nus.laps.employee.EmployeeService;
 import sg.edu.nus.laps.employee.model.Employee;
 import sg.edu.nus.laps.leave.model.LeaveApplication;
@@ -39,11 +42,14 @@ public class ApprovalController {
     private final LeaveService lService;
     private final ApprovalService aService;
     private final EmployeeService eService;
+    private final OvertimeClaimService otService;
     public ApprovalController(LeaveService lService, 
-        ApprovalService aService, EmployeeService eService) {
+        ApprovalService aService, EmployeeService eService,
+        OvertimeClaimService otService) {
         this.lService = lService;
         this.aService = aService;
         this.eService = eService;
+        this.otService = otService;
     }
 
     /**
@@ -63,7 +69,7 @@ public class ApprovalController {
         @RequestParam(name = "view", defaultValue = "pending") String view,
         Model model) {
 
-        boolean isPending = !"approved".equalsIgnoreCase(view);
+        boolean isPending = !"processed".equalsIgnoreCase(view);
         List<LeaveApplication> leaveList;
 
         if (isPending) {
@@ -76,7 +82,7 @@ public class ApprovalController {
 
         model.addAttribute("leaveList", leaveList);
         model.addAttribute("isPending", isPending);
-        model.addAttribute("currentView", isPending ? "pending" : "approved");
+        model.addAttribute("currentView", isPending ? "pending" : "processed");
         return "approval/team-leave-list";
     }
 
@@ -174,20 +180,20 @@ public class ApprovalController {
      * Handles the approval of a leave application.
      * Updates leave status to APPROVED and deducts from employee's leave balance.
      * 
-     * Request: POST /manager/approve
+     * Request: POST /manager/team-leaves/approve
      * Parameters: id (leave application ID)
      * 
      * @param id the leave application ID to approve
      * @return redirect to team-leaves view with success/error message
      */
-    @PostMapping("/approve")
+    @PostMapping("/team-leaves/approve")
     public String approveLeave(@RequestParam("id") Long id,
         RedirectAttributes redirAttr) {
         try {
             lService.processApproveOrRejectLeave(id, LeaveStatus.APPROVED, null);
             redirAttr.addFlashAttribute("successMsg", 
                 String.format("Leave Application #%d approved successfully", id));
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             redirAttr.addFlashAttribute("globalError", 
                 "Error: " + e.getMessage());
         }
@@ -206,7 +212,7 @@ public class ApprovalController {
      * @param comment the mandatory reason for rejection
      * @return redirect to team-leaves view with success/error message
      */
-    @PostMapping("/reject")
+    @PostMapping("/team-leaves/reject")
     public String rejectLeave(@RequestParam("id") Long id, 
         @RequestParam("comment") String comment,
         RedirectAttributes redirAttr) {
@@ -214,17 +220,17 @@ public class ApprovalController {
             lService.processApproveOrRejectLeave(id, LeaveStatus.REJECTED, comment);
             redirAttr.addFlashAttribute("successMsg", 
                 String.format("Leave Application #%d rejected successfully", id));
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             redirAttr.addFlashAttribute("globalError", 
                 "Error: " + e.getMessage());
         }
         return "redirect:/manager/team-leaves";
     }
 
-    // REST API to export CSV
+    // REST API to export CSV for team leaves
     @ResponseBody
-    @PostMapping("/export-csv")
-    public ResponseEntity<?> exportCSV(
+    @PostMapping("/team-leaves/export-csv")
+    public ResponseEntity<?> exportLeavesCSV(
         @AuthenticationPrincipal AuthUserDetails user,
         @RequestBody List<Long> leaveAppIdList) {
         if (leaveAppIdList == null || leaveAppIdList.isEmpty()) {
@@ -235,8 +241,8 @@ public class ApprovalController {
         // Attempt to export and return file
         // By manager ID and leave app IDs
         try {
-            byte[] csv = aService.processExportRequest(user.getEmployeeId(), leaveAppIdList);
-            String fileName = user.getEmployeeId() + "-leave-report-" + LocalDate.now() + ".csv";
+            byte[] csv = aService.processLeavesExportRequest(user.getEmployeeId(), leaveAppIdList);
+            String fileName = user.getEmployeeId() + "-leaves-report-" + LocalDate.now() + ".csv";
 
             return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType("text/csv"))
@@ -248,17 +254,97 @@ public class ApprovalController {
         }
     }
 
-    // Overtime Compensation
+    // Overtime Compensation view
     @GetMapping("/team-claims")
     public String viewTeamOvertimeClaims(
         @AuthenticationPrincipal AuthUserDetails user,
+        @RequestParam(name = "view", defaultValue = "pending") String view,
         Model model) {
+
+        boolean isPending = !"processed".equalsIgnoreCase(view);
+        List<OvertimeClaim> teamClaims;
+
+        if (isPending) {
+            teamClaims = aService
+                .getTeamOvertimeClaims(user.getEmployeeId(), OvertimeClaimStatus.APPLIED);
+        } else {
+            teamClaims = aService
+                .getTeamOvertimeClaims(user.getEmployeeId(), 
+                    OvertimeClaimStatus.APPROVED, OvertimeClaimStatus.REJECTED);
+        }
         
-            
+        model.addAttribute("teamClaims", teamClaims);
+        model.addAttribute("isPending", isPending);
+        model.addAttribute("currentView", isPending ? "pending" : "processed");
 
+        return "approval/team-claim-list";
+    }
 
-        return "";
+    // Approve Compensation Claim
+    @PostMapping("/team-claims/approve")
+    public String approveTeamOvertimeClaim(
+        @AuthenticationPrincipal AuthUserDetails user,
+        @RequestParam(name = "id") Long claimId,
+        Model model, RedirectAttributes redirAttr) {
 
+        try {
+            otService.processApproveOrRejectClaim(claimId, user.getEmployeeId(), OvertimeClaimStatus.APPROVED);
+            redirAttr.addFlashAttribute("successMsg", 
+                String.format("Compensation Claim #%d approved successfully", claimId));
+        } catch (Exception e) {
+            redirAttr.addFlashAttribute("globalError", 
+                "Error: " + e.getMessage());
+        }
+
+        return "redirect:/manager/team-claims";
+
+    }
+
+    // Reject Compensation Claim
+    @PostMapping("/team-claims/reject")
+    public String rejectTeamOvertimeClaim(
+        @AuthenticationPrincipal AuthUserDetails user,
+        @RequestParam(name = "id") Long claimId,
+        Model model, RedirectAttributes redirAttr) {
+
+        try {
+            otService.processApproveOrRejectClaim(claimId, user.getEmployeeId(), OvertimeClaimStatus.REJECTED);
+            redirAttr.addFlashAttribute("successMsg", 
+                String.format("Compensation Claim #%d rejected successfully", claimId));
+        } catch (Exception e) {
+            redirAttr.addFlashAttribute("globalError", 
+                "Error: " + e.getMessage());
+        }
+
+        return "redirect:/manager/team-claims";
+
+    }
+
+    // REST API to export CSV for claims
+    @ResponseBody
+    @PostMapping("/team-claims/export-csv")
+    public ResponseEntity<?> exportClaimsCSV(
+        @AuthenticationPrincipal AuthUserDetails user,
+        @RequestBody List<Long> claimIdList) {
+        if (claimIdList == null || claimIdList.isEmpty()) {
+            return ResponseEntity.badRequest().body(
+                Map.of("message", "Report generation failed on null or empty request"));
+        }
+
+        // Attempt to export and return file
+        // By manager ID and leave app IDs
+        try {
+            byte[] csv = aService.processClaimsExportRequest(user.getEmployeeId(), claimIdList);
+            String fileName = user.getEmployeeId() + "-claims-report-" + LocalDate.now() + ".csv";
+
+            return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("text/csv"))
+                // Content disposition renders CSV file as download
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .body(csv);
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Report generation failed on unexpected error");
+        }
     }
 
 }

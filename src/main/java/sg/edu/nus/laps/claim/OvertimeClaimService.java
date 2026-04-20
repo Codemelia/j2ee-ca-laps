@@ -24,6 +24,7 @@ public class OvertimeClaimService {
     private final LeaveTypeRepository leaveTypeRepo;
     private final LeaveRecordRepository leaveRecordRepo;
     private final EmployeeRepository empRepo;
+
     public OvertimeClaimService(
         OvertimeClaimRepository claimRepo,
         LeaveTypeRepository leaveTypeRepo,
@@ -42,7 +43,7 @@ public class OvertimeClaimService {
             throw new IllegalArgumentException("Overtime claim must not be null");
         }
 
-        validateClaimUnits(claim.getClaimedUnits());
+        validateClaimUnits(claim.getClaimedDays());
 
         // Find employee from repo
         Optional<Employee> optEmp = empRepo.findById(empId);
@@ -57,17 +58,9 @@ public class OvertimeClaimService {
 
     // Retrieve employee claim history
     @Transactional(readOnly = true)
-    public List<OvertimeClaim> retrieveClaimHistory(Long employeeId) {
+    public List<OvertimeClaim> findClaimsHistory(Long employeeId) {
         if (employeeId == null) { return List.of(); }
         return claimRepo.findByEmployeeIdOrderByCreatedAtDesc(employeeId);
-    }
-
-    // Retrieve manager's team claims by status
-    @Transactional(readOnly = true)
-    public List<OvertimeClaim> retrieveTeamClaims(Long managerId, List<OvertimeClaimStatus> statuses) {
-        if (managerId == null || statuses == null || statuses.size() < 1) { return List.of(); }
-        return claimRepo.findByEmployeeManagerIdAndStatusInOrderByCreatedAtDesc(
-            managerId, statuses);
     }
 
     // Manager: approve/reject claim
@@ -89,12 +82,12 @@ public class OvertimeClaimService {
 
         // Null check and whether manager is employee's manager
         if (claim.getEmployee() == null || !managerId.equals(claim.getEmployee().getManagerId())) {
-            throw new IllegalArgumentException("Unauthorized to process this overtime claim");
+            throw new IllegalArgumentException("Unauthorized to process this claim");
         }
 
         // Ensure claim is not already processed
         if (claim.getStatus() != OvertimeClaimStatus.APPLIED) {
-            throw new IllegalStateException("Only applied claims can be processed");
+            throw new IllegalStateException("Claim was already processed previously");
         }
 
         // Set status to claim and update
@@ -126,7 +119,7 @@ public class OvertimeClaimService {
                     claim.getEmployee(), compensationType));
 
         // Convert hours to days and save to record
-        double creditedDays = claim.getClaimedUnits();
+        double creditedDays = claim.getClaimedDays();
         leaveRecord.setEntitledDays(leaveRecord.getEntitledDays() + creditedDays);
         leaveRecordRepo.save(leaveRecord);
     }

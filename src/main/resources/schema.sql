@@ -3,6 +3,7 @@
 -- ============================================================
 
 -- PREVENT ERRORS ON CREATE --
+DROP TABLE IF EXISTS overtime_claims;
 DROP TABLE IF EXISTS leave_records;
 DROP TABLE IF EXISTS leave_applications;
 DROP TABLE IF EXISTS employees;
@@ -89,10 +90,22 @@ CREATE TABLE leave_records (
     employee_id     BIGINT          NOT NULL,
     leave_type_id   BIGINT          NOT NULL,
     calendar_year   INT             NOT NULL,
-    entitled_days   DECIMAL (4, 2)  NOT NULL        DEFAULT 0.0, -- Double, user earn/use 0.5 day of leave
-    consumed_days   DECIMAL (4, 2)  NOT NULL        DEFAULT 0.0,  -- Double, user earn/use 0.5 day of leave
+    entitled_days   DECIMAL(4, 2)  NOT NULL        DEFAULT 0.0, -- Double, user earn/use 0.5 day of leave
+    consumed_days   DECIMAL(4, 2)  NOT NULL        DEFAULT 0.0,  -- Double, user earn/use 0.5 day of leave
     created_at          DATETIME    NOT NULL        DEFAULT CURRENT_TIMESTAMP,
     updated_at          DATETIME    NOT NULL        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_leave_records_employees FOREIGN KEY (employee_id) REFERENCES employees(id),
     CONSTRAINT fk_leave_records_types FOREIGN KEY (leave_type_id) REFERENCES leave_types(id)
+);
+
+-- ── overtime_claims (ManytoOne → employees) ───────────────────────────────────────────────────────────────
+CREATE TABLE overtime_claims (
+    id              BIGINT           AUTO_INCREMENT  PRIMARY KEY,
+    employee_id     BIGINT           NOT NULL,
+    worked_date     DATE             NOT NULL,
+    claimed_days    DECIMAL(4, 2)    NOT NULL,
+    status          ENUM('APPLIED', 'APPROVED', 'REJECTED')   NOT NULL,
+    created_at      DATETIME         NOT NULL        DEFAULT CURRENT_TIMESTAMP,
+    updated_at      DATETIME         NOT NULL        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_claims_employee FOREIGN KEY (employee_id) REFERENCES employees(id)
 );

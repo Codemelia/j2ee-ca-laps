@@ -38,8 +38,8 @@ public class OvertimeClaim extends SetCreatedUpdated {
 
     @NotNull(message = "Claimed compensation units are mandatory")
     @PositiveOrZero(message = "Claimed compensation units must be positive or zero")
-    @Column(name = "claimed_hours", nullable = false)
-    private double claimedUnits;
+    @Column(name = "claimed_days", nullable = false)
+    private double claimedDays;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -51,11 +51,11 @@ public class OvertimeClaim extends SetCreatedUpdated {
     private Employee employee;
 
     public OvertimeClaim() {}
-    public OvertimeClaim(Long id, LocalDate workedDate, double claimedUnits,
+    public OvertimeClaim(Long id, LocalDate workedDate, double claimedDays,
         OvertimeClaimStatus status, Employee employee) {
         this.id = id;
         this.workedDate = workedDate;
-        this.claimedUnits = claimedUnits;
+        this.claimedDays = claimedDays;
         this.status = status;
         this.employee = employee;
     }
@@ -64,16 +64,19 @@ public class OvertimeClaim extends SetCreatedUpdated {
     public void setId(Long id) { this.id = id; }
     public LocalDate getWorkedDate() { return this.workedDate; }
     public void setWorkedDate(LocalDate workedDate) { this.workedDate = workedDate; }
-    public double getClaimedUnits() { return this.claimedUnits; }
-    public void setClaimedUnits(double claimedUnits) { this.claimedUnits = claimedUnits; }
+    public double getClaimedDays() { return this.claimedDays; }
+    public void setClaimedDays(double claimedDays) { this.claimedDays = claimedDays; }
     public OvertimeClaimStatus getStatus() { return this.status; }
     public void setStatus(OvertimeClaimStatus status) { this.status = status; }
     public Employee getEmployee() { return this.employee; }
     public void setEmployee(Employee employee) { this.employee = employee; }
 
-    @AssertTrue(message = "Claimed compensation units must be either 0.5 or 1.0")
+    @AssertTrue(message = "Claimed compensation units must be in increments of 0.5")
     private boolean isValidClaimUnits() {
-        return claimedUnits == 0.5 || claimedUnits == 1.0;
+        if (claimedDays < 0) { return false; }
+        // Check whether units are in increments of 0.6
+        double multi = claimedDays * 2; // Always integer (expected)
+        return Math.abs(multi - Math.round(multi)) < 1e-9; // Checks whether value is extremely close to integer
     }
 
 }
