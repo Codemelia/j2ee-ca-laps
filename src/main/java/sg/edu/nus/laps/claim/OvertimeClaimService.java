@@ -1,6 +1,7 @@
 package sg.edu.nus.laps.claim;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,9 +49,8 @@ public class OvertimeClaimService {
             throw new IllegalArgumentException("Claimed compensation units must be in increments of 0.5");
         }
 
-        if (claim.getWorkedDate().isBefore(LocalDate.now().minusWeeks(2))) {
-            throw new IllegalArgumentException("Worked date cannot be more than 2 weeks before today");
-        }
+        LocalDate workedDate = claim.getWorkedDate();
+        validateWorkedDateWithinSubmissionWindow(workedDate);
 
         // Find employee from repo
         Optional<Employee> optEmp = empRepo.findById(empId);
@@ -75,6 +75,11 @@ public class OvertimeClaimService {
 
         if (!claim.getEmployee().getId().equals(employeeId)) {
             throw new IllegalArgumentException("Employee does not match claim records");
+        }
+
+        OvertimeClaimStatus status = claim.getStatus();
+        if (status != null && status != OvertimeClaimStatus.APPLIED) {
+            throw new IllegalStateException("Overtime claim is past the deletion window");
         }
 
         // If all ok, update claim status to deleted and save
@@ -149,6 +154,22 @@ public class OvertimeClaimService {
         double credDays = claim.getClaimedDays();
         leaveRecord.setEntitledDays(leaveRecord.getEntitledDays() + credDays);
         leaveRecordRepo.save(leaveRecord);
+    }
+
+    // Helper: check if worked date within submission window
+    private void validateWorkedDateWithinSubmissionWindow(LocalDate workedDate) {
+        LocalDate today = LocalDate.now();
+        LocalDate deadline = calcSubmissionDeadline(workedDate);
+
+        if (today.isAfter(deadline)) {
+            throw new IllegalArgumentException("Overtime claim is past the submission deadline");
+        }
+    }
+
+    // MOM rule: overtime compensation must be claimed latest 14 days aft end of last salary period
+    private LocalDate calcSubmissionDeadline(LocalDate workedDate) {
+        LocalDate endSalaryPeriod = YearMonth.from(workedDate).atEndOfMonth();
+        return endSalaryPeriod.plusDays(14);
     }
 
 }
