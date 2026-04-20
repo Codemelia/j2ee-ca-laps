@@ -255,6 +255,7 @@ public class ApprovalController {
     }
 
     // Overtime Compensation view
+    // Same toggle as team leaves view
     @GetMapping("/team-claims")
     public String viewTeamOvertimeClaims(
         @AuthenticationPrincipal AuthUserDetails user,
@@ -281,6 +282,7 @@ public class ApprovalController {
     }
 
     // Approve Compensation Claim
+    // Same process as team leave approve
     @PostMapping("/team-claims/approve")
     public String approveTeamOvertimeClaim(
         @AuthenticationPrincipal AuthUserDetails user,
@@ -301,6 +303,7 @@ public class ApprovalController {
     }
 
     // Reject Compensation Claim
+    // Same process as team leave reject
     @PostMapping("/team-claims/reject")
     public String rejectTeamOvertimeClaim(
         @AuthenticationPrincipal AuthUserDetails user,
@@ -332,7 +335,7 @@ public class ApprovalController {
         }
 
         // Attempt to export and return file
-        // By manager ID and leave app IDs
+        // By manager ID and claim IDs
         try {
             byte[] csv = aService.processClaimsExportRequest(user.getEmployeeId(), claimIdList);
             String fileName = user.getEmployeeId() + "-claims-report-" + LocalDate.now() + ".csv";

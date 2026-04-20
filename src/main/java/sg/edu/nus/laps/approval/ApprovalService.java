@@ -3,8 +3,6 @@ package sg.edu.nus.laps.approval;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -21,10 +19,10 @@ import sg.edu.nus.laps.leave.service.LeaveService;
 
 /**
  *  ApprovalService provides methods for 
-*      1. Managing leave approval processes
-*      2. Including retrieving pending requests
+*      2. Retrieving pending leave and claim requests
 *      3. Subordinate leave history
 *      4. Conflicting leave applications for manager's team
+*      
  */
 @Service
 public class ApprovalService {
@@ -36,7 +34,6 @@ public class ApprovalService {
         DateTimeFormatter.ofPattern("yyyy-MM-dd"); // For start end date
     private static final DateTimeFormatter DATETIME_FORMAT = 
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // For createdAt
-    private static final ZoneId SGT_ZONE = ZoneId.of("Asia/Singapore");
     
     public ApprovalService(
         LeaveApplicationRepository laRepo,
@@ -145,7 +142,7 @@ public class ApprovalService {
 
         // Build CSV file
         StringBuilder csvSB = new StringBuilder();
-        csvSB.append("Leave ID,Employee ID,Employee Name,Leave Type,Start Date,End Date,Duration in Days,Leave Status,Applied On (SGT),Manager Comment")
+        csvSB.append("Leave ID,Employee ID,Employee Name,Leave Type,Start Date,End Date,Duration in Days,Leave Status,Applied On,Manager Comment")
             .append(System.lineSeparator()); // Separate row
 
         // For each leave app in list, retrieve rows and append to csv
@@ -154,7 +151,7 @@ public class ApprovalService {
             appendLeaveRow(csvSB, leaveApp, daysDuration);
         }
 
-        return csvSB.toString().getBytes(StandardCharsets.UTF_8);
+        return csvSB.toString().getBytes(StandardCharsets.UTF_8); // Return in byte array for parsing
     }
 
     // process claims report CSV
@@ -169,15 +166,15 @@ public class ApprovalService {
 
         // Build CSV file
         StringBuilder csvSB = new StringBuilder();
-        csvSB.append("Claim ID,Employee ID,Employee Name,Worked Date,Claim Days,Status,Submitted On (SGT)")
+        csvSB.append("Claim ID,Employee ID,Employee Name,Worked Date,Claim Days,Status,Submitted On")
             .append(System.lineSeparator()); // Separate row
 
-        // For each leave app in list, retrieve rows and append to csv
+        // For each claim in list, retrieve rows and append to csv
         for (OvertimeClaim claim : teamClaims) {
             appendClaimRow(csvSB, claim);
         }
 
-        return csvSB.toString().getBytes(StandardCharsets.UTF_8);
+        return csvSB.toString().getBytes(StandardCharsets.UTF_8); // Return in byte array for parsing
     }
 
     // Escape quotes for CSV generation
@@ -188,7 +185,7 @@ public class ApprovalService {
         return "\"" + escaped + "\"";
     }
 
-    // append csv columns for each row
+    // append csv columns for each claim row
     private void appendClaimRow(StringBuilder csvSB, OvertimeClaim claim) {
         csvSB.append(claim.getId())
                 .append(',')
@@ -202,11 +199,11 @@ public class ApprovalService {
                 .append(',')
             .append(csvEscape(claim.getStatus() != null ? claim.getStatus().name() : ""))
                 .append(',')
-                .append(csvEscape(formatSgtDateTime(claim.getCreatedAt())))
+                .append(csvEscape(claim.getCreatedAt().format(DATETIME_FORMAT)))
             .append(System.lineSeparator());
     }
 
-    // append csv columns for each row
+    // append csv columns for each leave row
     private void appendLeaveRow(StringBuilder csvSB, LeaveApplication leaveApp, double daysDuration) {
         csvSB.append(leaveApp.getId())
                 .append(',')
@@ -224,21 +221,10 @@ public class ApprovalService {
                 .append(',')
             .append(csvEscape(leaveApp.getStatus() != null ? leaveApp.getStatus().name() : ""))
                 .append(',')
-            .append(csvEscape(formatSgtDateTime(leaveApp.getCreatedAt())))
+            .append(csvEscape((leaveApp.getCreatedAt().format(DATETIME_FORMAT))))
                 .append(',')
             .append(csvEscape(leaveApp.getManagerComment()))
             .append(System.lineSeparator());
-    }
-
-    private String formatSgtDateTime(LocalDateTime dateTime) {
-        if (dateTime == null) {
-            return "";
-        }
-
-        return dateTime
-            .atZone(ZoneId.systemDefault())
-            .withZoneSameInstant(SGT_ZONE)
-            .format(DATETIME_FORMAT);
     }
 
 }
