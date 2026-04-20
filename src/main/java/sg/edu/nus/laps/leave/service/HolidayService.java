@@ -46,7 +46,7 @@ public class HolidayService {
 	 * 		of the new year. Does not include unscheduled public holidays such as Polling Day. 
 	 */
 	@Transactional
-	@EventListener(ApplicationReadyEvent.class) // Run once every time app starts (seeding)
+	// @EventListener(ApplicationReadyEvent.class) // Run once every time app starts (seeding)
 	@Scheduled(cron = "0 0 0 1 1 ?")
 	public void fetchAndSyncHolidays() {
 		try {

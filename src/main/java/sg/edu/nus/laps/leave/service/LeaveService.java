@@ -340,6 +340,10 @@ public class LeaveService {
 	 * d. Helper Method: getCombinedLeaveChainSpan --> Find the Total Calendar Days for Chained Leave
 	 */
 	private long getCombinedLeaveChainSpan(LeaveApplication leave, Long currentLeaveDuration) {
+		if (currentLeaveDuration > 14) {
+			throw new RuntimeException("Leave duration must not exceed 14 consecutive days");
+		}
+
 		// --> Check if there is an existing leave application just before the new leave application starts
 		int dialback = (leave.getFromDate().getDayOfWeek() == DayOfWeek.MONDAY) ? 3 : 1;
 		LocalDate backBridge = leave.getFromDate().minusDays(dialback);

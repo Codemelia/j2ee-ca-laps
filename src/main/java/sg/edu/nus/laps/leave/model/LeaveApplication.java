@@ -37,11 +37,17 @@ public class LeaveApplication extends SetCreatedUpdated {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "from_date", nullable = false)
     private LocalDate fromDate;
+    
+    @Column(name = "from_ampm")
+    private String fromAMPM;
 
     @NotNull(message = "End date is mandatory")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "to_date", nullable = false)
     private LocalDate toDate;
+    
+    @Column(name = "to_ampm")
+    private String toAMPM;
 
     @URL(message="Proof URL must be in a valid URL format")
     @Size(max = 2048, message = "Proof URL cannot exceed 2048 characters")
@@ -104,8 +110,12 @@ public class LeaveApplication extends SetCreatedUpdated {
     public void setId(Long id) 									{ this.id = id; }
     public LocalDate getFromDate() 								{ return fromDate; }
     public void setFromDate(LocalDate fromDate) 				{ this.fromDate = fromDate; }
+    public String getFromAMPM() 								{ return fromAMPM; }
+    public void setFromAMPM(String fromAMPM) 					{ this.fromAMPM = fromAMPM; }
     public LocalDate getToDate() 								{ return toDate; }
     public void setToDate(LocalDate toDate) 					{ this.toDate = toDate; }
+    public String getToAMPM() 									{ return toAMPM; }
+    public void setToAMPM(String toAMPM) 						{ this.toAMPM = toAMPM; }
     public String getReason() 									{ return reason; }
     public void setReason(String reason) 						{ this.reason = reason; }
     public LeaveStatus getStatus() 								{ return status; }
