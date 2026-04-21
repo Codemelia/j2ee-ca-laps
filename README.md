@@ -88,7 +88,7 @@ On Local Machine
 
 5. Test locally with RDS
    docker run -d -p 8080:8080 ^
-   -e MYSQL_HOSTNAME=jdbc:mysql://database-1.cxaskw62mcmk.us-east-1.rds.amazonaws.com:3306/lapsdb ^
+   -e MYSQL_HOSTNAME=database-1.cxaskw62mcmk.us-east-1.rds.amazonaws.com ^
    -e MYSQL_USERNAME=root ^
    -e MYSQL_PASSWORD=password ^
    codemelia/laps:v6
@@ -125,7 +125,7 @@ On EC2 Instance
 
 15. Run container
     docker run -d -p 8080:8080 \
-    -e MYSQL_HOSTNAME=jdbc:mysql://database-1.cxaskw62mcmk.us-east-1.rds.amazonaws.com:3306/lapsdb \
+    -e MYSQL_HOSTNAME=database-1.cxaskw62mcmk.us-east-1.rds.amazonaws.com \
     -e MYSQL_USERNAME=root \
     -e MYSQL_PASSWORD=password \
     590183705020.dkr.ecr.us-east-1.amazonaws.com/lapsrepo:v1
