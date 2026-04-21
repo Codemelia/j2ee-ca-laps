@@ -9,6 +9,7 @@ This README is organized as a practical setup and workflow guide.
 1. Git workflow
 2. Environment variable configuration
 3. Project run commands
+4. Packaging and deployment
 
 ---
 
@@ -157,3 +158,8 @@ To run with a fresh build, add a "clean" argument before spring-boot:run.
 
 3. macOS/Linux:
     ./mvnw clean package
+
+---
+
+## 4. Packaging and Deployment
+This section identifies the steps our team took to package and deploy our application
