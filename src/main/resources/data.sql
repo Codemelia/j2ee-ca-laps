@@ -150,5 +150,5 @@ INSERT INTO leave_records (id, employee_id, leave_type_id, calendar_year, entitl
 INSERT INTO overtime_claims (id, employee_id, worked_date, claimed_days, status) VALUES
   (1, 2, '2026-04-20', 0.5, 'APPLIED'),
   (2, 2, '2026-04-21', 1.0, 'APPROVED'),
-  (3, 3, '2026-04-22', 1.5, 'APPLIED'),
-  (4, 3, '2026-04-23', 2.0, 'REJECTED');
+  (3, 3, '2026-04-19', 1.0, 'APPLIED'),
+  (4, 3, '2026-04-17', 0.5, 'REJECTED');
