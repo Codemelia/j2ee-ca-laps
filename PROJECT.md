@@ -18,6 +18,8 @@ The G3LAPS is a leave processing system that is used by three primary user role 
 2. Manager [Internal user]
 3. Admin [Internal/External user - can be outsourced]
 
+There are two endpoints for users to login: Employee Portal vs Admin Portal.
+
 ### 1.2 Main users and responsibilities
 1. Employee: apply leave, view own leave, manage own account.
 2. Manager: all employee functions plus approve/reject subordinate leave.
