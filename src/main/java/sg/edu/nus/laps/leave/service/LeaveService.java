@@ -275,6 +275,11 @@ public class LeaveService {
 		}
 	}
 
+	/* 
+	 * Helper method: isActuallyOverlapping --> Find if the New Leave Application Selected Start-Date &
+			End-Date overlapped with Any Previously Submitted Leave Application/s (Approved)
+	 */
+			
 	private boolean isActuallyOverlapping(LeaveApplication newApp, LeaveApplication existing) {
 		// 1. Quick Discard: If dates don't even touch, no overlap.
 		if (existing.getToDate().isBefore(newApp.getFromDate()) || existing.getFromDate().isAfter(newApp.getToDate())) {
