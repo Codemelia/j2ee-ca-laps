@@ -60,7 +60,7 @@ This application uses the following stack components for development.
 7. Authentication and authorization: Spring Security, Thymeleaf Extras - Spring Security 6, role/authority-based access control, custom authentication provider, and custom invalid/expired session strategies
 8. Configuration and localization: Profile-based configuration (application.properties, application-railway properties, application-aws.properties) and messages.properties
 9. Database initialization and dummy data: schema.sql and data.sql for schema setup and test/demo data population
-10. Packaging and deployment: Dockerfile with cloud deployment configuration for Railway and AWS EC2/RDS via Learner Lab
+10. Packaging and deployment: Dockerfile with cloud deployment configuration for Railway and AWS EC2/RDS/ECR via Learner Lab
 11. External API integration: Spring RestTemplate-based integration for holiday data retrieval
 12. Testing support: Spring Boot test starters for Web MVC, Security, JPA, Validation, and Thymeleaf
 
