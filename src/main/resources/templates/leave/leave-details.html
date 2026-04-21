@@ -92,10 +92,16 @@
                                     <dd th:text="*{leaveType.leaveType}"></dd>
                                     
                                     <dt><b>Start Date</b></dt>
-                                    <dd th:text="*{fromDate}"></dd>
+                                    <dd><span th:text="*{fromDate}">01 Jan 2026</span>
+									    <span th:if="*{leaveType != null && 'Compensation'.equals(leaveType.leaveType)}" 
+									          th:text="*{fromAMPM}" 
+									          class="badge bg-light text-dark ms-1">AM</span></dd>
                                     
                                     <dt><b>End Date</b></dt>
-                                    <dd th:text="*{toDate}"></dd>
+                                    <dd><span th:text="*{toDate}">01 Jan 2026</span>
+										<span th:if="*{leaveType != null && 'Compensation'.equals(leaveType.leaveType)}" 
+										 th:text="*{toAMPM}" 
+										class="badge bg-light text-dark ms-1">AM</span></dd>
                                                                 
                                     <dt><b>Reason</b></dt>
                                     <dd th:text="*{reason} ?: 'No Reason Provided'"></dd>
