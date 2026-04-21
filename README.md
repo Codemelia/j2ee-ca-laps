@@ -63,11 +63,10 @@ Deployment on EC2 Instance
     Port: 8080
     Source: 0.0.0.0/0
 
-### 1.3 Amelia’s Account
+### 1.3 Amelia’s Account: Docker + RDS + CR + ECS → orchestrated, managed deployment
 http://ec2-3-85-192-51.compute-1.amazonaws.com:8080/auth/admin/login
 http://ec2-3-85-192-51.compute-1.amazonaws.com:8080/auth/employee/login
 
-Docker + RDS + CR + ECS → orchestrated, managed deployment
 On AWS Learner Lab — RDS Setup
 1. Create RDS (MySQL) instance
    - DB instance identifier: database-1
