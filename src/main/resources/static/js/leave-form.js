@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
         proofStar.style.display = (selectedText === 'Medical') ? 'inline' : 'none';
 
         // 2. Toggle Compensation AM/PM Fields
-        // Using "3" based on your ID requirement
+        // Using "3" based on ID for Compensation
         const isCompensation = (selectedValue === "3");
 
         compToggles.forEach(el => {
