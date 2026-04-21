@@ -37,8 +37,9 @@
 					th:text="${globalError}"></div>
 
 				<!-- Success -->
-				<div class="alert alert-success"
-					th:if="${successMsg}"
+				<div id="successMsg"
+					class="alert alert-success d-none"
+					th:classappend="${successMsg} ? '' : ' d-none'"
 					th:text="${successMsg}"></div>
 	
 				<!-- th:if checks whether the list is empty -->
@@ -86,7 +87,7 @@
                                     th:action="@{/claims/delete/{id}(id=${claim.id})}" method="post">
                                     <input type="hidden" name="id" th:value="${claim.id}">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                    <button type="submit" class="btn btn-primary claim-action-btn">Delete</button>
+                                    <button type="submit" class="btn btn-danger claim-action-btn">Delete</button>
                                 </form>
                                 <p></p>
                                 <span th:unless="${'APPLIED'.equals(claim.status.name())}">
@@ -100,7 +101,7 @@
                                     th:action="@{/manager/team-claims/approve}" method="post">
                                     <input type="hidden" name="id" th:value="${claim.id}">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                    <button type="submit" class="btn btn-primary claim-action-btn">Approve</button>
+                                    <button type="submit" class="btn btn-success claim-action-btn">Approve</button>
                                 </form>
                                 <p></p>
                                 <form

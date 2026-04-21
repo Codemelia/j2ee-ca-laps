@@ -1,5 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+    // On page load, retrieve success message
+    const successMsg = sessionStorage.getItem("successMsg");
+    if (successMsg) {
+        sessionStorage.removeItem("successMsg"); // Refresh
+
+        // Retrieve successMsg and insert in inner text
+        // Remove display: none;
+        const successAlert = document.getElementById("successMsg");
+        if (successAlert) {
+            successAlert.innerText = successMsg;
+            successAlert.classList.remove("d-none");
+        }
+    }
+
     const form = document.getElementById("claimSubmitForm");
     if (!form) return;
 
@@ -65,7 +79,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const result = await resp.json();
 
             // if response is OK 200, redirect to claims
+            // set success message to session storage for display
             if (resp.ok) {
+                sessionStorage.setItem("successMsg", result.message || "Claim submitted successfully");
                 window.location.href = "/claims";
                 return;
             }
